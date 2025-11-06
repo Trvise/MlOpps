@@ -1,0 +1,216 @@
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { useModels } from '../store/useModels';
+import { MetricCard } from '../components/MetricCard';
+import { 
+  Zap, 
+  FlaskConical, 
+  Package, 
+  Rocket, 
+  CheckCircle2,
+  Clock,
+  AlertCircle
+} from 'lucide-react';
+import { formatDate, formatNumber } from '../lib/utils';
+
+export const DashboardPage = () => {
+  const navigate = useNavigate();
+  const { models } = useModels();
+
+  const totalModels = models.length;
+  const trainedModels = models.filter(m => m.metrics).length;
+  const validatedModels = models.filter(m => m.validation).length;
+  const deployedModels = models.filter(m => m.status === 'deployed').length;
+
+  const avgAccuracy = models.length > 0
+    ? models.filter(m => m.metrics).reduce((acc, m) => acc + (m.metrics?.accuracy || 0), 0) / 
+      (models.filter(m => m.metrics).length || 1)
+    : 0;
+
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      idle: { bg: 'bg-slate-700', text: 'text-slate-300', icon: Clock },
+      training: { bg: 'bg-blue-500', text: 'text-white', icon: Zap },
+      validating: { bg: 'bg-purple-500', text: 'text-white', icon: FlaskConical },
+      exporting: { bg: 'bg-yellow-500', text: 'text-white', icon: Package },
+      deployed: { bg: 'bg-green-500', text: 'text-white', icon: CheckCircle2 },
+    };
+
+    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.idle;
+    const Icon = config.icon;
+
+    return (
+      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${config.bg} ${config.text}`}>
+        <Icon className="w-3 h-3" />
+        {status}
+      </span>
+    );
+  };
+
+  return (
+    <div className="p-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Model Dashboard</h1>
+          <p className="text-slate-400">Manage and monitor your ML model lifecycle</p>
+        </div>
+
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <MetricCard
+            label="Total Models"
+            value={totalModels}
+            icon={Package}
+          />
+          <MetricCard
+            label="Trained Models"
+            value={trainedModels}
+            icon={Zap}
+            trend="up"
+          />
+          <MetricCard
+            label="Deployed Models"
+            value={deployedModels}
+            icon={Rocket}
+            trend="up"
+          />
+          <MetricCard
+            label="Avg Accuracy"
+            value={`${formatNumber(avgAccuracy * 100, 1)}%`}
+            icon={CheckCircle2}
+            trend={avgAccuracy > 0.9 ? 'up' : 'neutral'}
+          />
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 mb-8">
+          <h2 className="text-xl font-semibold text-white mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <button
+              onClick={() => navigate('/train')}
+              className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-lg shadow-blue-500/20"
+            >
+              <Zap className="w-5 h-5 text-amber-300" />
+              New Training
+            </button>
+            <button
+              onClick={() => navigate('/validate')}
+              className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
+            >
+              <FlaskConical className="w-5 h-5" />
+              Validate Model
+            </button>
+            <button
+              onClick={() => navigate('/export')}
+              className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
+            >
+              <Package className="w-5 h-5" />
+              Export Model
+            </button>
+            <button
+              onClick={() => navigate('/deploy')}
+              className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
+            >
+              <Rocket className="w-5 h-5" />
+              Deploy to Fleet
+            </button>
+          </div>
+        </div>
+
+        {/* Models Table */}
+        <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-800">
+            <h2 className="text-xl font-semibold text-white">All Models</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-slate-800/50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    Version
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    Framework
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    Dataset
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    Accuracy
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    Loss
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                    Created
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800">
+                {models.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-12 text-center">
+                      <AlertCircle className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+                      <p className="text-slate-400">No models yet. Create your first training run!</p>
+                      <button
+                        onClick={() => navigate('/train')}
+                        className="mt-4 text-amber-400 hover:text-amber-300 font-medium"
+                      >
+                        Start Training →
+                      </button>
+                    </td>
+                  </tr>
+                ) : (
+                  models.map((model) => (
+                    <motion.tr
+                      key={model.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="hover:bg-slate-800/30 transition-colors cursor-pointer"
+                      onClick={() => navigate('/history')}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-mono text-amber-400">{model.version}</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm text-slate-300">{model.framework}</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-mono text-blue-400">{model.datasetVersion}</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm text-green-400">
+                          {model.metrics ? `${formatNumber(model.metrics.accuracy * 100, 2)}%` : '-'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm text-orange-400">
+                          {model.metrics ? formatNumber(model.metrics.loss, 3) : '-'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStatusBadge(model.status)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm text-slate-400">{formatDate(model.createdAt)}</span>
+                      </td>
+                    </motion.tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
