@@ -131,21 +131,21 @@ export const HistoryPage = () => {
         transition={{ duration: 0.5 }}
       >
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+        <div className="mb-12">
+          <h1 className="text-4xl font-light text-white mb-3 tracking-tight flex items-center gap-3">
             <History className="w-8 h-8 text-slate-400" />
             Model History
           </h1>
-          <p className="text-slate-400">Timeline and version comparison</p>
+          <p className="text-lg text-slate-400">Timeline and version comparison</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Timeline */}
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-800 flex items-center gap-2">
+            <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl overflow-hidden">
+              <div className="px-8 py-6 border-b border-slate-800/50 flex items-center gap-2">
                 <GitBranch className="w-5 h-5 text-slate-400" />
-                <h2 className="text-xl font-semibold text-white">Event Timeline</h2>
+                <h2 className="text-xl font-medium text-white">Event Timeline</h2>
               </div>
               <div className="p-6 max-h-[600px] overflow-y-auto">
                 {sortedEvents.length === 0 ? (
@@ -189,8 +189,8 @@ export const HistoryPage = () => {
 
           {/* Diff Viewer */}
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-white mb-6">Compare Versions</h2>
+            <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-8">
+              <h2 className="text-xl font-medium text-white mb-6">Compare Versions</h2>
               
               <div className="space-y-4">
                 <div>

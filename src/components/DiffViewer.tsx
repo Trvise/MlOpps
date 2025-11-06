@@ -22,8 +22,8 @@ export const DiffViewer = ({ oldVersion, newVersion, diffs }: DiffViewerProps) =
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
-      <div className="bg-slate-800/50 px-4 py-3 border-b border-slate-700">
+    <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl overflow-hidden">
+      <div className="bg-slate-800/30 px-6 py-4 border-b border-slate-700/50">
         <div className="flex items-center gap-3">
           <span className="text-sm font-mono text-slate-400">{oldVersion}</span>
           <ArrowRight className="w-4 h-4 text-slate-600" />

@@ -303,17 +303,17 @@ export const ConnectorsPage = () => {
         transition={{ duration: 0.5 }}
       >
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-12 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-3">
-              <Plug className="w-6 h-6 md:w-8 md:h-8 text-amber-400" />
+            <h1 className="text-4xl font-light text-white mb-3 tracking-tight flex items-center gap-3">
+              <Plug className="w-8 h-8 text-amber-400" />
               Connectors
             </h1>
-            <p className="text-sm md:text-base text-slate-400">Connect to cloud data sources and external model repositories</p>
+            <p className="text-lg text-slate-400">Connect to cloud data sources and external model repositories</p>
           </div>
           <button
             onClick={() => handleOpenModal()}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-medium transition-all shadow-lg shadow-blue-500/20"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 md:px-6 md:py-3 rounded-lg font-medium transition-all"
           >
             <Plus className="w-4 h-4 md:w-5 md:h-5" />
             <span className="hidden sm:inline">Add Connector</span>
@@ -328,7 +328,7 @@ export const ConnectorsPage = () => {
               key={connector.id}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-slate-900 border border-slate-800 rounded-lg p-6 hover:border-blue-500/30 transition-all"
+              className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-6 hover:border-slate-700/50 transition-all"
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-4">

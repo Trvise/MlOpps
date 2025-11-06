@@ -165,12 +165,12 @@ checkpoint:
         className="flex-1 flex flex-col min-h-0"
       >
         {/* Header */}
-        <div className="mb-4 md:mb-6 flex-shrink-0">
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-3">
-            <Zap className="w-6 h-6 md:w-8 md:h-8 text-amber-400" />
+        <div className="mb-8 flex-shrink-0">
+          <h1 className="text-4xl font-light text-white mb-3 tracking-tight flex items-center gap-3">
+            <Zap className="w-8 h-8 text-amber-400" />
             Train Model
           </h1>
-          <p className="text-sm md:text-base text-slate-400">Configure hyperparameters and start a new training run</p>
+          <p className="text-lg text-slate-400">Configure hyperparameters and start a new training run</p>
         </div>
 
         {/* View Mode Toggle */}
@@ -178,10 +178,10 @@ checkpoint:
           <div className="bg-slate-900 border border-slate-800 rounded-lg p-1 flex gap-1">
             <button
               onClick={() => setViewMode('code')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-normal transition-all ${
                 viewMode === 'code'
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
               }`}
             >
               <Code className="w-4 h-4" />
@@ -189,10 +189,10 @@ checkpoint:
             </button>
             <button
               onClick={() => setViewMode('form')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-normal transition-all ${
                 viewMode === 'form'
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
               }`}
             >
               <Settings className="w-4 h-4" />

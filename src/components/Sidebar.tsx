@@ -42,8 +42,8 @@ export const Sidebar = () => {
             <Activity className="w-6 h-6 text-amber-400" />
           </div>
           <div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-amber-400 bg-clip-text text-transparent">The Vortex</h1>
-            <p className="text-xs text-slate-400">ML Lifecycle v1.1</p>
+            <h1 className="text-xl font-light tracking-tight text-white">The Vortex</h1>
+            <p className="text-xs text-slate-400 mt-1">ML Lifecycle Management</p>
           </div>
         </div>
       </div>
@@ -57,17 +57,17 @@ export const Sidebar = () => {
               to={item.to}
               end={item.to === '/'}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
+                `flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 group ${
                   isActive
-                    ? 'bg-gradient-to-r from-blue-500/10 to-amber-600/10 text-amber-400 border border-blue-500/20'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                    ? 'bg-blue-600/10 text-blue-400'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <item.icon className={`w-5 h-5 ${isActive ? 'text-amber-400' : 'group-hover:text-white'}`} />
-                  <span className="font-medium">{item.label}</span>
+                  <item.icon className={`w-5 h-5 ${isActive ? 'text-blue-400' : 'group-hover:text-white'}`} />
+                  <span className="font-normal text-sm">{item.label}</span>
                 </>
               )}
             </NavLink>
@@ -83,17 +83,17 @@ export const Sidebar = () => {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
+                `flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 group ${
                   isActive
-                    ? 'bg-gradient-to-r from-blue-500/10 to-amber-600/10 text-amber-400 border border-blue-500/20'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                    ? 'bg-blue-600/10 text-blue-400'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <item.icon className={`w-5 h-5 ${isActive ? 'text-amber-400' : 'group-hover:text-white'}`} />
-                  <span className="font-medium">{item.label}</span>
+                  <item.icon className={`w-5 h-5 ${isActive ? 'text-blue-400' : 'group-hover:text-white'}`} />
+                  <span className="font-normal text-sm">{item.label}</span>
                 </>
               )}
             </NavLink>

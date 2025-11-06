@@ -1,102 +1,118 @@
-# 🤖 RoboML Console
+# The Vortex
 
-A comprehensive React web application for managing the complete ML model lifecycle for robotics - from training to deployment.
+A comprehensive ML model lifecycle management platform for robotics - from training to deployment.
 
-![RoboML Console](https://img.shields.io/badge/React-18.2-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-cyan)
-![Zustand](https://img.shields.io/badge/Zustand-4.4-purple)
+## Features
 
-## ✨ Features
+### Model Dashboard
+- Real-time overview of all models with metadata (version, status, accuracy, loss)
+- Quick actions for training, validation, export, and deployment
+- Metrics at a glance: total models, deployed models, average accuracy
+- Interactive table with click-through model details and status tracking
 
-### 🎯 Model Dashboard
-- **Real-time Overview**: View all models with metadata (version, status, accuracy, loss)
-- **Quick Actions**: Fast access to training, validation, export, and deployment
-- **Metrics at a Glance**: Total models, deployed models, average accuracy
-- **Interactive Table**: Click-through model details and status tracking
+### Datasets Management
+- Dataset library for managing training, validation, and test datasets
+- Upload and track datasets with metadata (size, samples, format)
+- Export dataset info as JSON
+- Rich metadata tracking: classes, resolution, augmentation status
+- Dataset statistics: total samples, storage usage, dataset counts
+- Filtering by dataset type (Training/Validation/Test)
+- Seamless integration with training runs
 
-### 💾 Datasets Management
-- **Dataset Library**: Manage training, validation, and test datasets
-- **Upload & Track**: Add new datasets with metadata (size, samples, format)
-- **Export Dataset Info**: Download dataset metadata as JSON
-- **Rich Metadata**: Track classes, resolution, augmentation status
-- **Dataset Statistics**: View total samples, storage usage, dataset counts
-- **Filtering**: Filter by dataset type (Training/Validation/Test)
-- **Integration**: Seamlessly link datasets to training runs
-
-### 🔥 Training Module
-- **Framework Selection**: Choose between PyTorch and TensorFlow
-- **Dataset Selection**: Pick from available training datasets
-- **Hyperparameter Configuration**: 
+### Training Module
+- Framework selection: PyTorch and TensorFlow
+- Dataset selection from available training datasets
+- Hyperparameter configuration:
   - Learning rate adjustment
   - Batch size customization
   - Epoch control
-- **Live Training Simulation**: Real-time progress bars and training logs
-- **Automatic Versioning**: Models auto-versioned as M-001, M-002, etc.
-- **Dataset Linking**: Each training run linked to a specific dataset version
+- Live training simulation with real-time progress bars and logs
+- Automatic versioning: models auto-versioned as M-001, M-002, etc.
+- Code editor interface with VS Code-like experience
+- YAML configuration editing with search and save functionality
 
-### 🧪 Validation Module
-- **Simulator Support**: 
+### Validation Module
+- Simulator support:
   - NVIDIA Isaac Sim
   - Gazebo
-- **Comprehensive Metrics**:
+- Comprehensive metrics:
   - Safety score
   - Latency measurements
   - FPS performance
-- **Live Validation**: Real-time progress and simulator logs
-- **Results Tracking**: All validation results stored with model version
+- Live validation with real-time progress and simulator logs
+- Results tracking: all validation results stored with model version
 
-### 📦 Export & Optimize
-- **Multiple Formats**:
+### Export & Optimize
+- Multiple formats:
   - ONNX (cross-platform)
   - TensorRT (NVIDIA optimization)
   - TFLite (mobile/edge devices)
-- **Artifact Management**: Track file sizes, export versions, timestamps
-- **Conversion Progress**: Live progress bars and logs
-- **Export History**: View all exported artifacts with metadata
+- Artifact management: track file sizes, export versions, timestamps
+- Conversion progress: live progress bars and logs
+- Export history: view all exported artifacts with metadata
 
-### 🚀 Deployment Module
-- **Robot Fleet Management**: 
-  - 6 mock robots (Scout, Cargo, Navigation units)
+### Deployment Module
+- Robot fleet management:
+  - Multiple robot units (Scout, Cargo, Navigation)
   - Online/offline status tracking
   - Last sync timestamps
-- **Selective Deployment**: Choose which robots to update
-- **One-Click Rollback**: Revert to previous model versions
-- **Fleet Statistics**: Real-time online/offline counts
+- Selective deployment: choose which robots to update
+- One-click rollback: revert to previous model versions
+- Fleet statistics: real-time online/offline counts
+- ROS integration for robot deployment
 
-### 📊 Version History & Git-Style Diff
-- **Event Timeline**: Complete audit trail of all operations
+### Version History & Git-Style Diff
+- Event timeline: complete audit trail of all operations
   - Training events
   - Validations
   - Exports
   - Deployments
   - Rollbacks
-- **Version Comparison**: Side-by-side diff viewer
+- Version comparison: side-by-side diff viewer
   - Hyperparameter changes
   - Metrics improvements
   - Framework differences
   - Dataset version tracking
-- **Detailed Metadata**: JSON metadata for each event
+- Detailed metadata: JSON metadata for each event
 
-## 🎨 UI/UX Features
+### Connectors
+- Cloud data source integration:
+  - AWS S3
+  - GCP Storage
+  - Azure Blob Storage
+- External model sources:
+  - Custom ROS connections
+  - External model APIs
+- Connection testing and management
+- Configuration management
 
-- **Dark Theme**: Minimalistic design inspired by Weights & Biases
-- **Gradient Accents**: Neon blue/green/purple color scheme
-- **Smooth Animations**: Framer Motion transitions between states
-- **Responsive Design**: Works on desktop and tablet screens
-- **Live Progress**: Real-time updates with auto-scrolling logs
-- **Status Badges**: Color-coded model status indicators
+### Profile & Settings
+- User profile management
+- Security settings with two-factor authentication
+- Notification preferences
+- ROS deployment configuration
 
-## 🏗️ Technical Architecture
+## UI/UX Features
+
+- Dark theme with minimalistic design
+- Blue and gold accent colors (Trvise-inspired)
+- Smooth animations with Framer Motion
+- Responsive design for desktop and tablet
+- Live progress updates with auto-scrolling logs
+- Status badges with color-coded indicators
+- Clean, professional B2B layout
+
+## Technical Architecture
 
 ### Tech Stack
-- **Frontend**: React 18.2 with TypeScript
-- **State Management**: Zustand with localStorage persistence
-- **Styling**: Tailwind CSS + custom dark theme
-- **Animations**: Framer Motion
-- **Icons**: Lucide React
-- **Routing**: React Router v6
-- **Build Tool**: Vite
+- Frontend: React 18.2 with TypeScript
+- State Management: Zustand with localStorage persistence
+- Styling: Tailwind CSS with custom dark theme
+- Animations: Framer Motion
+- Icons: Lucide React
+- Code Editor: Monaco Editor (VS Code editor)
+- Routing: React Router v6
+- Build Tool: Vite
 
 ### Project Structure
 ```
@@ -106,7 +122,8 @@ src/
 │   ├── ProgressBar.tsx # Animated progress indicator
 │   ├── LogViewer.tsx   # Monospace log display
 │   ├── DiffViewer.tsx  # Version comparison
-│   └── MetricCard.tsx  # Metric display cards
+│   ├── MetricCard.tsx  # Metric display cards
+│   └── CodeEditor.tsx  # Monaco code editor
 │
 ├── pages/              # Main application pages
 │   ├── DashboardPage.tsx   # Model overview
@@ -115,13 +132,15 @@ src/
 │   ├── ValidatePage.tsx    # Validation interface
 │   ├── ExportPage.tsx      # Export & optimization
 │   ├── DeployPage.tsx      # Fleet deployment
-│   └── HistoryPage.tsx     # Timeline & diffs
+│   ├── HistoryPage.tsx     # Timeline & diffs
+│   ├── ConnectorsPage.tsx  # Cloud connectors
+│   └── ProfilePage.tsx     # User settings
 │
 ├── store/              # Zustand state stores
 │   ├── useModels.ts    # Model state management
 │   ├── useDatasets.ts  # Dataset management
 │   ├── useHistory.ts   # Event history
-│   └── useRobots.ts    # Robot fleet state
+│   ├── useRobots.ts    # Robot fleet state
 │
 ├── utils/              # Utility functions
 │   ├── fakeJobs.ts     # Async job simulation
@@ -139,7 +158,7 @@ src/
 └── index.css           # Global styles
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js 18+ 
@@ -147,75 +166,75 @@ src/
 
 ### Installation
 
-1. **Install dependencies**:
+1. Install dependencies:
 ```bash
 npm install
 ```
 
-2. **Start development server**:
+2. Start development server:
 ```bash
 npm run dev
 ```
 
-3. **Build for production**:
+3. Build for production:
 ```bash
 npm run build
 ```
 
-4. **Preview production build**:
+4. Preview production build:
 ```bash
 npm run preview
 ```
 
-## 💾 Data Persistence
+## Data Persistence
 
-All data is stored in the browser's `localStorage`:
-- **Models**: `roboml-models-storage`
-- **Datasets**: `roboml-datasets-storage`
-- **History**: `roboml-history-storage`
-- **Robots**: `roboml-robots-storage`
+All data is stored in the browser's localStorage:
+- Models: `roboml-models-storage`
+- Datasets: `roboml-datasets-storage`
+- History: `roboml-history-storage`
+- Robots: `roboml-robots-storage`
 
 Data persists across page refreshes and browser sessions. Sample datasets are automatically initialized on first load.
 
-## 🔄 Workflow Example
+## Workflow Example
 
-1. **Upload Dataset**: Add training data to the Datasets library
-2. **Train**: Create a new model with selected dataset and hyperparameters
-3. **Validate**: Test in Isaac Sim or Gazebo simulator
-4. **Export**: Convert to ONNX/TensorRT/TFLite
-5. **Deploy**: Push to robot fleet
-6. **Monitor**: Track in history and compare versions
-7. **Export Data**: Download dataset info for external use
-8. **Rollback**: Revert if needed
+1. Upload Dataset: Add training data to the Datasets library
+2. Train: Create a new model with selected dataset and hyperparameters
+3. Validate: Test in Isaac Sim or Gazebo simulator
+4. Export: Convert to ONNX/TensorRT/TFLite
+5. Deploy: Push to robot fleet
+6. Monitor: Track in history and compare versions
+7. Export Data: Download dataset info for external use
+8. Rollback: Revert if needed
 
-## 🎯 Model Versioning
+## Model Versioning
 
-- **Models**: `M-001`, `M-002`, `M-003`...
-- **Exports**: `E-001`, `E-002`, `E-003`...
-- **Fleet**: `F-001`, `F-002`, `F-003`...
-- **Datasets**: `DS-001`, `DS-002`, `DS-003`...
+- Models: `M-001`, `M-002`, `M-003`...
+- Exports: `E-001`, `E-002`, `E-003`...
+- Fleet: `F-001`, `F-002`, `F-003`...
+- Datasets: `DS-001`, `DS-002`, `DS-003`...
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
 Once you connect to your real data pipeline:
 
-1. **Dataset Integration**: 
+1. Dataset Integration: 
    - Add Dataset store
    - Link datasets to training runs
    - Dataset versioning and lineage
 
-2. **API Layer**:
+2. API Layer:
    - REST/gRPC endpoints
    - Real model registry (MLflow)
    - Actual job orchestration (Kubernetes, Ray)
 
-3. **Advanced Features**:
+3. Advanced Features:
    - Real-time model monitoring
    - A/B testing deployment
    - Performance analytics
    - Cost optimization tracking
 
-## 📝 Development Notes
+## Development Notes
 
 ### Simulated Jobs
 All training, validation, and export processes are simulated with:
@@ -231,11 +250,11 @@ Zustand provides:
 
 ### Styling
 Tailwind classes follow a dark theme:
-- Background: `slate-950`, `slate-900`
-- Borders: `slate-800`, `slate-700`
-- Accents: `cyan-400`, `blue-600`, `green-400`
+- Background: Black, slate-900
+- Borders: slate-800, slate-700
+- Accents: blue-600, amber-400
 
-## 🤝 Contributing
+## Contributing
 
 This is a demonstration/prototype application. Feel free to:
 - Customize the UI theme
@@ -243,16 +262,12 @@ This is a demonstration/prototype application. Feel free to:
 - Integrate with real ML pipelines
 - Extend robot fleet management
 
-## 📄 License
+## License
 
 MIT License - feel free to use this in your projects!
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
-- Design inspired by Weights & Biases
+- Design inspired by modern AI platforms
 - Built with modern React best practices
 - Optimized for ML/robotics workflows
-
----
-
-**Built with ❤️ for the ML/Robotics community**

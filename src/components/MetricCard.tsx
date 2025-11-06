@@ -19,9 +19,9 @@ export const MetricCard = ({ label, value, icon: Icon, trend, className }: Metri
 
   return (
     <motion.div
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.01 }}
       className={cn(
-        'bg-slate-900 border border-slate-800 rounded-lg p-4 hover:border-blue-500/30 transition-colors',
+        'bg-slate-900/50 border border-slate-800/50 rounded-xl p-6 hover:border-slate-700/50 transition-colors',
         className
       )}
     >
@@ -32,8 +32,8 @@ export const MetricCard = ({ label, value, icon: Icon, trend, className }: Metri
             {value}
           </div>
         </div>
-        <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center">
-          <Icon className="w-5 h-5 text-amber-400" />
+        <div className="w-12 h-12 bg-slate-800/50 rounded-lg flex items-center justify-center">
+          <Icon className="w-5 h-5 text-blue-400" />
         </div>
       </div>
     </motion.div>

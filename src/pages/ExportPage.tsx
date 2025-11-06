@@ -67,19 +67,19 @@ export const ExportPage = () => {
         transition={{ duration: 0.5 }}
       >
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+        <div className="mb-12">
+          <h1 className="text-4xl font-light text-white mb-3 tracking-tight flex items-center gap-3">
             <Package className="w-8 h-8 text-yellow-400" />
             Export & Optimize
           </h1>
-          <p className="text-slate-400">Convert models for deployment and optimization</p>
+          <p className="text-lg text-slate-400">Convert models for deployment and optimization</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Export Form */}
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-white mb-6">Export Configuration</h2>
+            <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-8">
+              <h2 className="text-xl font-medium text-white mb-6">Export Configuration</h2>
               
               <div className="space-y-6">
                 {/* Model Selection */}
@@ -113,10 +113,10 @@ export const ExportPage = () => {
                         key={fmt}
                         onClick={() => setFormat(fmt)}
                         disabled={isExporting}
-                        className={`px-4 py-3 rounded-lg font-medium transition-all ${
+                        className={`px-4 py-3 rounded-lg font-normal transition-all ${
                           format === fmt
-                            ? 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white'
-                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                            ? 'bg-yellow-600 text-white'
+                            : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800 border border-slate-700/50'
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                       >
                         {fmt}
@@ -143,10 +143,10 @@ export const ExportPage = () => {
 
                 {/* Start Export Button */}
                 <button
-                  onClick={handleStartExport}
-                  disabled={isExporting || !selectedModelId}
-                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+                onClick={handleStartExport}
+                disabled={isExporting || !selectedModelId}
+                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                   {isExporting ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

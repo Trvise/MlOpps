@@ -70,19 +70,19 @@ export const ValidatePage = () => {
         transition={{ duration: 0.5 }}
       >
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+        <div className="mb-12">
+          <h1 className="text-4xl font-light text-white mb-3 tracking-tight flex items-center gap-3">
             <FlaskConical className="w-8 h-8 text-purple-400" />
             Validate Model
           </h1>
-          <p className="text-slate-400">Test model performance in simulation environments</p>
+          <p className="text-lg text-slate-400">Test model performance in simulation environments</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Validation Form */}
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-white mb-6">Validation Configuration</h2>
+            <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-8">
+              <h2 className="text-xl font-medium text-white mb-6">Validation Configuration</h2>
               
               <div className="space-y-6">
                 {/* Model Selection */}
@@ -114,22 +114,22 @@ export const ValidatePage = () => {
                     <button
                       onClick={() => setSimulator('Isaac Sim')}
                       disabled={isValidating}
-                      className={`px-4 py-3 rounded-lg font-medium transition-all ${
-                        simulator === 'Isaac Sim'
-                          ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white'
-                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                      } disabled:opacity-50 disabled:cursor-not-allowed`}
-                    >
-                      Isaac Sim
-                    </button>
-                    <button
-                      onClick={() => setSimulator('Gazebo')}
-                      disabled={isValidating}
-                      className={`px-4 py-3 rounded-lg font-medium transition-all ${
-                        simulator === 'Gazebo'
-                          ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white'
-                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    className={`px-4 py-3 rounded-lg font-normal transition-all ${
+                      simulator === 'Isaac Sim'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800 border border-slate-700/50'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    Isaac Sim
+                  </button>
+                  <button
+                    onClick={() => setSimulator('Gazebo')}
+                    disabled={isValidating}
+                    className={`px-4 py-3 rounded-lg font-normal transition-all ${
+                      simulator === 'Gazebo'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800 border border-slate-700/50'
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       Gazebo
                     </button>
@@ -152,10 +152,10 @@ export const ValidatePage = () => {
 
                 {/* Start Validation Button */}
                 <button
-                  onClick={handleStartValidation}
-                  disabled={isValidating || !selectedModelId}
-                  className="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+                onClick={handleStartValidation}
+                disabled={isValidating || !selectedModelId}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                   {isValidating ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

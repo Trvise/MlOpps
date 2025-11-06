@@ -48,20 +48,20 @@ export const DashboardPage = () => {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-8 max-w-7xl mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Model Dashboard</h1>
-          <p className="text-slate-400">Manage and monitor your ML model lifecycle</p>
+        <div className="mb-12">
+          <h1 className="text-4xl font-light text-white mb-3 tracking-tight">Model Dashboard</h1>
+          <p className="text-slate-400 text-lg">Manage and monitor your ML model lifecycle</p>
         </div>
 
         {/* Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <MetricCard
             label="Total Models"
             value={totalModels}
@@ -88,33 +88,33 @@ export const DashboardPage = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold text-white mb-4">Quick Actions</h2>
+        <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-8 mb-12">
+          <h2 className="text-xl font-medium text-white mb-6">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <button
               onClick={() => navigate('/train')}
-              className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-lg shadow-blue-500/20"
+              className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
             >
-              <Zap className="w-5 h-5 text-amber-300" />
+              <Zap className="w-5 h-5" />
               New Training
             </button>
             <button
               onClick={() => navigate('/validate')}
-              className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
+              className="flex items-center justify-center gap-2 bg-slate-800/50 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-all border border-slate-700/50"
             >
               <FlaskConical className="w-5 h-5" />
               Validate Model
             </button>
             <button
               onClick={() => navigate('/export')}
-              className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
+              className="flex items-center justify-center gap-2 bg-slate-800/50 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-all border border-slate-700/50"
             >
               <Package className="w-5 h-5" />
               Export Model
             </button>
             <button
               onClick={() => navigate('/deploy')}
-              className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
+              className="flex items-center justify-center gap-2 bg-slate-800/50 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-all border border-slate-700/50"
             >
               <Rocket className="w-5 h-5" />
               Deploy to Fleet
@@ -123,41 +123,41 @@ export const DashboardPage = () => {
         </div>
 
         {/* Models Table */}
-        <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-800">
-            <h2 className="text-xl font-semibold text-white">All Models</h2>
+        <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl overflow-hidden">
+          <div className="px-8 py-6 border-b border-slate-800/50">
+            <h2 className="text-xl font-medium text-white">All Models</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-slate-800/50">
+              <thead className="bg-slate-800/20">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                  <th className="px-8 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                     Version
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                  <th className="px-8 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                     Framework
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                  <th className="px-8 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                     Dataset
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                  <th className="px-8 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                     Accuracy
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                  <th className="px-8 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                     Loss
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                  <th className="px-8 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
+                  <th className="px-8 py-4 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">
                     Created
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-slate-800/50">
                 {models.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-8 py-12 text-center">
                       <AlertCircle className="w-12 h-12 text-slate-600 mx-auto mb-3" />
                       <p className="text-slate-400">No models yet. Create your first training run!</p>
                       <button
@@ -174,32 +174,32 @@ export const DashboardPage = () => {
                       key={model.id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="hover:bg-slate-800/30 transition-colors cursor-pointer"
+                      className="hover:bg-slate-800/20 transition-colors cursor-pointer"
                       onClick={() => navigate('/history')}
                     >
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-8 py-4 whitespace-nowrap">
                         <span className="text-sm font-mono text-amber-400">{model.version}</span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-8 py-4 whitespace-nowrap">
                         <span className="text-sm text-slate-300">{model.framework}</span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-8 py-4 whitespace-nowrap">
                         <span className="text-sm font-mono text-blue-400">{model.datasetVersion}</span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-8 py-4 whitespace-nowrap">
                         <span className="text-sm text-green-400">
                           {model.metrics ? `${formatNumber(model.metrics.accuracy * 100, 2)}%` : '-'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-8 py-4 whitespace-nowrap">
                         <span className="text-sm text-orange-400">
                           {model.metrics ? formatNumber(model.metrics.loss, 3) : '-'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-8 py-4 whitespace-nowrap">
                         {getStatusBadge(model.status)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-8 py-4 whitespace-nowrap">
                         <span className="text-sm text-slate-400">{formatDate(model.createdAt)}</span>
                       </td>
                     </motion.tr>

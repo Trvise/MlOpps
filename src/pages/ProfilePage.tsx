@@ -54,18 +54,18 @@ export const ProfilePage = () => {
         className="flex-1 flex flex-col max-w-6xl mx-auto w-full"
       >
         {/* Header */}
-        <div className="mb-6 flex-shrink-0">
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-3">
-            <User className="w-6 h-6 md:w-8 md:h-8 text-amber-400" />
+        <div className="mb-12 flex-shrink-0">
+          <h1 className="text-4xl font-light text-white mb-3 tracking-tight flex items-center gap-3">
+            <User className="w-8 h-8 text-amber-400" />
             Profile Settings
           </h1>
-          <p className="text-sm md:text-base text-slate-400">Manage your account settings and preferences</p>
+          <p className="text-lg text-slate-400">Manage your account settings and preferences</p>
         </div>
 
         <div className="flex-1 flex flex-col lg:flex-row gap-6 min-h-0">
           {/* Sidebar Tabs */}
           <div className="flex-shrink-0 lg:w-64">
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-2">
+            <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-2">
               <nav className="space-y-1">
                 {tabs.map((tab) => {
                   const Icon = tab.icon;
@@ -73,11 +73,11 @@ export const ProfilePage = () => {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id as any)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-                        activeTab === tab.id
-                          ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                          : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                      }`}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-normal transition-all ${
+                      activeTab === tab.id
+                        ? 'bg-blue-600 text-white'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
+                    }`}
                     >
                       <Icon className="w-4 h-4" />
                       {tab.label}
@@ -90,7 +90,7 @@ export const ProfilePage = () => {
 
           {/* Main Content */}
           <div className="flex-1 min-h-0 overflow-y-auto">
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+            <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-8">
               {/* General Tab */}
               {activeTab === 'general' && (
                 <div className="space-y-6">
@@ -425,7 +425,7 @@ export const ProfilePage = () => {
               <div className="mt-8 pt-6 border-t border-slate-800 flex justify-end">
                 <button
                   onClick={handleSave}
-                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-lg shadow-blue-500/20"
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
                 >
                   <Save className="w-5 h-5" />
                   Save Changes

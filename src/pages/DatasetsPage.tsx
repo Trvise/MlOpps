@@ -120,17 +120,17 @@ export const DatasetsPage = () => {
         transition={{ duration: 0.5 }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-12">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+            <h1 className="text-4xl font-light text-white mb-3 tracking-tight flex items-center gap-3">
               <Database className="w-8 h-8 text-amber-400" />
               Datasets
             </h1>
-            <p className="text-slate-400">Manage training, validation, and test datasets</p>
+            <p className="text-lg text-slate-400">Manage training, validation, and test datasets</p>
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-lg shadow-blue-500/20"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
           >
             <Plus className="w-5 h-5" />
             Upload Dataset
@@ -191,10 +191,10 @@ export const DatasetsPage = () => {
               <button
                 key={type}
                 onClick={() => setFilterType(type)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-lg text-sm font-normal transition-all ${
                   filterType === type
-                    ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg shadow-blue-500/20'
-                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800 border border-slate-700/50'
                 }`}
               >
                 {type}
@@ -210,7 +210,7 @@ export const DatasetsPage = () => {
               key={dataset.id}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-slate-900 border border-slate-800 rounded-lg p-6 hover:border-blue-500/30 transition-all"
+              className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-6 hover:border-slate-700/50 transition-all"
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-4">

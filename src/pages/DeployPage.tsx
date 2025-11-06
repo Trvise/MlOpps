@@ -86,19 +86,19 @@ export const DeployPage = () => {
         transition={{ duration: 0.5 }}
       >
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+        <div className="mb-12">
+          <h1 className="text-4xl font-light text-white mb-3 tracking-tight flex items-center gap-3">
             <Rocket className="w-8 h-8 text-green-400" />
             Deploy to Fleet
           </h1>
-          <p className="text-slate-400">Roll out models to your robot fleet</p>
+          <p className="text-lg text-slate-400">Roll out models to your robot fleet</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Deployment Form */}
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-white mb-6">Deployment Configuration</h2>
+            <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-8">
+              <h2 className="text-xl font-medium text-white mb-6">Deployment Configuration</h2>
               
               <div className="space-y-6">
                 {/* Model Selection */}
@@ -175,10 +175,10 @@ export const DeployPage = () => {
 
                 {/* Deploy Button */}
                 <button
-                  onClick={handleDeploy}
-                  disabled={!selectedModelId || selectedRobots.length === 0}
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+                onClick={handleDeploy}
+                disabled={!selectedModelId || selectedRobots.length === 0}
+                className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                   <Rocket className="w-5 h-5" />
                   Deploy to {selectedRobots.length} Robot{selectedRobots.length !== 1 ? 's' : ''}
                 </button>
@@ -202,9 +202,9 @@ export const DeployPage = () => {
 
           {/* Fleet Status */}
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-800">
-                <h2 className="text-xl font-semibold text-white">Fleet Status</h2>
+            <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl overflow-hidden">
+              <div className="px-8 py-6 border-b border-slate-800/50">
+                <h2 className="text-xl font-medium text-white">Fleet Status</h2>
               </div>
               <div className="p-6">
                 <div className="space-y-3">
@@ -213,7 +213,7 @@ export const DeployPage = () => {
                       key={robot.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 hover:border-slate-600 transition-colors"
+                      className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4 hover:border-slate-700 transition-colors"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
