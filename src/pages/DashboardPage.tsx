@@ -181,7 +181,8 @@ export const DashboardPage = () => {
                         <span className="text-sm font-mono text-amber-400">{model.version}</span>
                       </td>
                       <td className="px-8 py-4 whitespace-nowrap">
-                        <span className="text-sm text-slate-300">{model.framework}</span>
+                        <div className="text-sm text-slate-300">{model.framework}</div>
+                        <div className="text-xs text-slate-500 mt-1">{model.componentType}</div>
                       </td>
                       <td className="px-8 py-4 whitespace-nowrap">
                         <span className="text-sm font-mono text-blue-400">{model.datasetVersion}</span>

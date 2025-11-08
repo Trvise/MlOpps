@@ -36,20 +36,28 @@ export const DeployPage = () => {
     const model = models.find(m => m.id === selectedModelId);
     if (!model) return;
 
+    // Determine deployment type based on component type
+    let deploymentType: 'ROS2' | 'Docker' | 'Orin' | 'A100' = 'ROS2';
+    if (model.componentType === 'Policy/Control' || model.componentType === 'Perception') {
+      deploymentType = 'Orin'; // Edge deployment
+    } else if (model.componentType === 'High-level reasoning') {
+      deploymentType = 'A100'; // Cloud/GPU deployment
+    }
+
     // Update robot models
     selectedRobots.forEach(robotId => {
       updateRobotModel(robotId, model.version);
     });
 
     // Deploy model
-    deployModel(selectedModelId, selectedRobots);
+    deployModel(selectedModelId, selectedRobots, deploymentType);
 
     // Add history event
     addEvent({
       modelVersion: model.version,
       type: 'Deploy',
-      details: `Deployed to ${selectedRobots.length} robot(s)`,
-      metadata: { robotIds: selectedRobots },
+      details: `Deployed ${model.componentType} component to ${selectedRobots.length} robot(s) via ${deploymentType === 'ROS2' ? 'ROS2' : deploymentType === 'Orin' ? 'Dockerized ROS2 on Orin' : 'A100 cluster'}`,
+      metadata: { robotIds: selectedRobots, deploymentType, componentType: model.componentType },
     });
 
     setDeploySuccess(true);
@@ -91,7 +99,7 @@ export const DeployPage = () => {
             <Rocket className="w-8 h-8 text-green-400" />
             Deploy to Fleet
           </h1>
-          <p className="text-lg text-slate-400">Roll out models to your robot fleet</p>
+          <p className="text-lg text-slate-400">Deploy components to robot fleet via ROS2/Docker on Orin or A100 cluster</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -125,6 +133,7 @@ export const DeployPage = () => {
                   <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
                     <div className="text-sm text-slate-400 mb-2">Selected Model</div>
                     <div className="font-mono text-cyan-400 mb-2">{selectedModel.version}</div>
+                    <div className="text-xs text-blue-400 mb-2">Component: {selectedModel.componentType}</div>
                     <div className="flex gap-4 text-xs text-slate-300">
                       <div>Format: {selectedModel.export?.format}</div>
                       <div>Size: {selectedModel.export?.fileSizeMB.toFixed(1)} MB</div>
@@ -134,6 +143,13 @@ export const DeployPage = () => {
                         Export: {selectedModel.export.exportVersion}
                       </div>
                     )}
+                    <div className="text-xs text-slate-500 mt-2">
+                      Deployment: {selectedModel.componentType === 'Policy/Control' || selectedModel.componentType === 'Perception' 
+                        ? 'Dockerized ROS2 nodes on Orin' 
+                        : selectedModel.componentType === 'High-level reasoning'
+                        ? 'A100 cluster'
+                        : 'ROS2 nodes'}
+                    </div>
                   </div>
                 )}
 

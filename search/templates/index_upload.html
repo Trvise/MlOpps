@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trvise Video Intelligence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #000000;
+            color: #f5f5f7;
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .hero {
+            background: linear-gradient(180deg, #1d1d1f 0%, #000000 100%);
+            padding: 80px 20px 60px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .hero h1 {
+            font-size: 64px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 24px;
+            color: #a1a1a6;
+            font-weight: 400;
+            letter-spacing: -0.5px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .workflow {
+            display: grid;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .step-card {
+            background: rgba(29, 29, 31, 0.72);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            padding: 32px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .step-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        
+        .step-card.active {
+            border-color: rgba(10, 132, 255, 0.5);
+            background: rgba(10, 132, 255, 0.1);
+        }
+        
+        .step-card.complete {
+            border-color: rgba(52, 199, 89, 0.5);
+            background: rgba(52, 199, 89, 0.1);
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .step-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 600;
+            margin-right: 16px;
+            transition: all 0.3s;
+        }
+        
+        .step-card.active .step-number {
+            background: #0a84ff;
+            color: white;
+        }
+        
+        .step-card.complete .step-number {
+            background: #34c759;
+            color: white;
+        }
+        
+        .step-title {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        .status-badge {
+            margin-left: auto;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .status-badge.processing {
+            background: #0a84ff;
+        }
+        
+        .status-badge.complete {
+            background: #34c759;
+        }
+        
+        .btn {
+            background: #0a84ff;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: -0.3px;
+        }
+        
+        .btn:hover {
+            background: #0071e3;
+            transform: scale(1.02);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn:disabled {
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.3);
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-success {
+            background: #34c759;
+        }
+        
+        .btn-success:hover {
+            background: #30b350;
+        }
+        
+        .file-upload {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .file-label {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .file-label:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+        }
+        
+        .file-info {
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            font-size: 14px;
+            color: #a1a1a6;
+            line-height: 1.8;
+        }
+        
+        .file-info strong {
+            color: #f5f5f7;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0a84ff, #34c759);
+            transition: width 0.3s;
+            border-radius: 4px;
+        }
+        
+        .config-group {
+            margin: 20px 0;
+        }
+        
+        .config-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 15px;
+        }
+        
+        .config-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            font-size: 17px;
+            color: #f5f5f7;
+            transition: all 0.2s;
+        }
+        
+        .config-group input:focus {
+            outline: none;
+            border-color: #0a84ff;
+            background: rgba(255,255,255,0.08);
+        }
+        
+        .config-group small {
+            display: block;
+            margin-top: 8px;
+            color: #86868b;
+            font-size: 13px;
+        }
+        
+        .info-box {
+            background: rgba(10, 132, 255, 0.1);
+            border: 1px solid rgba(10, 132, 255, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #a1a1a6;
+        }
+        
+        .search-section {
+            display: none;
+            margin-top: 60px;
+            padding: 40px;
+            background: rgba(29, 29, 31, 0.72);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+        }
+        
+        .search-section.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .search-section h2 {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 18px 24px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 16px;
+            font-size: 19px;
+            color: #f5f5f7;
+            transition: all 0.2s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #0a84ff;
+            background: rgba(255,255,255,0.08);
+        }
+        
+        .search-input::placeholder {
+            color: #6e6e73;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+        
+        .result-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        
+        .result-image {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .result-content {
+            padding: 20px;
+        }
+        
+        .result-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .timestamp {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0a84ff;
+        }
+        
+        .similarity {
+            font-size: 14px;
+            color: #a1a1a6;
+        }
+        
+        .similarity-score {
+            font-weight: 600;
+            color: #34c759;
+        }
+        
+        .data-values {
+            font-size: 13px;
+            color: #86868b;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .data-values div {
+            margin: 4px 0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid #0a84ff;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6e6e73;
+        }
+        
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        #tokenProgress {
+            margin-top: 20px;
+        }
+        
+        #tokenMessage {
+            text-align: center;
+            color: #a1a1a6;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+        
+        .progress-text {
+            text-align: center;
+            color: #a1a1a6;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+        
+        /* Chain of Thought Reasoning */
+        .reasoning-section {
+            margin-bottom: 40px;
+            background: rgba(29, 29, 31, 0.72);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        
+        .reasoning-header {
+            padding: 24px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(255,255,255,0.02);
+        }
+        
+        .reasoning-header:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .reasoning-title {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .reasoning-icon {
+            font-size: 24px;
+        }
+        
+        .toggle-icon {
+            font-size: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .reasoning-header.expanded .toggle-icon {
+            transform: rotate(90deg);
+        }
+        
+        .reasoning-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .reasoning-content.expanded {
+            max-height: 2000px;
+        }
+        
+        .reasoning-steps {
+            padding: 28px;
+        }
+        
+        .reasoning-step {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 24px;
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .step-indicator {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: rgba(10, 132, 255, 0.2);
+            border: 2px solid rgba(10, 132, 255, 0.5);
+            position: relative;
+        }
+        
+        .step-indicator::after {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 24px;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .reasoning-step:last-child .step-indicator::after {
+            display: none;
+        }
+        
+        .step-indicator.query {
+            background: rgba(175, 82, 222, 0.2);
+            border-color: rgba(175, 82, 222, 0.5);
+        }
+        
+        .step-indicator.decomposition {
+            background: rgba(10, 132, 255, 0.2);
+            border-color: rgba(10, 132, 255, 0.5);
+        }
+        
+        .step-indicator.visual_search {
+            background: rgba(255, 159, 10, 0.2);
+            border-color: rgba(255, 159, 10, 0.5);
+        }
+        
+        .step-indicator.data_filter {
+            background: rgba(52, 199, 89, 0.2);
+            border-color: rgba(52, 199, 89, 0.5);
+        }
+        
+        .step-indicator.result {
+            background: rgba(52, 199, 89, 0.2);
+            border-color: rgba(52, 199, 89, 0.5);
+        }
+        
+        .step-body {
+            flex: 1;
+            padding-top: 4px;
+        }
+        
+        .step-type {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #86868b;
+            margin-bottom: 6px;
+        }
+        
+        .step-content {
+            font-size: 15px;
+            color: #f5f5f7;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            white-space: pre-line;
+        }
+        
+        .step-data {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 12px;
+            font-size: 13px;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+        
+        .step-data-title {
+            font-weight: 600;
+            color: #a1a1a6;
+            margin-bottom: 8px;
+        }
+        
+        .step-data pre {
+            color: #d4d4d4;
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .step-timestamp {
+            font-size: 11px;
+            color: #6e6e73;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>Trvise</h1>
+        <p>Video Intelligence Platform</p>
+    </div>
+    
+    <div class="container">
+        <div class="workflow">
+            <!-- Step 1: Upload Video -->
+            <div class="step-card" id="step1">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Upload Video</div>
+                </div>
+                <div class="file-upload">
+                    <input type="file" id="videoFile" accept=".mp4,.avi,.mov,.mkv,.flv,.wmv">
+                    <label for="videoFile" class="file-label">Choose Video File</label>
+                    <button class="btn" id="uploadVideoBtn" style="display: none;">Upload</button>
+                </div>
+                <div id="videoInfo" class="file-info" style="display: none;"></div>
+            </div>
+            
+            <!-- Step 2: Upload CSV -->
+            <div class="step-card" id="step2">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Upload Data</div>
+                </div>
+                <div class="file-upload">
+                    <input type="file" id="csvFile" accept=".csv">
+                    <label for="csvFile" class="file-label">Choose CSV File</label>
+                    <button class="btn" id="uploadCsvBtn" style="display: none;">Upload</button>
+                </div>
+                <div id="csvInfo" class="file-info" style="display: none;"></div>
+            </div>
+            
+            <!-- Step 3: Tokenize Video -->
+            <div class="step-card" id="step3">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Tokenize</div>
+                    <span class="status-badge" id="tokenStatus">Waiting</span>
+                </div>
+                <div class="info-box">
+                    Configure frame sampling rate. Higher skip values mean faster processing.
+                </div>
+                <div class="config-group">
+                    <label for="skipFrames">Skip Frames</label>
+                    <input type="number" id="skipFrames" value="30" min="1" max="300">
+                    <small>Sample every N frames (default: 30 ≈ 1 frame/sec for 30fps video)</small>
+                </div>
+                <div class="config-group">
+                    <label for="maxFrames">Max Frames (optional)</label>
+                    <input type="number" id="maxFrames" placeholder="Leave empty to process all frames">
+                    <small>Limit total frames to process (useful for testing)</small>
+                </div>
+                <button class="btn" id="tokenizeBtn" disabled>Start Tokenization</button>
+                <div id="tokenProgress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">0%</div>
+                    <div id="tokenMessage"></div>
+                </div>
+            </div>
+            
+            <!-- Step 4: Initialize Search -->
+            <div class="step-card" id="step4">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Initialize</div>
+                </div>
+                <p style="color: #a1a1a6; margin-bottom: 20px;">
+                    Load the search system with your tokenized video and data.
+                </p>
+                <button class="btn btn-success" id="initializeBtn" disabled>Initialize System</button>
+            </div>
+        </div>
+        
+        <!-- Search Section -->
+        <div class="search-section" id="searchSection">
+            <h2>🔍 Search</h2>
+            <div class="search-box">
+                <input type="text" class="search-input" id="searchQuery" 
+                       placeholder="Try: car at 50 kmph with acceleration > 10 m/s²">
+                <button class="btn btn-success" id="searchBtn">Search</button>
+            </div>
+            
+            <!-- Reasoning Chain -->
+            <div id="reasoningSection" style="display: none;"></div>
+            
+            <!-- Results -->
+            <div id="searchResults"></div>
+        </div>
+    </div>
+    
+    <script>
+        let videoUploaded = false;
+        let csvUploaded = false;
+        let tokenizationComplete = false;
+        let searchReady = false;
+        
+        // File selection handlers
+        document.getElementById('videoFile').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                document.getElementById('uploadVideoBtn').style.display = 'inline-block';
+            }
+        });
+        
+        document.getElementById('csvFile').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                document.getElementById('uploadCsvBtn').style.display = 'inline-block';
+            }
+        });
+        
+        // Upload video
+        document.getElementById('uploadVideoBtn').addEventListener('click', async function() {
+            const fileInput = document.getElementById('videoFile');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('video', file);
+            
+            try {
+                this.disabled = true;
+                this.textContent = 'Uploading...';
+                
+                const response = await fetch('/api/upload/video', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    videoUploaded = true;
+                    document.getElementById('step1').classList.add('complete');
+                    document.getElementById('videoInfo').style.display = 'block';
+                    document.getElementById('videoInfo').innerHTML = `
+                        <strong>✓ Video Uploaded:</strong> ${data.filename}<br>
+                        <strong>Duration:</strong> ${data.info.duration.toFixed(2)}s | 
+                        <strong>FPS:</strong> ${data.info.fps.toFixed(2)} | 
+                        <strong>Frames:</strong> ${data.info.total_frames} | 
+                        <strong>Resolution:</strong> ${data.info.width}×${data.info.height}
+                    `;
+                    this.style.display = 'none';
+                    checkTokenizeReady();
+                } else {
+                    alert('Upload failed: ' + data.error);
+                }
+            } catch (error) {
+                alert('Upload error: ' + error.message);
+            } finally {
+                this.disabled = false;
+                this.textContent = 'Upload';
+            }
+        });
+        
+        // Upload CSV
+        document.getElementById('uploadCsvBtn').addEventListener('click', async function() {
+            const fileInput = document.getElementById('csvFile');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('csv', file);
+            
+            try {
+                this.disabled = true;
+                this.textContent = 'Uploading...';
+                
+                const response = await fetch('/api/upload/csv', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    csvUploaded = true;
+                    document.getElementById('step2').classList.add('complete');
+                    document.getElementById('csvInfo').style.display = 'block';
+                    document.getElementById('csvInfo').innerHTML = `
+                        <strong>✓ CSV Uploaded:</strong> ${data.filename}<br>
+                        <strong>Rows:</strong> ${data.info.rows.toLocaleString()} | 
+                        <strong>Columns:</strong> ${data.info.column_count}<br>
+                        <strong>Fields:</strong> ${data.info.columns.join(', ')}
+                    `;
+                    this.style.display = 'none';
+                    checkTokenizeReady();
+                } else {
+                    alert('Upload failed: ' + data.error);
+                }
+            } catch (error) {
+                alert('Upload error: ' + error.message);
+            } finally {
+                this.disabled = false;
+                this.textContent = 'Upload';
+            }
+        });
+        
+        function checkTokenizeReady() {
+            if (videoUploaded && csvUploaded) {
+                document.getElementById('tokenizeBtn').disabled = false;
+                document.getElementById('step3').classList.add('active');
+            }
+        }
+        
+        // Start tokenization
+        document.getElementById('tokenizeBtn').addEventListener('click', async function() {
+            const skipFrames = parseInt(document.getElementById('skipFrames').value);
+            const maxFramesInput = document.getElementById('maxFrames').value;
+            const maxFrames = maxFramesInput ? parseInt(maxFramesInput) : null;
+            
+            try {
+                this.disabled = true;
+                
+                const response = await fetch('/api/tokenize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        skip_frames: skipFrames,
+                        max_frames: maxFrames
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('tokenProgress').style.display = 'block';
+                    updateTokenStatus('processing');
+                    pollTokenizationStatus();
+                } else {
+                    alert('Tokenization failed: ' + data.error);
+                    this.disabled = false;
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+                this.disabled = false;
+            }
+        });
+        
+        function updateTokenStatus(status) {
+            const badge = document.getElementById('tokenStatus');
+            badge.className = 'status-badge';
+            if (status === 'processing') {
+                badge.classList.add('processing');
+                badge.textContent = 'Processing';
+            } else if (status === 'complete') {
+                badge.classList.add('complete');
+                badge.textContent = 'Complete';
+            } else {
+                badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            }
+        }
+        
+        function pollTokenizationStatus() {
+            const interval = setInterval(async () => {
+                try {
+                    const response = await fetch('/api/tokenize/status');
+                    const status = await response.json();
+                    
+                    updateTokenStatus(status.status);
+                    
+                    if (status.status === 'processing') {
+                        const progress = status.progress || 0;
+                        document.getElementById('progressFill').style.width = progress + '%';
+                        document.getElementById('progressText').textContent = progress + '%';
+                        document.getElementById('tokenMessage').textContent = status.message;
+                    } else if (status.status === 'complete') {
+                        clearInterval(interval);
+                        document.getElementById('progressFill').style.width = '100%';
+                        document.getElementById('progressText').textContent = '100%';
+                        document.getElementById('tokenMessage').textContent = status.message;
+                        document.getElementById('step3').classList.remove('active');
+                        document.getElementById('step3').classList.add('complete');
+                        document.getElementById('step4').classList.add('active');
+                        document.getElementById('initializeBtn').disabled = false;
+                        tokenizationComplete = true;
+                    } else if (status.status === 'error') {
+                        clearInterval(interval);
+                        document.getElementById('tokenMessage').textContent = 'Error: ' + status.message;
+                        document.getElementById('tokenizeBtn').disabled = false;
+                    }
+                } catch (error) {
+                    console.error('Error polling status:', error);
+                }
+            }, 1000);
+        }
+        
+        // Initialize search system
+        document.getElementById('initializeBtn').addEventListener('click', async function() {
+            try {
+                this.disabled = true;
+                this.textContent = 'Initializing...';
+                
+                const response = await fetch('/api/initialize', {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('step4').classList.remove('active');
+                    document.getElementById('step4').classList.add('complete');
+                    document.getElementById('searchSection').classList.add('show');
+                    searchReady = true;
+                    this.textContent = '✓ Initialized';
+                } else {
+                    alert('Initialization failed: ' + data.error);
+                    this.disabled = false;
+                    this.textContent = 'Initialize System';
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+                this.disabled = false;
+                this.textContent = 'Initialize System';
+            }
+        });
+        
+        // Search
+        document.getElementById('searchBtn').addEventListener('click', async function() {
+            const query = document.getElementById('searchQuery').value.trim();
+            
+            if (!query) {
+                alert('Please enter a search query');
+                return;
+            }
+            
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching...</p></div>';
+            
+            try {
+                const response = await fetch('/api/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        top_k: 12
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResults(data.session);
+                } else {
+                    resultsDiv.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Search failed: ' + data.error + '</p></div>';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Error: ' + error.message + '</p></div>';
+            }
+        });
+        
+        function displayReasoning(session) {
+            const reasoningDiv = document.getElementById('reasoningSection');
+            
+            if (!session.reasoning_steps || session.reasoning_steps.length === 0) {
+                reasoningDiv.style.display = 'none';
+                return;
+            }
+            
+            const stepIcons = {
+                'query': '🔍',
+                'decomposition': '🧩',
+                'visual_search': '👁️',
+                'data_filter': '📊',
+                'combination': '🔗',
+                'result': '✨'
+            };
+            
+            const stepLabels = {
+                'query': 'Query Analysis',
+                'decomposition': 'Query Decomposition',
+                'visual_search': 'Visual Search',
+                'data_filter': 'Data Filtering',
+                'combination': 'Combining Results',
+                'result': 'Final Results'
+            };
+            
+            let stepsHtml = '';
+            session.reasoning_steps.forEach((step, index) => {
+                const icon = stepIcons[step.type] || '•';
+                const label = stepLabels[step.type] || step.type;
+                
+                stepsHtml += `
+                    <div class="reasoning-step">
+                        <div class="step-indicator ${step.type}">${icon}</div>
+                        <div class="step-body">
+                            <div class="step-type">${label}</div>
+                            <div class="step-content">${escapeHtml(step.content)}</div>
+                            ${step.data ? `
+                                <div class="step-data">
+                                    <div class="step-data-title">Details</div>
+                                    <pre>${JSON.stringify(step.data, null, 2)}</pre>
+                                </div>
+                            ` : ''}
+                            <div class="step-timestamp">${step.timestamp}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            reasoningDiv.innerHTML = `
+                <div class="reasoning-section">
+                    <div class="reasoning-header" onclick="toggleReasoning()">
+                        <div class="reasoning-title">
+                            <span class="reasoning-icon">🧠</span>
+                            <span>Chain of Thought Reasoning</span>
+                        </div>
+                        <span class="toggle-icon">▶</span>
+                    </div>
+                    <div class="reasoning-content" id="reasoningContent">
+                        <div class="reasoning-steps">
+                            ${stepsHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            reasoningDiv.style.display = 'block';
+        }
+        
+        function toggleReasoning() {
+            const header = document.querySelector('.reasoning-header');
+            const content = document.getElementById('reasoningContent');
+            
+            header.classList.toggle('expanded');
+            content.classList.toggle('expanded');
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        async function displayResults(session) {
+            const resultsDiv = document.getElementById('searchResults');
+            
+            // Display reasoning chain first
+            displayReasoning(session);
+            
+            if (!session.combined_results || session.combined_results.length === 0) {
+                resultsDiv.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>No results found</p></div>';
+                return;
+            }
+            
+            let html = '<div class="results-grid">';
+            
+            for (let i = 0; i < session.combined_results.length; i++) {
+                const result = session.combined_results[i];
+                
+                // Fetch frame image
+                const imageResponse = await fetch(`/api/frame/${result.timestamp}`);
+                const imageData = await imageResponse.json();
+                const imageUrl = imageData.success ? imageData.image : '';
+                
+                html += `
+                    <div class="result-card">
+                        ${imageUrl ? `<img src="${imageUrl}" class="result-image" alt="Frame at ${result.timestamp.toFixed(2)}s">` : ''}
+                        <div class="result-content">
+                            <div class="result-meta">
+                                <span class="timestamp">${result.timestamp.toFixed(2)}s</span>
+                                <span class="similarity">
+                                    <span class="similarity-score">${result.similarity.toFixed(4)}</span>
+                                </span>
+                            </div>
+                            ${Object.keys(result.data_values).length > 0 ? 
+                                '<div class="data-values">' + 
+                                Object.entries(result.data_values).map(([key, value]) => 
+                                    `<div><strong>${key}:</strong> ${typeof value === 'number' ? value.toFixed(2) : value}</div>`
+                                ).join('') + 
+                                '</div>' : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            resultsDiv.innerHTML = html;
+        }
+        
+        // Allow Enter key to search
+        document.getElementById('searchQuery').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('searchBtn').click();
+            }
+        });
+    </script>
+</body>
+</html>

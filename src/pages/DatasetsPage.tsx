@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useDatasets } from '../store/useDatasets';
 import { 
   Database, 
@@ -13,21 +14,21 @@ import {
   HardDrive,
   Image,
   Calendar,
-  User
+  User,
+  Sparkles
 } from 'lucide-react';
 import { formatDate, formatNumber } from '../lib/utils';
 
 export const DatasetsPage = () => {
+  const navigate = useNavigate();
   const { datasets, addDataset, deleteDataset, exportDatasetInfo } = useDatasets();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedDataset, setSelectedDataset] = useState<string | null>(null);
-  const [filterType, setFilterType] = useState<'All' | 'Training' | 'Validation' | 'Test'>('All');
 
   // Form state
   const [formData, setFormData] = useState({
     name: '',
-    type: 'Training' as 'Training' | 'Validation' | 'Test',
     size: '',
     samples: '',
     format: 'COCO' as 'COCO' | 'YOLO' | 'TFRecord' | 'Custom',
@@ -39,14 +40,9 @@ export const DatasetsPage = () => {
     augmented: false,
   });
 
-  const filteredDatasets = filterType === 'All' 
-    ? datasets 
-    : datasets.filter(d => d.type === filterType);
-
   const handleCreateDataset = () => {
-    const newDataset = addDataset({
+    addDataset({
       name: formData.name,
-      type: formData.type,
       size: parseFloat(formData.size),
       samples: parseInt(formData.samples),
       format: formData.format,
@@ -54,6 +50,11 @@ export const DatasetsPage = () => {
       tags: formData.tags.split(',').map(t => t.trim()).filter(t => t),
       uploadedBy: formData.uploadedBy,
       s3Path: `s3://roboml/datasets/${formData.name.toLowerCase().replace(/\s+/g, '-')}/`,
+      splits: {
+        train: [],
+        test: [],
+        inference: [],
+      },
       metadata: {
         classes: formData.classes.split(',').map(c => c.trim()).filter(c => c),
         resolution: formData.resolution,
@@ -64,7 +65,6 @@ export const DatasetsPage = () => {
     // Reset form
     setFormData({
       name: '',
-      type: 'Training',
       size: '',
       samples: '',
       format: 'COCO',
@@ -99,19 +99,6 @@ export const DatasetsPage = () => {
 
   const dataset = selectedDataset ? datasets.find(d => d.id === selectedDataset) : null;
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'Training':
-        return 'bg-blue-500/10 border-blue-500/20 text-blue-400';
-      case 'Validation':
-        return 'bg-purple-500/10 border-purple-500/20 text-purple-400';
-      case 'Test':
-        return 'bg-green-500/10 border-green-500/20 text-green-400';
-      default:
-        return 'bg-slate-500/10 border-slate-500/20 text-slate-400';
-    }
-  };
-
   return (
     <div className="p-8">
       <motion.div
@@ -128,13 +115,22 @@ export const DatasetsPage = () => {
             </h1>
             <p className="text-lg text-slate-400">Manage training, validation, and test datasets</p>
           </div>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
-          >
-            <Plus className="w-5 h-5" />
-            Upload Dataset
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => navigate('/search')}
+              className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
+            >
+              <Sparkles className="w-5 h-5" />
+              Curate with Search
+            </button>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
+            >
+              <Plus className="w-5 h-5" />
+              Upload Dataset
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -173,39 +169,19 @@ export const DatasetsPage = () => {
           <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm text-slate-400 mb-1">Training Sets</div>
-                <div className="text-3xl font-bold text-green-400">
-                  {datasets.filter(d => d.type === 'Training').length}
+                <div className="text-sm text-slate-400 mb-1">Search-Based</div>
+                <div className="text-3xl font-bold text-purple-400">
+                  {datasets.filter(d => d.isSearchBased).length}
                 </div>
               </div>
-              <Upload className="w-10 h-10 text-green-900" />
+              <Sparkles className="w-10 h-10 text-purple-900" />
             </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 mb-6">
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-slate-400">Filter by type:</span>
-            {(['All', 'Training', 'Validation', 'Test'] as const).map((type) => (
-              <button
-                key={type}
-                onClick={() => setFilterType(type)}
-                className={`px-4 py-2 rounded-lg text-sm font-normal transition-all ${
-                  filterType === type
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800 border border-slate-700/50'
-                }`}
-              >
-                {type}
-              </button>
-            ))}
           </div>
         </div>
 
         {/* Datasets Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredDatasets.map((dataset) => (
+          {datasets.map((dataset) => (
             <motion.div
               key={dataset.id}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -217,9 +193,14 @@ export const DatasetsPage = () => {
                 <div className="flex-1">
                   <div className="font-mono text-xs text-amber-400 mb-1">{dataset.version}</div>
                   <h3 className="text-lg font-semibold text-white mb-2">{dataset.name}</h3>
-                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium border ${getTypeColor(dataset.type)}`}>
-                    {dataset.type}
-                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {dataset.isSearchBased && (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-purple-500/10 border border-purple-500/20 text-purple-400">
+                        <Sparkles className="w-3 h-3" />
+                        Search-Based
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <Database className="w-8 h-8 text-slate-700" />
               </div>
@@ -290,10 +271,10 @@ export const DatasetsPage = () => {
           ))}
         </div>
 
-        {filteredDatasets.length === 0 && (
+        {datasets.length === 0 && (
           <div className="bg-slate-900 border border-slate-800 rounded-lg p-12 text-center">
             <Database className="w-16 h-16 text-slate-700 mx-auto mb-4" />
-            <p className="text-slate-400 mb-4">No datasets found for {filterType}</p>
+            <p className="text-slate-400 mb-4">No datasets found</p>
           </div>
         )}
       </motion.div>
@@ -341,19 +322,6 @@ export const DatasetsPage = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Type</label>
-                    <select
-                      value={formData.type}
-                      onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
-                    >
-                      <option value="Training">Training</option>
-                      <option value="Validation">Validation</option>
-                      <option value="Test">Test</option>
-                    </select>
-                  </div>
-
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">Format</label>
                     <select
@@ -517,12 +485,6 @@ export const DatasetsPage = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <div className="text-xs text-slate-400 mb-1">Type</div>
-                    <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium border ${getTypeColor(dataset.type)}`}>
-                      {dataset.type}
-                    </span>
-                  </div>
-                  <div>
                     <div className="text-xs text-slate-400 mb-1">Format</div>
                     <div className="text-white">{dataset.format}</div>
                   </div>
@@ -546,9 +508,25 @@ export const DatasetsPage = () => {
                   </div>
                 )}
 
+                {dataset.isSearchBased && (
+                  <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Sparkles className="w-4 h-4 text-purple-400" />
+                      <div className="text-sm font-semibold text-purple-400">Search-Based Dataset</div>
+                    </div>
+                    <div className="text-xs text-slate-400 space-y-1">
+                      <div>Query: "{dataset.searchQuery}"</div>
+                      {dataset.sourceVideo && <div>Source Video: {dataset.sourceVideo}</div>}
+                      {dataset.searchInstances && (
+                        <div>Instances: {dataset.searchInstances.length} curated samples</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {dataset.metadata && (
                   <>
-                    {dataset.metadata.classes && (
+                    {dataset.metadata.classes && dataset.metadata.classes.length > 0 && (
                       <div>
                         <div className="text-xs text-slate-400 mb-2">Classes</div>
                         <div className="flex flex-wrap gap-2">

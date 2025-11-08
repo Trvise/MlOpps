@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useModels } from '../store/useModels';
 import { useHistory } from '../store/useHistory';
@@ -14,12 +14,23 @@ export const ValidatePage = () => {
   const { addEvent } = useHistory();
   
   const [selectedModelId, setSelectedModelId] = useState('');
-  const [simulator, setSimulator] = useState<'Isaac Sim' | 'Gazebo'>('Isaac Sim');
+  const [simulator, setSimulator] = useState<'Isaac Sim' | 'Gazebo' | 'Isaac Gym'>('Isaac Sim');
   const [isValidating, setIsValidating] = useState(false);
   const [validationResults, setValidationResults] = useState<any>(null);
 
   const trainedModels = models.filter(m => m.metrics && !m.validation);
   const selectedModel = models.find(m => m.id === selectedModelId);
+
+  // Update simulator based on component type
+  useEffect(() => {
+    if (selectedModel) {
+      if (selectedModel.componentType === 'Policy/Control') {
+        setSimulator('Isaac Gym');
+      } else {
+        setSimulator('Isaac Sim');
+      }
+    }
+  }, [selectedModel]);
 
   const handleStartValidation = () => {
     if (!selectedModelId) return;
@@ -58,7 +69,9 @@ export const ValidatePage = () => {
             details: `Validation completed in ${simulator}`,
           });
         }
-      }
+      },
+      simulator,
+      model?.componentType
     );
   };
 
@@ -99,7 +112,7 @@ export const ValidatePage = () => {
                     <option value="">Choose a trained model...</option>
                     {trainedModels.map(model => (
                       <option key={model.id} value={model.id}>
-                        {model.version} - {model.framework} (Acc: {formatNumber(model.metrics!.accuracy * 100, 1)}%)
+                        {model.version} - {model.componentType} ({model.framework}) (Acc: {formatNumber(model.metrics!.accuracy * 100, 1)}%)
                       </option>
                     ))}
                   </select>
@@ -110,29 +123,41 @@ export const ValidatePage = () => {
                   <label className="block text-sm font-medium text-slate-300 mb-2">
                     Simulator
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      onClick={() => setSimulator('Isaac Sim')}
-                      disabled={isValidating}
-                    className={`px-4 py-3 rounded-lg font-normal transition-all ${
-                      simulator === 'Isaac Sim'
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800 border border-slate-700/50'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
-                  >
-                    Isaac Sim
-                  </button>
-                  <button
-                    onClick={() => setSimulator('Gazebo')}
-                    disabled={isValidating}
-                    className={`px-4 py-3 rounded-lg font-normal transition-all ${
-                      simulator === 'Gazebo'
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800 border border-slate-700/50'
-                    } disabled:opacity-50 disabled:cursor-not-allowed`}
-                    >
-                      Gazebo
-                    </button>
+                  <div className={`grid gap-3 ${
+                    selectedModel?.componentType === 'Policy/Control' 
+                      ? 'grid-cols-1' 
+                      : 'grid-cols-2'
+                  }`}>
+                    {selectedModel?.componentType === 'Policy/Control' ? (
+                      <div className="px-4 py-3 rounded-lg bg-purple-600 text-white font-normal">
+                        Isaac Gym (RL Training Environment)
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => setSimulator('Isaac Sim')}
+                          disabled={isValidating}
+                          className={`px-4 py-3 rounded-lg font-normal transition-all ${
+                            simulator === 'Isaac Sim'
+                              ? 'bg-purple-600 text-white'
+                              : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800 border border-slate-700/50'
+                          } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                          Isaac Sim
+                        </button>
+                        <button
+                          onClick={() => setSimulator('Gazebo')}
+                          disabled={isValidating}
+                          className={`px-4 py-3 rounded-lg font-normal transition-all ${
+                            simulator === 'Gazebo'
+                              ? 'bg-purple-600 text-white'
+                              : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800 border border-slate-700/50'
+                          } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                          Gazebo
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -142,6 +167,9 @@ export const ValidatePage = () => {
                     <div className="text-sm text-slate-400 mb-2">Selected Model</div>
                     <div className="font-mono text-cyan-400">{selectedModel.version}</div>
                     <div className="text-sm text-slate-300 mt-1">
+                      Component: {selectedModel.componentType}
+                    </div>
+                    <div className="text-sm text-slate-300">
                       Framework: {selectedModel.framework}
                     </div>
                     <div className="text-sm text-slate-300">

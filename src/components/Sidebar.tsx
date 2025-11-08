@@ -9,13 +9,15 @@ import {
   Activity,
   Database,
   Plug,
-  User
+  User,
+  Sparkles
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/datasets', icon: Database, label: 'Datasets' },
+  { to: '/search', icon: Sparkles, label: 'Search & Curate' },
   { to: '/train', icon: Zap, label: 'Train' },
   { to: '/validate', icon: FlaskConical, label: 'Validate' },
   { to: '/export', icon: Package, label: 'Export' },

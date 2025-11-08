@@ -1,11 +1,18 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+export interface SearchInstance {
+  timestamp: number;
+  similarity: number;
+  dataValues: Record<string, number>;
+  matchedCriteria: string[];
+  visualQuery?: string;
+}
+
 export interface Dataset {
   id: string;
   version: string;
   name: string;
-  type: 'Training' | 'Validation' | 'Test';
   size: number; // in MB
   samples: number;
   format: 'COCO' | 'YOLO' | 'TFRecord' | 'Custom';
@@ -19,6 +26,23 @@ export interface Dataset {
     resolution?: string;
     augmented?: boolean;
   };
+  // Search-based dataset fields
+  isSearchBased?: boolean;
+  sourceVideo?: string;
+  sourceCsv?: string;
+  searchQuery?: string;
+  searchInstances?: SearchInstance[];
+  // Dataset splits - all datasets have all 3 splits
+  splits: {
+    train: SearchInstance[];
+    test: SearchInstance[];
+    inference: SearchInstance[];
+  };
+  tokenizationConfig?: {
+    skipFrames: number;
+    maxFrames?: number;
+    embeddingsDir?: string;
+  };
 }
 
 interface DatasetsState {
@@ -29,6 +53,8 @@ interface DatasetsState {
   getDataset: (id: string) => Dataset | undefined;
   getDatasetByVersion: (version: string) => Dataset | undefined;
   exportDatasetInfo: (id: string) => string;
+  createSearchDataset: (name: string, searchQuery: string, instances: SearchInstance[], sourceVideo: string, sourceCsv: string, split: 'train' | 'test' | 'inference', tokenizationConfig: any, description?: string, tags?: string[]) => Dataset;
+  createSearchDatasetWithSplits: (name: string, searchQuery: string, trainInstances: SearchInstance[], testInstances: SearchInstance[], inferenceInstances: SearchInstance[], sourceVideo: string, sourceCsv: string, tokenizationConfig: any, description?: string, tags?: string[]) => Dataset;
 }
 
 const generateDatasetVersion = (existingVersions: string[]): string => {
@@ -47,7 +73,6 @@ const initializeDatasets = (): Dataset[] => {
       id: crypto.randomUUID(),
       version: 'DS-001',
       name: 'Robot Navigation Dataset',
-      type: 'Training',
       size: 2450,
       samples: 15000,
       format: 'COCO',
@@ -56,6 +81,11 @@ const initializeDatasets = (): Dataset[] => {
       createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
       uploadedBy: 'admin',
       s3Path: 's3://roboml/datasets/nav-v1/',
+      splits: {
+        train: [],
+        test: [],
+        inference: [],
+      },
       metadata: {
         classes: ['obstacle', 'path', 'wall', 'door'],
         resolution: '640x480',
@@ -66,7 +96,6 @@ const initializeDatasets = (): Dataset[] => {
       id: crypto.randomUUID(),
       version: 'DS-002',
       name: 'Object Detection - Warehouse',
-      type: 'Training',
       size: 3200,
       samples: 22000,
       format: 'YOLO',
@@ -75,6 +104,11 @@ const initializeDatasets = (): Dataset[] => {
       createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
       uploadedBy: 'admin',
       s3Path: 's3://roboml/datasets/warehouse-v2/',
+      splits: {
+        train: [],
+        test: [],
+        inference: [],
+      },
       metadata: {
         classes: ['box', 'pallet', 'forklift', 'person', 'shelf'],
         resolution: '1280x720',
@@ -85,7 +119,6 @@ const initializeDatasets = (): Dataset[] => {
       id: crypto.randomUUID(),
       version: 'DS-003',
       name: 'Validation Set - Mixed Environments',
-      type: 'Validation',
       size: 850,
       samples: 5000,
       format: 'COCO',
@@ -94,6 +127,11 @@ const initializeDatasets = (): Dataset[] => {
       createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
       uploadedBy: 'admin',
       s3Path: 's3://roboml/datasets/validation-mixed/',
+      splits: {
+        train: [],
+        test: [],
+        inference: [],
+      },
       metadata: {
         classes: ['obstacle', 'path', 'object'],
         resolution: '640x480',
@@ -115,6 +153,12 @@ export const useDatasets = create<DatasetsState>()(
           id: crypto.randomUUID(),
           version: generateDatasetVersion(existingVersions),
           createdAt: new Date().toISOString(),
+          // Ensure splits exist
+          splits: datasetData.splits || {
+            train: [],
+            test: [],
+            inference: [],
+          },
         };
         set(state => ({ datasets: [...state.datasets, newDataset] }));
         return newDataset;
@@ -122,7 +166,21 @@ export const useDatasets = create<DatasetsState>()(
 
       updateDataset: (id, updates) => {
         set(state => ({
-          datasets: state.datasets.map(d => d.id === id ? { ...d, ...updates } : d)
+          datasets: state.datasets.map(d => {
+            if (d.id === id) {
+              const updated = { ...d, ...updates };
+              // Ensure splits always exist
+              if (!updated.splits) {
+                updated.splits = {
+                  train: d.splits?.train || [],
+                  test: d.splits?.test || [],
+                  inference: d.splits?.inference || [],
+                };
+              }
+              return updated;
+            }
+            return d;
+          })
         }));
       },
 
@@ -146,6 +204,82 @@ export const useDatasets = create<DatasetsState>()(
         
         return JSON.stringify(dataset, null, 2);
       },
+
+      createSearchDataset: (name, searchQuery, instances, sourceVideo, sourceCsv, split, tokenizationConfig, customDescription, customTags) => {
+        const existingVersions = get().datasets.map(d => d.version);
+        const splits = {
+          train: split === 'train' ? instances : [],
+          test: split === 'test' ? instances : [],
+          inference: split === 'inference' ? instances : [],
+        };
+        const totalSamples = instances.length;
+        const defaultDescription = `Curated dataset from agentic search: "${searchQuery}"`;
+        const defaultTags = ['search-based', 'curated', 'agentic'];
+        const newDataset: Dataset = {
+          id: crypto.randomUUID(),
+          version: generateDatasetVersion(existingVersions),
+          name,
+          size: totalSamples * 0.5, // Estimate: ~0.5MB per instance
+          samples: totalSamples,
+          format: 'Custom',
+          description: customDescription || defaultDescription,
+          tags: customTags && customTags.length > 0 ? customTags : defaultTags,
+          createdAt: new Date().toISOString(),
+          uploadedBy: 'system',
+          isSearchBased: true,
+          sourceVideo,
+          sourceCsv,
+          searchQuery,
+          searchInstances: instances, // Keep for backward compatibility
+          splits,
+          tokenizationConfig,
+          metadata: {
+            classes: [],
+            resolution: 'variable',
+            augmented: false,
+          },
+        };
+        set(state => ({ datasets: [...state.datasets, newDataset] }));
+        return newDataset;
+      },
+
+      createSearchDatasetWithSplits: (name, searchQuery, trainInstances, testInstances, inferenceInstances, sourceVideo, sourceCsv, tokenizationConfig, customDescription, customTags) => {
+        const existingVersions = get().datasets.map(d => d.version);
+        const splits = {
+          train: trainInstances,
+          test: testInstances,
+          inference: inferenceInstances,
+        };
+        const totalSamples = trainInstances.length + testInstances.length + inferenceInstances.length;
+        const defaultDescription = `Curated dataset from agentic search: "${searchQuery}"`;
+        const defaultTags = ['search-based', 'curated', 'agentic'];
+        const newDataset: Dataset = {
+          id: crypto.randomUUID(),
+          version: generateDatasetVersion(existingVersions),
+          name,
+          size: totalSamples * 0.5, // Estimate: ~0.5MB per instance
+          samples: totalSamples,
+          format: 'Custom',
+          description: customDescription || defaultDescription,
+          tags: customTags && customTags.length > 0 ? customTags : defaultTags,
+          createdAt: new Date().toISOString(),
+          uploadedBy: 'system',
+          isSearchBased: true,
+          sourceVideo,
+          sourceCsv,
+          searchQuery,
+          searchInstances: [...trainInstances, ...testInstances, ...inferenceInstances], // Keep for backward compatibility
+          splits,
+          tokenizationConfig,
+          metadata: {
+            classes: [],
+            resolution: 'variable',
+            augmented: false,
+          },
+        };
+        set(state => ({ datasets: [...state.datasets, newDataset] }));
+        return newDataset;
+      },
     }),
     {
       name: 'roboml-datasets-storage',
@@ -153,6 +287,36 @@ export const useDatasets = create<DatasetsState>()(
         // Initialize with sample datasets if empty
         if (state && state.datasets.length === 0) {
           state.datasets = initializeDatasets();
+        }
+        // Migrate existing datasets to ensure all have all 3 splits initialized
+        if (state && state.datasets) {
+          state.datasets = state.datasets.map(dataset => {
+            // Ensure splits exist and have all 3 categories
+            if (!dataset.splits) {
+              // For search-based datasets, migrate searchInstances to train split
+              // For regular datasets, initialize all splits as empty
+              return {
+                ...dataset,
+                splits: {
+                  train: dataset.isSearchBased && dataset.searchInstances ? dataset.searchInstances : [],
+                  test: [],
+                  inference: [],
+                },
+              };
+            }
+            // Ensure all 3 splits exist even if dataset has splits but missing one
+            if (!dataset.splits.train || !dataset.splits.test || !dataset.splits.inference) {
+              return {
+                ...dataset,
+                splits: {
+                  train: dataset.splits.train || [],
+                  test: dataset.splits.test || [],
+                  inference: dataset.splits.inference || [],
+                },
+              };
+            }
+            return dataset;
+          });
         }
       },
     }

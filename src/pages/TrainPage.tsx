@@ -7,39 +7,121 @@ import { simulateTraining } from '../utils/fakeJobs';
 import { LogViewer } from '../components/LogViewer';
 import { ProgressBar } from '../components/ProgressBar';
 import { CodeEditor } from '../components/CodeEditor';
-import { Zap, CheckCircle2, Database, Code, Settings } from 'lucide-react';
+import { Zap, CheckCircle2, Database, Code, Settings, Eye, Brain, Route, MessageSquare } from 'lucide-react';
+import { ComponentType } from '../types';
 
 export const TrainPage = () => {
   const { addModel, startTraining, completeTraining, setJobProgress, clearJob, currentJob } = useModels();
   const { addEvent } = useHistory();
   const { datasets } = useDatasets();
   
-  const [framework, setFramework] = useState<'PyTorch' | 'TensorFlow'>('PyTorch');
-  const [learningRate, setLearningRate] = useState('0.001');
-  const [batchSize, setBatchSize] = useState('32');
-  const [epochs, setEpochs] = useState('10');
+  const [componentType, setComponentType] = useState<ComponentType>('Perception');
+  const [framework, setFramework] = useState<'PyTorch' | 'TensorFlow' | 'CasADi' | 'LangChain'>('PyTorch');
   const [selectedDataset, setSelectedDataset] = useState('');
   const [isTraining, setIsTraining] = useState(false);
   const [trainingComplete, setTrainingComplete] = useState(false);
   const [viewMode, setViewMode] = useState<'code' | 'form'>('code');
   const [configYaml, setConfigYaml] = useState('');
 
-  const trainingDatasets = datasets.filter(d => d.type === 'Training');
+  // Component-specific hyperparameters
+  // Perception (SLAM + Detection)
+  const [perceptionLearningRate, setPerceptionLearningRate] = useState('0.001');
+  const [perceptionBatchSize, setPerceptionBatchSize] = useState('16');
+  const [perceptionEpochs, setPerceptionEpochs] = useState('50');
+  const [slamKeyframeInterval, setSlamKeyframeInterval] = useState('5');
+  const [slamFeaturePoints, setSlamFeaturePoints] = useState('8000');
+  const [slamLoopClosureThreshold, setSlamLoopClosureThreshold] = useState('0.3');
+  const [detectionAnchorScales, setDetectionAnchorScales] = useState('[8, 16, 32, 64, 128]');
+  const [detectionNmsThreshold, setDetectionNmsThreshold] = useState('0.5');
+  const [detectionRoiPoolSize, setDetectionRoiPoolSize] = useState('7');
+
+  // Policy/Control (RL)
+  const [policyLearningRate, setPolicyLearningRate] = useState('0.0003');
+  const [policyBatchSize, setPolicyBatchSize] = useState('4096');
+  const [policyIterations, setPolicyIterations] = useState('1000');
+  const [rlGamma, setRlGamma] = useState('0.99');
+  const [rlLambda, setRlLambda] = useState('0.95');
+  const [rlClipEpsilon, setRlClipEpsilon] = useState('0.2');
+  const [rlValueCoef, setRlValueCoef] = useState('0.5');
+  const [rlEntropyCoef, setRlEntropyCoef] = useState('0.01');
+
+  // Planner (MPC)
+  const [mpcHorizonLength, setMpcHorizonLength] = useState('20');
+  const [mpcDt, setMpcDt] = useState('0.1');
+  const [mpcMaxIterations, setMpcMaxIterations] = useState('100');
+  const [mpcConvergenceTolerance, setMpcConvergenceTolerance] = useState('1e-4');
+  const [mpcPositionWeight, setMpcPositionWeight] = useState('1.0');
+  const [mpcVelocityWeight, setMpcVelocityWeight] = useState('0.5');
+  const [mpcControlWeight, setMpcControlWeight] = useState('0.1');
+
+  // High-level reasoning (LLM)
+  const [llmLearningRate, setLlmLearningRate] = useState('2e-5');
+  const [llmBatchSize, setLlmBatchSize] = useState('8');
+  const [llmEpochs, setLlmEpochs] = useState('3');
+  const [llmTemperature, setLlmTemperature] = useState('0.7');
+  const [llmMaxTokens, setLlmMaxTokens] = useState('512');
+  const [llmTopP, setLlmTopP] = useState('0.9');
+  const [llmTopK, setLlmTopK] = useState('50');
+
+  // Update framework based on component type
+  useEffect(() => {
+    if (componentType === 'Planner') {
+      setFramework('CasADi');
+    } else if (componentType === 'High-level reasoning') {
+      setFramework('LangChain');
+    } else {
+      setFramework('PyTorch');
+    }
+  }, [componentType]);
+
+  const componentIcons = {
+    'Perception': Eye,
+    'Policy/Control': Brain,
+    'Planner': Route,
+    'High-level reasoning': MessageSquare,
+  };
+
+  const trainingDatasets = datasets; // All datasets have train/test/inference splits
 
   // Generate YAML config from form state
   const generateYamlConfig = () => {
     const dataset = datasets.find(d => d.id === selectedDataset);
-    return `# ML Model Training Configuration
+    
+    let config = `# ${componentType} Component Training Configuration
 # Press Ctrl+F to search in code, Ctrl+S to save changes
 # Edit this configuration file to customize your training parameters
 
+component_type: ${componentType}
 framework: ${framework}
 dataset_version: ${dataset?.version || 'DS-001'}
 
-hyperparameters:
-  learning_rate: ${learningRate}
-  batch_size: ${batchSize}
-  epochs: ${epochs}
+`;
+
+    if (componentType === 'Perception') {
+      config += `hyperparameters:
+  learning_rate: ${perceptionLearningRate}
+  batch_size: ${perceptionBatchSize}
+  epochs: ${perceptionEpochs}
+
+perception_config:
+  slam_type: DROID-SLAM
+  detection_model: Mask R-CNN
+  backbone: ResNet-50
+  feature_extractor: EfficientNet-B0
+
+slam_hyperparameters:
+  keyframe_interval: ${slamKeyframeInterval}
+  feature_points: ${slamFeaturePoints}
+  loop_closure_threshold: ${slamLoopClosureThreshold}
+  depth_scale: 1000.0
+  max_keyframes: 1000
+
+detection_hyperparameters:
+  anchor_scales: ${detectionAnchorScales}
+  nms_threshold: ${detectionNmsThreshold}
+  roi_pool_size: ${detectionRoiPoolSize}
+  num_classes: 80
+  confidence_threshold: 0.5
   
 optimizer:
   type: adam
@@ -62,6 +144,98 @@ early_stopping:
 checkpoint:
   save_best: true
   save_frequency: 5`;
+    } else if (componentType === 'Policy/Control') {
+      config += `hyperparameters:
+  learning_rate: ${policyLearningRate}
+  batch_size: ${policyBatchSize}
+  iterations: ${policyIterations}
+
+policy_config:
+  training_env: Isaac Gym
+  algorithm: PPO-LSTM
+  parallel_envs: 4096
+  reward_shaping: true
+
+rl_hyperparameters:
+  gamma: ${rlGamma}
+  lambda: ${rlLambda}
+  clip_epsilon: ${rlClipEpsilon}
+  value_coef: ${rlValueCoef}
+  entropy_coef: ${rlEntropyCoef}
+  max_grad_norm: 0.5
+  ppo_epochs: 4
+  
+optimizer:
+  type: adam
+  weight_decay: 0.0001
+  
+scheduler:
+  type: cosine
+  warmup_epochs: 2
+  
+checkpoint:
+  save_best: true
+  save_frequency: 100`;
+    } else if (componentType === 'Planner') {
+      config += `hyperparameters:
+  horizon_length: ${mpcHorizonLength}
+  dt: ${mpcDt}
+  max_iterations: ${mpcMaxIterations}
+  convergence_tolerance: ${mpcConvergenceTolerance}
+
+planner_config:
+  solver: CasADi (IPOPT)
+  cost_function: quadratic
+  constraints:
+    - velocity_limit
+    - acceleration_limit
+    - collision_avoidance
+
+mpc_hyperparameters:
+  position_weight: ${mpcPositionWeight}
+  velocity_weight: ${mpcVelocityWeight}
+  control_weight: ${mpcControlWeight}
+  obstacle_margin: 0.5
+  max_velocity: 2.0
+  max_acceleration: 1.0
+  
+solver_options:
+  print_level: 0
+  max_iter: ${mpcMaxIterations}
+  tol: ${mpcConvergenceTolerance}`;
+    } else if (componentType === 'High-level reasoning') {
+      config += `hyperparameters:
+  learning_rate: ${llmLearningRate}
+  batch_size: ${llmBatchSize}
+  epochs: ${llmEpochs}
+
+reasoning_config:
+  llm_type: OpenVLA
+  framework: LangChain
+  prompt_template: chain_of_thought
+
+llm_hyperparameters:
+  temperature: ${llmTemperature}
+  max_tokens: ${llmMaxTokens}
+  top_p: ${llmTopP}
+  top_k: ${llmTopK}
+  repetition_penalty: 1.1
+  length_penalty: 1.0
+  
+optimizer:
+  type: adamw
+  weight_decay: 0.01
+  
+scheduler:
+  type: linear
+  warmup_epochs: 1
+  
+checkpoint:
+  save_best: true
+  save_frequency: 1`;
+    }
+
+    return config;
   };
 
   // Update YAML when form values change
@@ -69,29 +243,140 @@ checkpoint:
     const yaml = generateYamlConfig();
     setConfigYaml(yaml);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [framework, learningRate, batchSize, epochs, selectedDataset, datasets]);
+  }, [
+    componentType, framework, selectedDataset, datasets,
+    // Perception
+    perceptionLearningRate, perceptionBatchSize, perceptionEpochs,
+    slamKeyframeInterval, slamFeaturePoints, slamLoopClosureThreshold,
+    detectionAnchorScales, detectionNmsThreshold, detectionRoiPoolSize,
+    // Policy
+    policyLearningRate, policyBatchSize, policyIterations,
+    rlGamma, rlLambda, rlClipEpsilon, rlValueCoef, rlEntropyCoef,
+    // Planner
+    mpcHorizonLength, mpcDt, mpcMaxIterations, mpcConvergenceTolerance,
+    mpcPositionWeight, mpcVelocityWeight, mpcControlWeight,
+    // LLM
+    llmLearningRate, llmBatchSize, llmEpochs,
+    llmTemperature, llmMaxTokens, llmTopP, llmTopK,
+  ]);
 
   // Parse YAML and update form state
   const parseYamlAndUpdateForm = (yaml: string) => {
     try {
-      // Simple YAML parser for our specific config
       const lines = yaml.split('\n');
       lines.forEach(line => {
         const trimmed = line.trim();
-        if (trimmed.startsWith('framework:')) {
+        if (trimmed.startsWith('component_type:')) {
           const value = trimmed.split(':')[1]?.trim();
-          if (value === 'PyTorch' || value === 'TensorFlow') {
-            setFramework(value);
+          if (value && ['Perception', 'Policy/Control', 'Planner', 'High-level reasoning'].includes(value)) {
+            setComponentType(value as ComponentType);
           }
-        } else if (trimmed.startsWith('learning_rate:')) {
+        } else if (trimmed.startsWith('framework:')) {
           const value = trimmed.split(':')[1]?.trim();
-          if (value) setLearningRate(value);
-        } else if (trimmed.startsWith('batch_size:')) {
+          if (value && ['PyTorch', 'TensorFlow', 'CasADi', 'LangChain'].includes(value)) {
+            setFramework(value as 'PyTorch' | 'TensorFlow' | 'CasADi' | 'LangChain');
+          }
+        }
+        // Perception hyperparameters
+        else if (trimmed.startsWith('learning_rate:') && componentType === 'Perception') {
           const value = trimmed.split(':')[1]?.trim();
-          if (value) setBatchSize(value);
-        } else if (trimmed.startsWith('epochs:')) {
+          if (value) setPerceptionLearningRate(value);
+        } else if (trimmed.startsWith('batch_size:') && componentType === 'Perception') {
           const value = trimmed.split(':')[1]?.trim();
-          if (value) setEpochs(value);
+          if (value) setPerceptionBatchSize(value);
+        } else if (trimmed.startsWith('epochs:') && componentType === 'Perception') {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setPerceptionEpochs(value);
+        } else if (trimmed.startsWith('keyframe_interval:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setSlamKeyframeInterval(value);
+        } else if (trimmed.startsWith('feature_points:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setSlamFeaturePoints(value);
+        } else if (trimmed.startsWith('loop_closure_threshold:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setSlamLoopClosureThreshold(value);
+        } else if (trimmed.startsWith('anchor_scales:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setDetectionAnchorScales(value);
+        } else if (trimmed.startsWith('nms_threshold:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setDetectionNmsThreshold(value);
+        } else if (trimmed.startsWith('roi_pool_size:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setDetectionRoiPoolSize(value);
+        }
+        // Policy hyperparameters
+        else if (trimmed.startsWith('learning_rate:') && componentType === 'Policy/Control') {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setPolicyLearningRate(value);
+        } else if (trimmed.startsWith('batch_size:') && componentType === 'Policy/Control') {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setPolicyBatchSize(value);
+        } else if (trimmed.startsWith('iterations:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setPolicyIterations(value);
+        } else if (trimmed.startsWith('gamma:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setRlGamma(value);
+        } else if (trimmed.startsWith('lambda:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setRlLambda(value);
+        } else if (trimmed.startsWith('clip_epsilon:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setRlClipEpsilon(value);
+        } else if (trimmed.startsWith('value_coef:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setRlValueCoef(value);
+        } else if (trimmed.startsWith('entropy_coef:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setRlEntropyCoef(value);
+        }
+        // Planner hyperparameters
+        else if (trimmed.startsWith('horizon_length:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setMpcHorizonLength(value);
+        } else if (trimmed.startsWith('dt:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setMpcDt(value);
+        } else if (trimmed.startsWith('max_iterations:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setMpcMaxIterations(value);
+        } else if (trimmed.startsWith('convergence_tolerance:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setMpcConvergenceTolerance(value);
+        } else if (trimmed.startsWith('position_weight:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setMpcPositionWeight(value);
+        } else if (trimmed.startsWith('velocity_weight:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setMpcVelocityWeight(value);
+        } else if (trimmed.startsWith('control_weight:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setMpcControlWeight(value);
+        }
+        // LLM hyperparameters
+        else if (trimmed.startsWith('learning_rate:') && componentType === 'High-level reasoning') {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setLlmLearningRate(value);
+        } else if (trimmed.startsWith('batch_size:') && componentType === 'High-level reasoning') {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setLlmBatchSize(value);
+        } else if (trimmed.startsWith('epochs:') && componentType === 'High-level reasoning') {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setLlmEpochs(value);
+        } else if (trimmed.startsWith('temperature:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setLlmTemperature(value);
+        } else if (trimmed.startsWith('max_tokens:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setLlmMaxTokens(value);
+        } else if (trimmed.startsWith('top_p:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setLlmTopP(value);
+        } else if (trimmed.startsWith('top_k:')) {
+          const value = trimmed.split(':')[1]?.trim();
+          if (value) setLlmTopK(value);
         }
       });
     } catch (error) {
@@ -103,15 +388,78 @@ checkpoint:
     const dataset = datasets.find(d => d.id === selectedDataset);
     const datasetVersion = dataset?.version || 'DS-001';
 
+    // Build component config and hyperparameters based on component type
+    const componentConfig: any = {};
+    let hyperparams: Record<string, string | number> = {};
+
+    if (componentType === 'Perception') {
+      componentConfig.perception = {
+        slamType: 'DROID-SLAM',
+        detectionModel: 'Mask R-CNN',
+      };
+      hyperparams = {
+        learning_rate: parseFloat(perceptionLearningRate),
+        batch_size: parseInt(perceptionBatchSize),
+        epochs: parseInt(perceptionEpochs),
+        keyframe_interval: parseInt(slamKeyframeInterval),
+        feature_points: parseInt(slamFeaturePoints),
+        loop_closure_threshold: parseFloat(slamLoopClosureThreshold),
+        anchor_scales: detectionAnchorScales,
+        nms_threshold: parseFloat(detectionNmsThreshold),
+        roi_pool_size: parseInt(detectionRoiPoolSize),
+      };
+    } else if (componentType === 'Policy/Control') {
+      componentConfig.policy = {
+        trainingEnv: 'Isaac Gym',
+        algorithm: 'PPO-LSTM',
+      };
+      hyperparams = {
+        learning_rate: parseFloat(policyLearningRate),
+        batch_size: parseInt(policyBatchSize),
+        iterations: parseInt(policyIterations),
+        gamma: parseFloat(rlGamma),
+        lambda: parseFloat(rlLambda),
+        clip_epsilon: parseFloat(rlClipEpsilon),
+        value_coef: parseFloat(rlValueCoef),
+        entropy_coef: parseFloat(rlEntropyCoef),
+      };
+    } else if (componentType === 'Planner') {
+      componentConfig.planner = {
+        solver: 'CasADi',
+        mpcHorizon: parseInt(mpcHorizonLength),
+      };
+      hyperparams = {
+        horizon_length: parseInt(mpcHorizonLength),
+        dt: parseFloat(mpcDt),
+        max_iterations: parseInt(mpcMaxIterations),
+        convergence_tolerance: parseFloat(mpcConvergenceTolerance),
+        position_weight: parseFloat(mpcPositionWeight),
+        velocity_weight: parseFloat(mpcVelocityWeight),
+        control_weight: parseFloat(mpcControlWeight),
+      };
+    } else if (componentType === 'High-level reasoning') {
+      componentConfig.reasoning = {
+        llmType: 'OpenVLA',
+        framework: 'LangChain',
+      };
+      hyperparams = {
+        learning_rate: parseFloat(llmLearningRate),
+        batch_size: parseInt(llmBatchSize),
+        epochs: parseInt(llmEpochs),
+        temperature: parseFloat(llmTemperature),
+        max_tokens: parseInt(llmMaxTokens),
+        top_p: parseFloat(llmTopP),
+        top_k: parseInt(llmTopK),
+      };
+    }
+
     // Create a new model
     const newModel = addModel({
+      componentType,
       framework,
-      hyperparams: {
-        learning_rate: parseFloat(learningRate),
-        batch_size: parseInt(batchSize),
-        epochs: parseInt(epochs),
-      },
+      hyperparams,
       datasetVersion,
+      componentConfig,
     });
 
     // Start training
@@ -123,18 +471,23 @@ checkpoint:
     addEvent({
       modelVersion: newModel.version,
       type: 'Train',
-      details: `Started training with ${framework}`,
+      details: `Started training ${componentType} component with ${framework}`,
       metadata: {
+        componentType,
         framework,
-        hyperparams: {
-          learning_rate: learningRate,
-          batch_size: batchSize,
-          epochs: epochs,
-        },
+        hyperparams,
       },
     });
 
     // Simulate training
+    const totalEpochs = componentType === 'Perception' 
+      ? parseInt(perceptionEpochs)
+      : componentType === 'Policy/Control'
+      ? parseInt(policyIterations)
+      : componentType === 'Planner'
+      ? parseInt(mpcMaxIterations)
+      : parseInt(llmEpochs);
+
     simulateTraining(
       (progress, logs) => {
         setJobProgress(progress, logs);
@@ -149,10 +502,11 @@ checkpoint:
         addEvent({
           modelVersion: newModel.version,
           type: 'Train',
-          details: `Training completed successfully`,
+          details: `${componentType} training completed successfully`,
         });
       },
-      parseInt(epochs)
+      totalEpochs,
+      componentType
     );
   };
 
@@ -204,6 +558,33 @@ checkpoint:
           </div>
         </div>
 
+        {/* Component Type Selection */}
+        <div className="mb-4 md:mb-6 bg-slate-900 border border-slate-800 rounded-lg p-3 md:p-4 flex-shrink-0">
+          <label className="block text-sm font-medium text-slate-300 mb-3">
+            Component Type
+          </label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {(['Perception', 'Policy/Control', 'Planner', 'High-level reasoning'] as ComponentType[]).map((type) => {
+              const Icon = componentIcons[type];
+              return (
+                <button
+                  key={type}
+                  onClick={() => setComponentType(type)}
+                  disabled={isTraining}
+                  className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
+                    componentType === type
+                      ? 'bg-blue-600/20 border-blue-500 text-blue-400'
+                      : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  <Icon className="w-6 h-6" />
+                  <span className="text-xs font-medium text-center">{type}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Dataset Selection (shown in both modes) */}
         <div className="mb-4 md:mb-6 bg-slate-900 border border-slate-800 rounded-lg p-3 md:p-4 flex-shrink-0">
           <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -219,6 +600,7 @@ checkpoint:
             {trainingDatasets.map(dataset => (
               <option key={dataset.id} value={dataset.id}>
                 {dataset.version} - {dataset.name} ({dataset.samples.toLocaleString()} samples)
+                {dataset.isSearchBased ? ' [Search-Based]' : ''}
               </option>
             ))}
           </select>
@@ -340,7 +722,13 @@ checkpoint:
                   <label className="block text-sm font-medium text-slate-300 mb-2">
                     Framework
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className={`grid gap-3 ${
+                    componentType === 'Planner' || componentType === 'High-level reasoning' 
+                      ? 'grid-cols-1' 
+                      : 'grid-cols-2'
+                  }`}>
+                    {componentType !== 'Planner' && componentType !== 'High-level reasoning' && (
+                      <>
                     <button
                       onClick={() => setFramework('PyTorch')}
                       disabled={isTraining}
@@ -363,49 +751,205 @@ checkpoint:
                     >
                       TensorFlow
                     </button>
+                      </>
+                    )}
+                    {componentType === 'Planner' && (
+                      <div className="px-4 py-3 rounded-lg bg-slate-800 text-slate-300">
+                        CasADi (MPC Solver)
+                      </div>
+                    )}
+                    {componentType === 'High-level reasoning' && (
+                      <div className="px-4 py-3 rounded-lg bg-slate-800 text-slate-300">
+                        LangChain (LLM Framework)
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Hyperparameters */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Learning Rate
-                  </label>
-                  <input
-                    type="number"
-                    step="0.0001"
-                    value={learningRate}
-                    onChange={(e) => setLearningRate(e.target.value)}
-                    disabled={isTraining}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  />
-                </div>
+                {/* Component-Specific Hyperparameters */}
+                {componentType === 'Perception' && (
+                  <>
+                    <div className="border-t border-slate-700 pt-4">
+                      <h3 className="text-sm font-semibold text-slate-300 mb-4">General Training</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Learning Rate</label>
+                          <input type="number" step="0.0001" value={perceptionLearningRate} onChange={(e) => setPerceptionLearningRate(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Batch Size</label>
+                          <input type="number" value={perceptionBatchSize} onChange={(e) => setPerceptionBatchSize(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Epochs</label>
+                          <input type="number" value={perceptionEpochs} onChange={(e) => setPerceptionEpochs(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="border-t border-slate-700 pt-4">
+                      <h3 className="text-sm font-semibold text-slate-300 mb-4">SLAM (DROID-SLAM) Parameters</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Keyframe Interval</label>
+                          <input type="number" value={slamKeyframeInterval} onChange={(e) => setSlamKeyframeInterval(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Feature Points</label>
+                          <input type="number" value={slamFeaturePoints} onChange={(e) => setSlamFeaturePoints(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Loop Closure Threshold</label>
+                          <input type="number" step="0.01" value={slamLoopClosureThreshold} onChange={(e) => setSlamLoopClosureThreshold(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="border-t border-slate-700 pt-4">
+                      <h3 className="text-sm font-semibold text-slate-300 mb-4">Detection (Mask R-CNN) Parameters</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Anchor Scales</label>
+                          <input type="text" value={detectionAnchorScales} onChange={(e) => setDetectionAnchorScales(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" placeholder="[8, 16, 32, 64, 128]" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">NMS Threshold</label>
+                          <input type="number" step="0.01" value={detectionNmsThreshold} onChange={(e) => setDetectionNmsThreshold(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">ROI Pool Size</label>
+                          <input type="number" value={detectionRoiPoolSize} onChange={(e) => setDetectionRoiPoolSize(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
 
+                {componentType === 'Policy/Control' && (
+                  <>
+                    <div className="border-t border-slate-700 pt-4">
+                      <h3 className="text-sm font-semibold text-slate-300 mb-4">General Training</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Learning Rate</label>
+                          <input type="number" step="0.0001" value={policyLearningRate} onChange={(e) => setPolicyLearningRate(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Batch Size</label>
+                          <input type="number" value={policyBatchSize} onChange={(e) => setPolicyBatchSize(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Iterations</label>
+                          <input type="number" value={policyIterations} onChange={(e) => setPolicyIterations(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="border-t border-slate-700 pt-4">
+                      <h3 className="text-sm font-semibold text-slate-300 mb-4">RL (PPO-LSTM) Parameters</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Gamma (Discount)</label>
+                          <input type="number" step="0.01" value={rlGamma} onChange={(e) => setRlGamma(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Lambda (GAE)</label>
+                          <input type="number" step="0.01" value={rlLambda} onChange={(e) => setRlLambda(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Clip Epsilon</label>
+                          <input type="number" step="0.01" value={rlClipEpsilon} onChange={(e) => setRlClipEpsilon(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Value Coefficient</label>
+                          <input type="number" step="0.1" value={rlValueCoef} onChange={(e) => setRlValueCoef(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Batch Size
-                  </label>
-                  <input
-                    type="number"
-                    value={batchSize}
-                    onChange={(e) => setBatchSize(e.target.value)}
-                    disabled={isTraining}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  />
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Entropy Coefficient</label>
+                          <input type="number" step="0.001" value={rlEntropyCoef} onChange={(e) => setRlEntropyCoef(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                      </div>
                 </div>
+                  </>
+                )}
 
+                {componentType === 'Planner' && (
+                  <>
+                    <div className="border-t border-slate-700 pt-4">
+                      <h3 className="text-sm font-semibold text-slate-300 mb-4">MPC Parameters</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Horizon Length</label>
+                          <input type="number" value={mpcHorizonLength} onChange={(e) => setMpcHorizonLength(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Time Step (dt)</label>
+                          <input type="number" step="0.01" value={mpcDt} onChange={(e) => setMpcDt(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Max Iterations</label>
+                          <input type="number" value={mpcMaxIterations} onChange={(e) => setMpcMaxIterations(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Convergence Tolerance</label>
+                          <input type="text" value={mpcConvergenceTolerance} onChange={(e) => setMpcConvergenceTolerance(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" placeholder="1e-4" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Position Weight</label>
+                          <input type="number" step="0.1" value={mpcPositionWeight} onChange={(e) => setMpcPositionWeight(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Velocity Weight</label>
+                          <input type="number" step="0.1" value={mpcVelocityWeight} onChange={(e) => setMpcVelocityWeight(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Epochs
-                  </label>
-                  <input
-                    type="number"
-                    value={epochs}
-                    onChange={(e) => setEpochs(e.target.value)}
-                    disabled={isTraining}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  />
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Control Weight</label>
+                          <input type="number" step="0.1" value={mpcControlWeight} onChange={(e) => setMpcControlWeight(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                      </div>
                 </div>
+                  </>
+                )}
+
+                {componentType === 'High-level reasoning' && (
+                  <>
+                    <div className="border-t border-slate-700 pt-4">
+                      <h3 className="text-sm font-semibold text-slate-300 mb-4">General Training</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Learning Rate</label>
+                          <input type="text" value={llmLearningRate} onChange={(e) => setLlmLearningRate(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" placeholder="2e-5" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Batch Size</label>
+                          <input type="number" value={llmBatchSize} onChange={(e) => setLlmBatchSize(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Epochs</label>
+                          <input type="number" value={llmEpochs} onChange={(e) => setLlmEpochs(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="border-t border-slate-700 pt-4">
+                      <h3 className="text-sm font-semibold text-slate-300 mb-4">LLM Parameters</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Temperature</label>
+                          <input type="number" step="0.1" value={llmTemperature} onChange={(e) => setLlmTemperature(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Max Tokens</label>
+                          <input type="number" value={llmMaxTokens} onChange={(e) => setLlmMaxTokens(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Top P</label>
+                          <input type="number" step="0.01" value={llmTopP} onChange={(e) => setLlmTopP(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                <div>
+                          <label className="block text-sm font-medium text-slate-300 mb-2">Top K</label>
+                          <input type="number" value={llmTopK} onChange={(e) => setLlmTopK(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
+                        </div>
+                      </div>
+                </div>
+                  </>
+                )}
 
                 {/* Start Training Button */}
                 <button
