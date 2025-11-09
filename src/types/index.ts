@@ -7,6 +7,7 @@ export type ComponentType =
 export interface ModelRun {
   id: string;
   version: string;
+  name: string;
   componentType: ComponentType;
   framework: 'PyTorch' | 'TensorFlow' | 'CasADi' | 'LangChain';
   hyperparams: Record<string, string | number>;

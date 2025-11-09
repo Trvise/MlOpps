@@ -15,7 +15,8 @@ import {
   Image,
   Calendar,
   User,
-  Sparkles
+  Sparkles,
+  Search
 } from 'lucide-react';
 import { formatDate, formatNumber } from '../lib/utils';
 
@@ -248,11 +249,17 @@ export const DatasetsPage = () => {
               {/* Actions */}
               <div className="flex gap-2">
                 <button
+                  onClick={() => navigate(`/datasets/${dataset.id}/search`)}
+                  className="flex-1 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                >
+                  <Search className="w-4 h-4" />
+                  Search
+                </button>
+                <button
                   onClick={() => handleViewDetails(dataset.id)}
-                  className="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                  className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
                 >
                   <Eye className="w-4 h-4" />
-                  View
                 </button>
                 <button
                   onClick={() => handleExportDataset(dataset.id)}

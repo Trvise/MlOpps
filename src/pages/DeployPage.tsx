@@ -3,16 +3,20 @@ import { motion } from 'framer-motion';
 import { useModels } from '../store/useModels';
 import { useRobots } from '../store/useRobots';
 import { useHistory } from '../store/useHistory';
+import { simulateDeployment } from '../utils/fakeJobs';
+import { LogViewer } from '../components/LogViewer';
+import { ProgressBar } from '../components/ProgressBar';
 import { Rocket, CheckCircle2, Circle, AlertCircle, Undo2 } from 'lucide-react';
 import { formatDate } from '../lib/utils';
 
 export const DeployPage = () => {
-  const { models, deployModel } = useModels();
+  const { models, startDeployment, completeDeployment, setJobProgress, clearJob, currentJob } = useModels();
   const { robots, initializeRobots, updateRobotModel } = useRobots();
   const { addEvent } = useHistory();
   
   const [selectedModelId, setSelectedModelId] = useState('');
   const [selectedRobots, setSelectedRobots] = useState<string[]>([]);
+  const [isDeploying, setIsDeploying] = useState(false);
   const [deploySuccess, setDeploySuccess] = useState(false);
 
   useEffect(() => {
@@ -44,27 +48,51 @@ export const DeployPage = () => {
       deploymentType = 'A100'; // Cloud/GPU deployment
     }
 
-    // Update robot models
-    selectedRobots.forEach(robotId => {
-      updateRobotModel(robotId, model.version);
-    });
-
-    // Deploy model
-    deployModel(selectedModelId, selectedRobots, deploymentType);
+    // Start deployment
+    startDeployment(selectedModelId);
+    setIsDeploying(true);
+    setDeploySuccess(false);
 
     // Add history event
     addEvent({
       modelVersion: model.version,
       type: 'Deploy',
-      details: `Deployed ${model.componentType} component to ${selectedRobots.length} robot(s) via ${deploymentType === 'ROS2' ? 'ROS2' : deploymentType === 'Orin' ? 'Dockerized ROS2 on Orin' : 'A100 cluster'}`,
+      details: `Started deployment to ${selectedRobots.length} robot(s)`,
       metadata: { robotIds: selectedRobots, deploymentType, componentType: model.componentType },
     });
 
-    setDeploySuccess(true);
-    setTimeout(() => {
-      setDeploySuccess(false);
-      setSelectedRobots([]);
-    }, 3000);
+    // Simulate deployment
+    simulateDeployment(
+      (progress, logs) => {
+        setJobProgress(progress, logs);
+      },
+      () => {
+        // Update robot models
+        selectedRobots.forEach(robotId => {
+          updateRobotModel(robotId, model.version);
+        });
+
+        // Complete deployment
+        completeDeployment(selectedModelId, selectedRobots, deploymentType);
+        clearJob();
+        setIsDeploying(false);
+        setDeploySuccess(true);
+
+        // Add completion event
+        addEvent({
+          modelVersion: model.version,
+          type: 'Deploy',
+          details: `Deployed ${model.componentType} component to ${selectedRobots.length} robot(s) via ${deploymentType === 'ROS2' ? 'ROS2' : deploymentType === 'Orin' ? 'Dockerized ROS2 on Orin' : 'A100 cluster'}`,
+          metadata: { robotIds: selectedRobots, deploymentType, componentType: model.componentType },
+        });
+
+        setTimeout(() => {
+          setDeploySuccess(false);
+          setSelectedRobots([]);
+        }, 3000);
+      },
+      selectedRobots.length
+    );
   };
 
   const handleRollback = (robotId: string) => {
@@ -122,7 +150,7 @@ export const DeployPage = () => {
                     <option value="">Choose an exported model...</option>
                     {exportedModels.map(model => (
                       <option key={model.id} value={model.id}>
-                        {model.version} - {model.export?.format} ({model.export?.fileSizeMB.toFixed(1)} MB)
+                        {model.version} - {model.name}
                       </option>
                     ))}
                   </select>
@@ -133,6 +161,7 @@ export const DeployPage = () => {
                   <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
                     <div className="text-sm text-slate-400 mb-2">Selected Model</div>
                     <div className="font-mono text-cyan-400 mb-2">{selectedModel.version}</div>
+                    <div className="text-sm text-slate-300 mb-2">{selectedModel.name}</div>
                     <div className="text-xs text-blue-400 mb-2">Component: {selectedModel.componentType}</div>
                     <div className="flex gap-4 text-xs text-slate-300">
                       <div>Format: {selectedModel.export?.format}</div>
@@ -192,11 +221,20 @@ export const DeployPage = () => {
                 {/* Deploy Button */}
                 <button
                 onClick={handleDeploy}
-                disabled={!selectedModelId || selectedRobots.length === 0}
+                disabled={isDeploying || !selectedModelId || selectedRobots.length === 0}
                 className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                  <Rocket className="w-5 h-5" />
-                  Deploy to {selectedRobots.length} Robot{selectedRobots.length !== 1 ? 's' : ''}
+                  {isDeploying ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Deploying...
+                    </>
+                  ) : (
+                    <>
+                      <Rocket className="w-5 h-5" />
+                      Deploy to {selectedRobots.length} Robot{selectedRobots.length !== 1 ? 's' : ''}
+                    </>
+                  )}
                 </button>
 
                 {deploySuccess && (
@@ -218,6 +256,16 @@ export const DeployPage = () => {
 
           {/* Fleet Status */}
           <div className="space-y-6">
+            {isDeploying && currentJob && (
+              <>
+                <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">Deployment Progress</h3>
+                  <ProgressBar progress={currentJob.progress} />
+                </div>
+                <LogViewer logs={currentJob.logs} title="Deployment Logs" />
+              </>
+            )}
+
             <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl overflow-hidden">
               <div className="px-8 py-6 border-b border-slate-800/50">
                 <h2 className="text-xl font-medium text-white">Fleet Status</h2>
@@ -251,6 +299,12 @@ export const DeployPage = () => {
                           <div className="text-xs">
                             <span className="text-slate-400">Model: </span>
                             <span className="font-mono text-cyan-400">{robot.currentModelVersion}</span>
+                            {(() => {
+                              const robotModel = models.find(m => m.version === robot.currentModelVersion);
+                              return robotModel ? (
+                                <span className="text-slate-300 ml-2">- {robotModel.name}</span>
+                              ) : null;
+                            })()}
                           </div>
                           <div className="text-xs text-slate-500 mt-1">
                             Last sync: {formatDate(robot.lastSync)}

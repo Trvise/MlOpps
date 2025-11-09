@@ -89,48 +89,80 @@ const getComponentValidationLogs = (componentType: ComponentType, simulator: str
   const baseLogs: Record<ComponentType, string[]> = {
     'Perception': [
       `Initializing ${simulator} environment...`,
+      'Loading scene configuration and assets...',
+      'Setting up camera sensors and calibration...',
       'Loading DROID-SLAM model weights...',
       'Loading Mask R-CNN checkpoint...',
-      'Spawning test scenarios...',
+      'Initializing feature extractor pipeline...',
+      'Spawning test scenarios (10 scenarios)...',
       'Running visual odometry tests...',
+      'Testing SLAM tracking accuracy...',
+      'Evaluating loop closure detection...',
       'Testing object detection accuracy...',
+      'Running detection on 1000 test frames...',
       'Measuring SLAM tracking precision...',
-      'Evaluating detection mAP...',
-      'Recording inference latency...',
+      'Evaluating detection mAP across classes...',
+      'Computing pose estimation error...',
+      'Recording inference latency (1000 iterations)...',
+      'Analyzing memory usage...',
+      'Generating validation report...',
       'Validation completed!',
     ],
     'Policy/Control': [
       `Initializing ${simulator === 'Isaac Gym' ? 'Isaac Gym' : simulator} environment...`,
+      'Loading robot URDF and mesh files...',
+      'Setting up physics engine...',
       'Loading RL policy weights...',
-      'Spawning robot environments...',
+      'Initializing action space and observation space...',
+      'Spawning robot environments (5 parallel instances)...',
       'Running control policy tests...',
-      'Testing trajectory tracking...',
+      'Testing trajectory tracking (50 trajectories)...',
       'Evaluating reward performance...',
-      'Measuring control latency...',
+      'Running safety constraint checks...',
+      'Testing collision avoidance...',
+      'Measuring control latency (1000 control cycles)...',
       'Recording FPS metrics...',
-      'Evaluating safety protocols...',
+      'Evaluating stability and convergence...',
+      'Testing emergency stop protocols...',
+      'Running stress tests...',
+      'Generating performance metrics...',
       'Validation completed!',
     ],
     'Planner': [
       `Initializing ${simulator} environment...`,
+      'Loading robot dynamics model...',
+      'Setting up obstacle map...',
       'Loading MPC parameters...',
-      'Setting up planning scenarios...',
+      'Initializing optimization solver...',
+      'Setting up planning scenarios (20 scenarios)...',
       'Running trajectory optimization tests...',
       'Testing constraint satisfaction...',
       'Evaluating path smoothness...',
-      'Measuring planning latency...',
+      'Testing dynamic obstacle avoidance...',
+      'Running replanning tests...',
+      'Measuring planning latency (500 planning cycles)...',
       'Recording optimization metrics...',
+      'Evaluating solution quality...',
+      'Testing edge cases...',
+      'Generating validation report...',
       'Validation completed!',
     ],
     'High-level reasoning': [
       `Initializing ${simulator} environment...`,
-      'Loading LLM model...',
-      'Setting up reasoning tasks...',
+      'Loading scene and task definitions...',
+      'Loading LLM model weights...',
+      'Initializing tokenizer and embeddings...',
+      'Setting up reasoning tasks (15 tasks)...',
       'Running task planning tests...',
       'Testing decision-making accuracy...',
       'Evaluating reasoning quality...',
-      'Measuring inference latency...',
+      'Running multi-step reasoning tests...',
+      'Testing error recovery...',
+      'Measuring inference latency (100 queries)...',
       'Recording task success rate...',
+      'Evaluating response quality...',
+      'Testing edge cases and failures...',
+      'Generating validation report...',
       'Validation completed!',
     ],
   };
@@ -150,23 +182,41 @@ const getComponentValidationLogs = (componentType: ComponentType, simulator: str
 
 const validationLogs = [
   'Initializing simulator environment...',
+  'Loading scene configuration and assets...',
   'Loading model weights...',
-  'Spawning test scenarios...',
+  'Setting up test scenarios...',
+  'Spawning test scenarios (10 scenarios)...',
   'Running collision avoidance tests...',
   'Testing path planning accuracy...',
-  'Measuring inference latency...',
+  'Running performance benchmarks...',
+  'Measuring inference latency (1000 iterations)...',
   'Recording FPS metrics...',
   'Evaluating safety protocols...',
+  'Running stress tests...',
+  'Generating validation report...',
   'Validation completed!',
 ];
 
 const exportLogs = [
   'Loading model for conversion...',
+  'Analyzing model architecture...',
   'Optimizing graph structure...',
-  'Applying quantization...',
-  'Converting layers...',
+  'Removing unused nodes...',
+  'Folding batch normalization...',
+  'Applying quantization (INT8)...',
+  'Optimizing operator fusion...',
+  'Converting layers (0/100)...',
+  'Converting layers (25/100)...',
+  'Converting layers (50/100)...',
+  'Converting layers (75/100)...',
+  'Converting layers (100/100)...',
+  'Running inference tests...',
   'Verifying output accuracy...',
+  'Comparing outputs with original model...',
+  'Optimizing memory layout...',
+  'Compressing model weights...',
   'Packaging model artifact...',
+  'Generating metadata...',
   'Export completed!',
 ];
 
@@ -242,7 +292,7 @@ export const simulateValidation = (
         }, 500);
       }
     }
-  }, 600);
+  }, 1200);
 
   return () => {
     cancelled = true;
@@ -278,7 +328,71 @@ export const simulateExport = (
         }, 500);
       }
     }
-  }, 700);
+  }, 1500);
+
+  return () => {
+    cancelled = true;
+    clearInterval(interval);
+  };
+};
+
+const deploymentLogs = [
+  'Preparing deployment package...',
+  'Validating model artifacts...',
+  'Checking robot connectivity...',
+  'Uploading model to robots (0/0)...',
+  'Installing dependencies...',
+  'Configuring ROS2 nodes...',
+  'Setting up Docker containers...',
+  'Initializing model runtime...',
+  'Running health checks...',
+  'Verifying deployment...',
+  'Activating model on fleet...',
+  'Deployment completed!',
+];
+
+export const simulateDeployment = (
+  onProgress: (progress: number, logs: string[]) => void,
+  onComplete: () => void,
+  robotCount: number
+): (() => void) => {
+  const logsCopy = [...deploymentLogs];
+  // Update upload log with actual robot count
+  const uploadIndex = logsCopy.findIndex(log => log.includes('Uploading model'));
+  if (uploadIndex !== -1) {
+    logsCopy[uploadIndex] = `Uploading model to robots (0/${robotCount})...`;
+  }
+  
+  let currentProgress = 0;
+  let currentLogs: string[] = [];
+  let cancelled = false;
+
+  const interval = setInterval(() => {
+    if (cancelled) {
+      clearInterval(interval);
+      return;
+    }
+
+    if (currentProgress < logsCopy.length) {
+      // Update upload progress for multiple robots
+      if (currentProgress === uploadIndex && robotCount > 1) {
+        const uploaded = Math.min(Math.floor((currentProgress / logsCopy.length) * robotCount), robotCount);
+        currentLogs.push(`Uploading model to robots (${uploaded}/${robotCount})...`);
+      } else {
+        currentLogs.push(logsCopy[currentProgress]);
+      }
+      currentProgress++;
+      const progress = (currentProgress / logsCopy.length) * 100;
+      onProgress(progress, [...currentLogs]);
+
+      if (currentProgress >= logsCopy.length) {
+        clearInterval(interval);
+        setTimeout(() => {
+          if (!cancelled) onComplete();
+        }, 500);
+      }
+    }
+  }, 1800);
 
   return () => {
     cancelled = true;

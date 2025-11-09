@@ -17,7 +17,8 @@ interface ModelsState {
   completeValidation: (id: string, simulator: 'Isaac Sim' | 'Gazebo' | 'Isaac Gym') => void;
   startExport: (id: string) => void;
   completeExport: (id: string, format: string) => void;
-  deployModel: (id: string, robotIds: string[], deploymentType?: 'ROS2' | 'Docker' | 'Orin' | 'A100') => void;
+  startDeployment: (id: string) => void;
+  completeDeployment: (id: string, robotIds: string[], deploymentType?: 'ROS2' | 'Docker' | 'Orin' | 'A100') => void;
   setJobProgress: (progress: number, logs: string[]) => void;
   clearJob: () => void;
 }
@@ -131,7 +132,16 @@ export const useModels = create<ModelsState>()(
         }));
       },
 
-      deployModel: (id, robotIds, deploymentType?: 'ROS2' | 'Docker' | 'Orin' | 'A100') => {
+      startDeployment: (id) => {
+        set(state => ({
+          models: state.models.map(m => 
+            m.id === id ? { ...m, status: 'deployed' } : m
+          ),
+          currentJob: { id, progress: 0, logs: [] }
+        }));
+      },
+
+      completeDeployment: (id, robotIds, deploymentType?: 'ROS2' | 'Docker' | 'Orin' | 'A100') => {
         const model = get().models.find(m => m.id === id);
         if (!model) return;
 

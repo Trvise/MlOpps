@@ -2,7 +2,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
 import { DashboardPage } from './pages/DashboardPage';
 import { DatasetsPage } from './pages/DatasetsPage';
+import { CuratedDatasetsPage } from './pages/CuratedDatasetsPage';
 import { SearchDatasetPage } from './pages/SearchDatasetPage';
+import { DatasetSearchPage } from './pages/DatasetSearchPage';
 import { TrainPage } from './pages/TrainPage';
 import { ValidatePage } from './pages/ValidatePage';
 import { ExportPage } from './pages/ExportPage';
@@ -20,6 +22,8 @@ function App() {
           <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/datasets" element={<DatasetsPage />} />
+            <Route path="/datasets/:datasetId/search" element={<DatasetSearchPage />} />
+            <Route path="/curated-datasets" element={<CuratedDatasetsPage />} />
             <Route path="/search" element={<SearchDatasetPage />} />
             <Route path="/train" element={<TrainPage />} />
             <Route path="/validate" element={<ValidatePage />} />

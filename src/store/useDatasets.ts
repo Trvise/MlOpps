@@ -43,6 +43,19 @@ export interface Dataset {
     maxFrames?: number;
     embeddingsDir?: string;
   };
+  // Curated dataset fields
+  isCurated?: boolean;
+  curationMetadata?: {
+    sourceDatasetId: string;
+    sourceDatasetVersion: string;
+    label: string;
+    searchQuery: string;
+    selectedResults: Array<{
+      id: string;
+      timestamp?: number;
+      metadata?: Record<string, any>;
+    }>;
+  };
 }
 
 interface DatasetsState {

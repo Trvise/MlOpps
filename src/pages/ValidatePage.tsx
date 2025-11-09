@@ -112,7 +112,7 @@ export const ValidatePage = () => {
                     <option value="">Choose a trained model...</option>
                     {trainedModels.map(model => (
                       <option key={model.id} value={model.id}>
-                        {model.version} - {model.componentType} ({model.framework}) (Acc: {formatNumber(model.metrics!.accuracy * 100, 1)}%)
+                        {model.version} - {model.name}
                       </option>
                     ))}
                   </select>
@@ -167,10 +167,10 @@ export const ValidatePage = () => {
                     <div className="text-sm text-slate-400 mb-2">Selected Model</div>
                     <div className="font-mono text-cyan-400">{selectedModel.version}</div>
                     <div className="text-sm text-slate-300 mt-1">
-                      Component: {selectedModel.componentType}
+                      {selectedModel.name}
                     </div>
                     <div className="text-sm text-slate-300">
-                      Framework: {selectedModel.framework}
+                      Component: {selectedModel.componentType}
                     </div>
                     <div className="text-sm text-slate-300">
                       Dataset: {selectedModel.datasetVersion}

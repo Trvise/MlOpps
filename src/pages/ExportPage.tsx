@@ -96,7 +96,7 @@ export const ExportPage = () => {
                     <option value="">Choose a validated model...</option>
                     {validatedModels.map(model => (
                       <option key={model.id} value={model.id}>
-                        {model.version} - {model.framework} (Safety: {formatNumber(model.validation!.safety * 100, 1)}%)
+                        {model.version} - {model.name}
                       </option>
                     ))}
                   </select>
@@ -131,7 +131,7 @@ export const ExportPage = () => {
                     <div className="text-sm text-slate-400 mb-2">Selected Model</div>
                     <div className="font-mono text-cyan-400">{selectedModel.version}</div>
                     <div className="text-sm text-slate-300 mt-1">
-                      Framework: {selectedModel.framework}
+                      {selectedModel.name}
                     </div>
                     {selectedModel.validation && (
                       <div className="text-sm text-green-400 mt-1">

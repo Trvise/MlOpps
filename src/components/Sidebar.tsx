@@ -10,13 +10,15 @@ import {
   Database,
   Plug,
   User,
-  Sparkles
+  Sparkles,
+  BookOpen
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/datasets', icon: Database, label: 'Datasets' },
+  { to: '/curated-datasets', icon: BookOpen, label: 'Curated Datasets' },
   { to: '/search', icon: Sparkles, label: 'Search & Curate' },
   { to: '/train', icon: Zap, label: 'Train' },
   { to: '/validate', icon: FlaskConical, label: 'Validate' },

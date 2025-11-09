@@ -7,14 +7,17 @@ import { simulateTraining } from '../utils/fakeJobs';
 import { LogViewer } from '../components/LogViewer';
 import { ProgressBar } from '../components/ProgressBar';
 import { CodeEditor } from '../components/CodeEditor';
-import { Zap, CheckCircle2, Database, Code, Settings, Eye, Brain, Route, MessageSquare } from 'lucide-react';
+import { Zap, CheckCircle2, Database, Code, Settings } from 'lucide-react';
 import { ComponentType } from '../types';
 
 export const TrainPage = () => {
-  const { addModel, startTraining, completeTraining, setJobProgress, clearJob, currentJob } = useModels();
+  const { models, addModel, startTraining, completeTraining, setJobProgress, clearJob, currentJob } = useModels();
   const { addEvent } = useHistory();
   const { datasets } = useDatasets();
   
+  const [trainingMode, setTrainingMode] = useState<'new' | 'improve'>('new');
+  const [selectedBaseModel, setSelectedBaseModel] = useState('');
+  const [modelName, setModelName] = useState('');
   const [componentType, setComponentType] = useState<ComponentType>('Perception');
   const [framework, setFramework] = useState<'PyTorch' | 'TensorFlow' | 'CasADi' | 'LangChain'>('PyTorch');
   const [selectedDataset, setSelectedDataset] = useState('');
@@ -74,12 +77,56 @@ export const TrainPage = () => {
     }
   }, [componentType]);
 
-  const componentIcons = {
-    'Perception': Eye,
-    'Policy/Control': Brain,
-    'Planner': Route,
-    'High-level reasoning': MessageSquare,
-  };
+  // When improving, load the base model's configuration
+  useEffect(() => {
+    if (trainingMode === 'improve' && selectedBaseModel) {
+      const baseModel = models.find(m => m.id === selectedBaseModel);
+      if (baseModel) {
+        setModelName(`${baseModel.name} (Improved)`);
+        setComponentType(baseModel.componentType);
+        setFramework(baseModel.framework);
+        // Load hyperparameters from base model
+        if (baseModel.hyperparams) {
+          if (baseModel.componentType === 'Perception') {
+            if (baseModel.hyperparams.learning_rate) setPerceptionLearningRate(String(baseModel.hyperparams.learning_rate));
+            if (baseModel.hyperparams.batch_size) setPerceptionBatchSize(String(baseModel.hyperparams.batch_size));
+            if (baseModel.hyperparams.epochs) setPerceptionEpochs(String(baseModel.hyperparams.epochs));
+            if (baseModel.hyperparams.keyframe_interval) setSlamKeyframeInterval(String(baseModel.hyperparams.keyframe_interval));
+            if (baseModel.hyperparams.feature_points) setSlamFeaturePoints(String(baseModel.hyperparams.feature_points));
+            if (baseModel.hyperparams.loop_closure_threshold) setSlamLoopClosureThreshold(String(baseModel.hyperparams.loop_closure_threshold));
+            if (baseModel.hyperparams.anchor_scales) setDetectionAnchorScales(String(baseModel.hyperparams.anchor_scales));
+            if (baseModel.hyperparams.nms_threshold) setDetectionNmsThreshold(String(baseModel.hyperparams.nms_threshold));
+            if (baseModel.hyperparams.roi_pool_size) setDetectionRoiPoolSize(String(baseModel.hyperparams.roi_pool_size));
+          } else if (baseModel.componentType === 'Policy/Control') {
+            if (baseModel.hyperparams.learning_rate) setPolicyLearningRate(String(baseModel.hyperparams.learning_rate));
+            if (baseModel.hyperparams.batch_size) setPolicyBatchSize(String(baseModel.hyperparams.batch_size));
+            if (baseModel.hyperparams.iterations) setPolicyIterations(String(baseModel.hyperparams.iterations));
+            if (baseModel.hyperparams.gamma) setRlGamma(String(baseModel.hyperparams.gamma));
+            if (baseModel.hyperparams.lambda) setRlLambda(String(baseModel.hyperparams.lambda));
+            if (baseModel.hyperparams.clip_epsilon) setRlClipEpsilon(String(baseModel.hyperparams.clip_epsilon));
+            if (baseModel.hyperparams.value_coef) setRlValueCoef(String(baseModel.hyperparams.value_coef));
+            if (baseModel.hyperparams.entropy_coef) setRlEntropyCoef(String(baseModel.hyperparams.entropy_coef));
+          } else if (baseModel.componentType === 'Planner') {
+            if (baseModel.hyperparams.horizon_length) setMpcHorizonLength(String(baseModel.hyperparams.horizon_length));
+            if (baseModel.hyperparams.dt) setMpcDt(String(baseModel.hyperparams.dt));
+            if (baseModel.hyperparams.max_iterations) setMpcMaxIterations(String(baseModel.hyperparams.max_iterations));
+            if (baseModel.hyperparams.convergence_tolerance) setMpcConvergenceTolerance(String(baseModel.hyperparams.convergence_tolerance));
+            if (baseModel.hyperparams.position_weight) setMpcPositionWeight(String(baseModel.hyperparams.position_weight));
+            if (baseModel.hyperparams.velocity_weight) setMpcVelocityWeight(String(baseModel.hyperparams.velocity_weight));
+            if (baseModel.hyperparams.control_weight) setMpcControlWeight(String(baseModel.hyperparams.control_weight));
+          } else if (baseModel.componentType === 'High-level reasoning') {
+            if (baseModel.hyperparams.learning_rate) setLlmLearningRate(String(baseModel.hyperparams.learning_rate));
+            if (baseModel.hyperparams.batch_size) setLlmBatchSize(String(baseModel.hyperparams.batch_size));
+            if (baseModel.hyperparams.epochs) setLlmEpochs(String(baseModel.hyperparams.epochs));
+            if (baseModel.hyperparams.temperature) setLlmTemperature(String(baseModel.hyperparams.temperature));
+            if (baseModel.hyperparams.max_tokens) setLlmMaxTokens(String(baseModel.hyperparams.max_tokens));
+            if (baseModel.hyperparams.top_p) setLlmTopP(String(baseModel.hyperparams.top_p));
+            if (baseModel.hyperparams.top_k) setLlmTopK(String(baseModel.hyperparams.top_k));
+          }
+        }
+      }
+    }
+  }, [trainingMode, selectedBaseModel, models]);
 
   const trainingDatasets = datasets; // All datasets have train/test/inference splits
 
@@ -388,9 +435,20 @@ checkpoint:
     const dataset = datasets.find(d => d.id === selectedDataset);
     const datasetVersion = dataset?.version || 'DS-001';
 
+    // If improving, get the base model
+    const baseModel = trainingMode === 'improve' && selectedBaseModel 
+      ? models.find(m => m.id === selectedBaseModel)
+      : null;
+
     // Build component config and hyperparameters based on component type
     const componentConfig: any = {};
     let hyperparams: Record<string, string | number> = {};
+    
+    // If improving, track the parent model
+    if (baseModel) {
+      componentConfig.parentModelId = baseModel.id;
+      componentConfig.parentModelVersion = baseModel.version;
+    }
 
     if (componentType === 'Perception') {
       componentConfig.perception = {
@@ -453,8 +511,9 @@ checkpoint:
       };
     }
 
-    // Create a new model
+    // Create a new model (either from scratch or improved from existing)
     const newModel = addModel({
+      name: modelName.trim() || `Model ${componentType}`,
       componentType,
       framework,
       hyperparams,
@@ -468,14 +527,22 @@ checkpoint:
     setTrainingComplete(false);
 
     // Add history event
+    const trainingDetails = baseModel
+      ? `Started improving ${componentType} component from ${baseModel.version} with ${framework}`
+      : `Started training ${componentType} component with ${framework}`;
+    
     addEvent({
       modelVersion: newModel.version,
       type: 'Train',
-      details: `Started training ${componentType} component with ${framework}`,
+      details: trainingDetails,
       metadata: {
         componentType,
         framework,
         hyperparams,
+        ...(baseModel && { 
+          parentModelVersion: baseModel.version,
+          parentModelId: baseModel.id 
+        }),
       },
     });
 
@@ -527,9 +594,81 @@ checkpoint:
           <p className="text-lg text-slate-400">Configure hyperparameters and start a new training run</p>
         </div>
 
+        {/* Training Mode Selection */}
+        <div className="mb-6 bg-slate-900 border border-slate-800 rounded-lg p-4 flex-shrink-0">
+          <label className="block text-sm font-medium text-slate-300 mb-3">
+            Training Mode
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => {
+                setTrainingMode('new');
+                setSelectedBaseModel('');
+                setModelName('');
+              }}
+              disabled={isTraining}
+              className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
+                trainingMode === 'new'
+                  ? 'bg-blue-600/20 border-blue-500 text-blue-400'
+                  : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white'
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              <Zap className="w-6 h-6" />
+              <span className="text-sm font-medium">Create New Model</span>
+            </button>
+            <button
+              onClick={() => setTrainingMode('improve')}
+              disabled={isTraining}
+              className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
+                trainingMode === 'improve'
+                  ? 'bg-blue-600/20 border-blue-500 text-blue-400'
+                  : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white'
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              <CheckCircle2 className="w-6 h-6" />
+              <span className="text-sm font-medium">Improve Existing Model</span>
+            </button>
+          </div>
+
+          {/* Model Selection for Improve Mode */}
+          {trainingMode === 'improve' && (
+            <div className="mt-4 pt-4 border-t border-slate-800">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Select Base Model to Improve
+              </label>
+              <select
+                value={selectedBaseModel}
+                onChange={(e) => setSelectedBaseModel(e.target.value)}
+                disabled={isTraining}
+                className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value="">Choose a model to improve...</option>
+                {models
+                  .filter(m => m.status !== 'training' && m.status !== 'validating' && m.status !== 'exporting')
+                  .map(model => (
+                    <option key={model.id} value={model.id}>
+                      {model.version} - {model.name}
+                    </option>
+                  ))}
+              </select>
+              {models.length === 0 && (
+                <p className="text-xs text-orange-400 mt-2 flex items-center gap-1">
+                  <Database className="w-3 h-3" />
+                  No trained models available. Create a new model first.
+                </p>
+              )}
+              {selectedBaseModel && (
+                <p className="text-xs text-slate-400 mt-2">
+                  The base model's configuration will be loaded. You can modify hyperparameters before training.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* View Mode Toggle */}
-        <div className="mb-4 md:mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 flex-shrink-0">
-          <div className="bg-slate-900 border border-slate-800 rounded-lg p-1 flex gap-1">
+        <div className="mb-4 md:mb-6 flex-shrink-0">
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-1 inline-flex gap-1">
             <button
               onClick={() => setViewMode('code')}
               className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-normal transition-all ${
@@ -553,36 +692,21 @@ checkpoint:
               Form
             </button>
           </div>
-          <div className="text-xs sm:text-sm text-slate-400">
-            {viewMode === 'code' ? 'Edit configuration as code (Press Ctrl+F to search)' : 'Edit configuration via form'}
-          </div>
         </div>
 
-        {/* Component Type Selection */}
+        {/* Model Name Input */}
         <div className="mb-4 md:mb-6 bg-slate-900 border border-slate-800 rounded-lg p-3 md:p-4 flex-shrink-0">
-          <label className="block text-sm font-medium text-slate-300 mb-3">
-            Component Type
+          <label className="block text-sm font-medium text-slate-300 mb-2">
+            Model Name
           </label>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {(['Perception', 'Policy/Control', 'Planner', 'High-level reasoning'] as ComponentType[]).map((type) => {
-              const Icon = componentIcons[type];
-              return (
-                <button
-                  key={type}
-                  onClick={() => setComponentType(type)}
-                  disabled={isTraining}
-                  className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
-                    componentType === type
-                      ? 'bg-blue-600/20 border-blue-500 text-blue-400'
-                      : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white'
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  <Icon className="w-6 h-6" />
-                  <span className="text-xs font-medium text-center">{type}</span>
-                </button>
-              );
-            })}
-          </div>
+          <input
+            type="text"
+            value={modelName}
+            onChange={(e) => setModelName(e.target.value)}
+            disabled={isTraining}
+            placeholder="Enter a name for your model..."
+            className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          />
         </div>
 
         {/* Dataset Selection (shown in both modes) */}
@@ -638,7 +762,7 @@ checkpoint:
               <div className="flex-shrink-0">
                 <button
                   onClick={handleStartTraining}
-                  disabled={isTraining || !selectedDataset}
+                  disabled={isTraining || !selectedDataset || !modelName.trim() || (trainingMode === 'improve' && !selectedBaseModel)}
                   className="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isTraining ? (
@@ -717,6 +841,24 @@ checkpoint:
               <h2 className="text-xl font-semibold text-white mb-6">Training Configuration</h2>
               
               <div className="space-y-6">
+                {/* Component Type Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Component Type
+                  </label>
+                  <select
+                    value={componentType}
+                    onChange={(e) => setComponentType(e.target.value as ComponentType)}
+                    disabled={isTraining}
+                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <option value="Perception">Perception</option>
+                    <option value="Policy/Control">Policy/Control</option>
+                    <option value="Planner">Planner</option>
+                    <option value="High-level reasoning">High-level reasoning</option>
+                  </select>
+                </div>
+
                 {/* Framework Selection */}
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -954,7 +1096,7 @@ checkpoint:
                 {/* Start Training Button */}
                 <button
                   onClick={handleStartTraining}
-                  disabled={isTraining || !selectedDataset}
+                  disabled={isTraining || !selectedDataset || !modelName.trim() || (trainingMode === 'improve' && !selectedBaseModel)}
                   className="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isTraining ? (

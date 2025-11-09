@@ -15,6 +15,8 @@ import {
   TestTube,
   Activity
 } from 'lucide-react';
+import { useDatasets } from '../store/useDatasets';
+import { useHistory } from '../store/useHistory';
 
 interface Connector {
   id: string;
@@ -27,6 +29,9 @@ interface Connector {
 }
 
 export const ConnectorsPage = () => {
+  const { addDataset } = useDatasets();
+  const { addEvent } = useHistory();
+
   const [connectors, setConnectors] = useState<Connector[]>([
     {
       id: '1',
@@ -125,6 +130,73 @@ export const ConnectorsPage = () => {
         lastSync: new Date().toISOString(),
       };
       setConnectors([...connectors, newConnector]);
+
+      // If it's an AWS S3 dataset connector, create a dummy dataset from the bucket
+      if (newConnector.type === 'dataset' && newConnector.provider === 'AWS S3' && newConnector.config.bucket) {
+        // Simulate discovering a dataset from S3 bucket
+        const bucketName = newConnector.config.bucket;
+        const region = newConnector.config.region || 'us-east-1';
+        const pathPrefix = newConnector.config.pathPrefix || 'datasets';
+        
+        // Generate realistic dataset data
+        const datasetNames = [
+          'Robot Navigation Training Data',
+          'Object Detection Dataset',
+          'Warehouse Scenarios',
+          'Indoor Navigation Set',
+          'Autonomous Driving Data'
+        ];
+        const formats: ('COCO' | 'YOLO' | 'TFRecord' | 'Custom')[] = ['COCO', 'YOLO', 'TFRecord', 'Custom'];
+        const classes = [
+          ['obstacle', 'path', 'wall', 'door', 'person'],
+          ['box', 'pallet', 'forklift', 'shelf', 'robot'],
+          ['car', 'truck', 'pedestrian', 'traffic_light', 'sign'],
+          ['object', 'ground', 'ceiling', 'window', 'corridor']
+        ];
+
+        const randomName = datasetNames[Math.floor(Math.random() * datasetNames.length)];
+        const randomFormat = formats[Math.floor(Math.random() * formats.length)];
+        const randomClasses = classes[Math.floor(Math.random() * classes.length)];
+        const randomSamples = Math.floor(Math.random() * 15000) + 5000; // 5k-20k samples
+        const randomSize = Math.floor(randomSamples * 0.15 + Math.random() * 500); // MB
+
+        const newDataset = addDataset({
+          name: randomName,
+          size: randomSize,
+          samples: randomSamples,
+          format: randomFormat,
+          description: `Dataset discovered from S3 bucket: ${bucketName}. Synced from AWS S3 connector "${newConnector.name}" in region ${region}.`,
+          tags: ['s3', 'aws', 'synced', bucketName.replace(/[^a-z0-9]/gi, '').toLowerCase()],
+          uploadedBy: 'system',
+          s3Path: `s3://${bucketName}/${pathPrefix}/${randomName.toLowerCase().replace(/\s+/g, '-')}/`,
+          splits: {
+            train: [],
+            test: [],
+            inference: [],
+          },
+          metadata: {
+            classes: randomClasses,
+            resolution: randomFormat === 'YOLO' ? '640x640' : '1280x720',
+            augmented: Math.random() > 0.5,
+          },
+        });
+
+        // Add history event
+        addEvent({
+          modelVersion: newDataset.version,
+          type: 'Train',
+          details: `Dataset "${randomName}" (${newDataset.version}) discovered and synced from S3 bucket ${bucketName}`,
+          metadata: {
+            connectorId: newConnector.id,
+            connectorName: newConnector.name,
+            bucket: bucketName,
+            region: region,
+            s3Path: newDataset.s3Path,
+            samples: randomSamples,
+            format: randomFormat,
+          },
+        });
+      }
     }
     setShowModal(false);
   };
