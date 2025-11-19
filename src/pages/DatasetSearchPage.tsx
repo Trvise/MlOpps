@@ -53,23 +53,48 @@ export const DatasetSearchPage = () => {
     );
   }
 
-  // Generate random placeholder images
-  const generateRandomImages = (count: number): SearchResult[] => {
+  // List of actual images from the images directory
+  const imageFiles = [
+    'imag1.png',
+    'image2.png',
+    'image3.png',
+    'image4.png',
+    'image5.png',
+    'image6.png',
+    'image7.png',
+  ];
+
+  // Generate search results using actual images from the images directory
+  const generateImageResults = (): SearchResult[] => {
     const results: SearchResult[] = [];
-    for (let i = 0; i < count; i++) {
-      // Using placeholder image service - in future, these will come from actual files
-      const width = 400 + Math.floor(Math.random() * 200);
-      const height = 300 + Math.floor(Math.random() * 200);
+    
+    // Use all available images
+    imageFiles.forEach((filename, index) => {
+      // In Vite, files in public/ are served from root
+      // URL encode the filename to handle spaces and special characters
+      const imagePath = `/images/${encodeURIComponent(filename)}`;
+      
+      // Generate random similarity between 0.70 and 0.98
+      const randomSimilarity = (0.70 + Math.random() * 0.28).toFixed(3);
+      
       results.push({
-        id: `result-${i}-${Date.now()}`,
-        imageUrl: `https://picsum.photos/seed/${dataset?.id}-${i}-${Date.now()}/${width}/${height}`,
-        timestamp: Math.random() * 1000,
+        id: `result-${index}-${Date.now()}`,
+        imageUrl: imagePath,
+        timestamp: index * 10, // Simulated timestamp
         metadata: {
-          similarity: (0.9 - i * 0.05).toFixed(3),
-          frame: Math.floor(Math.random() * 10000),
+          similarity: randomSimilarity,
+          frame: index * 1000,
+          filename: filename,
         },
       });
+    });
+    
+    // Shuffle the results to randomize the order
+    for (let i = results.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [results[i], results[j]] = [results[j], results[i]];
     }
+    
     return results;
   };
 
@@ -83,8 +108,9 @@ export const DatasetSearchPage = () => {
     // Simulate search delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Generate random images (in future, this will read from actual files)
-    const results = generateRandomImages(12);
+    // Generate results using actual images from the images directory
+    const results = generateImageResults();
+    console.log('Generated image results:', results.map(r => r.imageUrl));
     setSearchResults(results);
     setIsSearching(false);
   };
@@ -137,10 +163,6 @@ export const DatasetSearchPage = () => {
       },
       metadata: {
         ...dataset.metadata,
-        curatedFrom: dataset.version,
-        curationLabel: datasetLabel,
-        searchQuery: searchQuery,
-        curatedSamples: selectedResultData.length,
       },
       isCurated: true,
       curationMetadata: {
@@ -303,7 +325,7 @@ export const DatasetSearchPage = () => {
           {/* Dataset Label Input */}
           {searchResults.length > 0 && (
             <div className="mt-6 pt-6 border-t border-slate-800">
-              <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+              <label className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-2">
                 <Tag className="w-4 h-4" />
                 Dataset Label
               </label>
@@ -394,30 +416,30 @@ export const DatasetSearchPage = () => {
                     }`}
                     onClick={() => toggleSelectResult(result.id)}
                   >
-                    <div className="aspect-video bg-slate-800 relative">
+                    <div className="relative bg-slate-800 overflow-hidden" style={{ aspectRatio: '16/9', width: '100%' }}>
                       <img
                         src={result.imageUrl}
-                        alt="Search result"
-                        className="w-full h-full object-cover"
+                        alt={`Search result ${result.metadata?.filename || result.id}`}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        style={{ objectPosition: 'center' }}
                         onError={(e) => {
+                          console.error('Failed to load image:', result.imageUrl, 'Error:', e);
                           // Fallback if image fails to load
                           (e.target as HTMLImageElement).src = `https://via.placeholder.com/400x300/1e293b/64748b?text=Image+${result.id.slice(-4)}`;
                         }}
+                        onLoad={() => {
+                          console.log('Successfully loaded image:', result.imageUrl);
+                        }}
                       />
                       {isSelected && (
-                        <div className="absolute inset-0 bg-purple-500/20 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-purple-500/20 flex items-center justify-center z-10">
                           <CheckCircle2 className="w-8 h-8 text-purple-400" />
                         </div>
                       )}
-                      <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded text-xs text-white">
+                      <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded text-xs text-white z-10">
                         {result.metadata?.similarity ? `${(parseFloat(result.metadata.similarity) * 100).toFixed(1)}%` : 'N/A'}
                       </div>
                     </div>
-                    {result.metadata?.frame && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                        <div className="text-xs text-white">Frame: {result.metadata.frame}</div>
-                      </div>
-                    )}
                   </motion.div>
                 );
               })}
