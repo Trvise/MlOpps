@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useModels } from '../store/useModels';
 import { useHistory } from '../store/useHistory';
-import { simulateExport } from '../utils/fakeJobs';
+import { simulateExport } from '../utils/jobOrchestration';
 import { LogViewer } from '../components/LogViewer';
 import { ProgressBar } from '../components/ProgressBar';
 import { Package, CheckCircle2, FileCode, HardDrive } from 'lucide-react';

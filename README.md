@@ -143,7 +143,7 @@ src/
 │   ├── useRobots.ts    # Robot fleet state
 │
 ├── utils/              # Utility functions
-│   ├── fakeJobs.ts     # Async job simulation
+│   ├── jobOrchestration.ts # Job orchestration and simulation
 │   ├── versionUtils.ts # Version generation
 │   └── randomMetrics.ts # Mock metrics
 │

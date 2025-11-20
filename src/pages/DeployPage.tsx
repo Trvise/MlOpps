@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useModels } from '../store/useModels';
 import { useRobots } from '../store/useRobots';
 import { useHistory } from '../store/useHistory';
-import { simulateDeployment } from '../utils/fakeJobs';
+import { simulateDeployment } from '../utils/jobOrchestration';
 import { LogViewer } from '../components/LogViewer';
 import { ProgressBar } from '../components/ProgressBar';
 import { Rocket, CheckCircle2, Circle, AlertCircle, Undo2 } from 'lucide-react';

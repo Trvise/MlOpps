@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useModels } from '../store/useModels';
 import { useHistory } from '../store/useHistory';
-import { simulateValidation } from '../utils/fakeJobs';
+import { simulateValidation } from '../utils/jobOrchestration';
 import { LogViewer } from '../components/LogViewer';
 import { ProgressBar } from '../components/ProgressBar';
 import { MetricCard } from '../components/MetricCard';

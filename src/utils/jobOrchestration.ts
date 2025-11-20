@@ -1,7 +1,25 @@
-import { generateTrainingMetrics, generateValidationMetrics, generateExportSize } from './randomMetrics';
 import { ComponentType } from '../types';
 
 const getComponentTrainingLogs = (componentType: ComponentType, epochs: number = 10): string[] => {
+  // Helper function to generate decreasing loss values that never go negative
+  const generateLoss = (epoch: number, totalEpochs: number, startLoss: number = 0.523, minLoss: number = 0.05): string => {
+    // Calculate loss that decreases from startLoss to minLoss over epochs
+    // Using exponential decay for more realistic training curve
+    const progress = epoch / totalEpochs;
+    const loss = startLoss * Math.pow(minLoss / startLoss, progress);
+    // Ensure loss never goes below minLoss
+    const clampedLoss = Math.max(loss, minLoss);
+    return clampedLoss.toFixed(3);
+  };
+
+  // Helper function to generate increasing accuracy values
+  const generateAccuracy = (epoch: number, totalEpochs: number, startAccuracy: number = 0.845, maxAccuracy: number = 0.99): string => {
+    const progress = epoch / totalEpochs;
+    const accuracy = startAccuracy + (maxAccuracy - startAccuracy) * progress;
+    const clampedAccuracy = Math.min(accuracy, maxAccuracy);
+    return clampedAccuracy.toFixed(3);
+  };
+
   const baseLogs: Record<ComponentType, string[]> = {
     'Perception': [
       'Initializing DROID-SLAM environment...',
@@ -10,7 +28,11 @@ const getComponentTrainingLogs = (componentType: ComponentType, epochs: number =
       'Setting up feature extractor...',
       'Initializing SLAM frontend...',
       'Starting perception training loop...',
-      ...Array.from({ length: epochs }, (_, i) => `Epoch ${i + 1}/${epochs}: SLAM loss=0.${(523 - i * 35).toString().padStart(3, '0')}, Detection mAP=0.${(845 + i * 13).toString().padStart(3, '0')}`),
+      ...Array.from({ length: epochs }, (_, i) => {
+        const loss = generateLoss(i + 1, epochs, 0.523, 0.08);
+        const accuracy = generateAccuracy(i + 1, epochs, 0.845, 0.98);
+        return `Epoch ${i + 1}/${epochs}: SLAM loss=${loss}, Detection mAP=${accuracy}`;
+      }),
       'Optimizing feature matching...',
       'Saving DROID-SLAM checkpoint...',
       'Saving Mask R-CNN weights...',
@@ -23,7 +45,11 @@ const getComponentTrainingLogs = (componentType: ComponentType, epochs: number =
       'Configuring PPO/PPO-LSTM agent...',
       'Spawning parallel environments (4096)...',
       'Starting RL training loop...',
-      ...Array.from({ length: epochs }, (_, i) => `Iteration ${i + 1}/${epochs}: Reward=${(523 + i * 45).toFixed(1)}, Policy Loss=0.${(523 - i * 35).toString().padStart(3, '0')}`),
+      ...Array.from({ length: epochs }, (_, i) => {
+        const reward = (523 + i * 45).toFixed(1);
+        const loss = generateLoss(i + 1, epochs, 0.523, 0.10);
+        return `Iteration ${i + 1}/${epochs}: Reward=${reward}, Policy Loss=${loss}`;
+      }),
       'Updating policy network...',
       'Saving policy checkpoint...',
       'Training completed successfully!',
@@ -35,7 +61,11 @@ const getComponentTrainingLogs = (componentType: ComponentType, epochs: number =
       'Configuring cost function and constraints...',
       'Initializing solver (IPOPT)...',
       'Starting optimization loop...',
-      ...Array.from({ length: epochs }, (_, i) => `Iteration ${i + 1}/${epochs}: Cost=${(523 - i * 35).toFixed(2)}, Convergence=${(85 + i * 1.3).toFixed(1)}%`),
+      ...Array.from({ length: epochs }, (_, i) => {
+        const cost = generateLoss(i + 1, epochs, 0.523, 0.05);
+        const convergence = Math.min(85 + i * 1.3, 99.5).toFixed(1);
+        return `Iteration ${i + 1}/${epochs}: Cost=${cost}, Convergence=${convergence}%`;
+      }),
       'Optimizing trajectory...',
       'Validating constraint satisfaction...',
       'Saving MPC parameters...',
@@ -48,7 +78,11 @@ const getComponentTrainingLogs = (componentType: ComponentType, epochs: number =
       'Configuring chain of thought reasoning...',
       'Loading task-specific datasets...',
       'Starting fine-tuning loop...',
-      ...Array.from({ length: epochs }, (_, i) => `Epoch ${i + 1}/${epochs}: Loss=0.${(523 - i * 35).toString().padStart(3, '0')}, Task Accuracy=0.${(845 + i * 13).toString().padStart(3, '0')}`),
+      ...Array.from({ length: epochs }, (_, i) => {
+        const loss = generateLoss(i + 1, epochs, 0.523, 0.08);
+        const accuracy = generateAccuracy(i + 1, epochs, 0.845, 0.97);
+        return `Epoch ${i + 1}/${epochs}: Loss=${loss}, Task Accuracy=${accuracy}`;
+      }),
       'Updating language model weights...',
       'Saving fine-tuned model...',
       'Training completed successfully!',
@@ -60,7 +94,11 @@ const getComponentTrainingLogs = (componentType: ComponentType, epochs: number =
     'Loading dataset...',
     'Building neural network architecture...',
     'Starting training loop...',
-    ...Array.from({ length: epochs }, (_, i) => `Epoch ${i + 1}/${epochs}: loss=0.${(523 - i * 35).toString().padStart(3, '0')}, accuracy=0.${(845 + i * 13).toString().padStart(3, '0')}`),
+    ...Array.from({ length: epochs }, (_, i) => {
+      const loss = generateLoss(i + 1, epochs, 0.523, 0.08);
+      const accuracy = generateAccuracy(i + 1, epochs, 0.845, 0.98);
+      return `Epoch ${i + 1}/${epochs}: loss=${loss}, accuracy=${accuracy}`;
+    }),
     'Saving model checkpoint...',
     'Training completed successfully!',
   ];
@@ -399,3 +437,4 @@ export const simulateDeployment = (
     clearInterval(interval);
   };
 };
+

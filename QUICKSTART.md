@@ -188,7 +188,7 @@ npm run build
 ## Next Steps
 
 Once you have real data:
-1. Replace `fakeJobs.ts` with actual API calls
+1. Replace `jobOrchestration.ts` with actual API calls
 2. Connect to real model registry (MLflow, etc.)
 3. Integrate with Kubernetes/Ray for orchestration
 4. Add dataset management

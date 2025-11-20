@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useModels } from '../store/useModels';
 import { useHistory } from '../store/useHistory';
 import { useDatasets } from '../store/useDatasets';
-import { simulateTraining } from '../utils/fakeJobs';
+import { simulateTraining } from '../utils/jobOrchestration';
 import { LogViewer } from '../components/LogViewer';
 import { ProgressBar } from '../components/ProgressBar';
 import { CodeEditor } from '../components/CodeEditor';
