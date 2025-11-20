@@ -6,7 +6,6 @@ import {
   Package, 
   Rocket, 
   History,
-  Activity,
   Database,
   Plug,
   User,
@@ -42,8 +41,12 @@ export const Sidebar = () => {
       {/* Logo */}
       <div className="p-6 border-b border-slate-900">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/50">
-            <Activity className="w-6 h-6 text-amber-400" />
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+            <img 
+              src="/images/logo.png" 
+              alt="The Vortex Logo" 
+              className="w-full h-full object-contain"
+            />
           </div>
           <div>
             <h1 className="text-xl font-light tracking-tight text-white">The Vortex</h1>
