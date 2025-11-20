@@ -53,23 +53,56 @@ export const DatasetSearchPage = () => {
     );
   }
 
-  // List of actual images from the images directory
-  const imageFiles = [
-    'imag1.png',
-    'image2.png',
-    'image3.png',
-    'image4.png',
-    'image5.png',
-    'image6.png',
-    'image7.png',
-  ];
+  // Dynamically discover images from the public/images directory
+  // Since we can't directly scan the filesystem in the browser, we'll try to discover
+  // images by attempting to load them and checking which prefixes exist
+  const discoverImages = async (prefix: string): Promise<string[]> => {
+    const discoveredImages: string[] = [];
+    const maxAttempts = 20; // Try up to 20 images per prefix
+    
+    // Check all images for the given prefix in parallel for better performance
+    const checkPromises: Promise<{ filename: string; exists: boolean }>[] = [];
+    
+    for (let i = 1; i <= maxAttempts; i++) {
+      const filename = `${prefix}${i}.png`;
+      const imagePath = `/images/${encodeURIComponent(filename)}`;
+      
+      // Create a promise to check if image exists
+      const checkPromise = fetch(imagePath, { method: 'HEAD' })
+        .then(response => ({ filename, exists: response.ok }))
+        .catch(() => ({ filename, exists: false }));
+      
+      checkPromises.push(checkPromise);
+    }
+    
+    // Wait for all checks to complete
+    const results = await Promise.all(checkPromises);
+    
+    // Filter to only include existing images
+    results.forEach(({ filename, exists }) => {
+      if (exists) {
+        discoveredImages.push(filename);
+      }
+    });
+    
+    return discoveredImages;
+  };
 
   // Generate search results using actual images from the images directory
-  const generateImageResults = (): SearchResult[] => {
+  const generateImageResults = async (query: string): Promise<SearchResult[]> => {
     const results: SearchResult[] = [];
     
-    // Use all available images
-    imageFiles.forEach((filename, index) => {
+    // Determine which prefix to use based on search query
+    // If "drop" is in the query, show images starting with "image"
+    // Otherwise, show images starting with "hold"
+    const queryLower = query.toLowerCase();
+    const prefix = queryLower.includes('drop') ? 'image' : 'hold';
+    
+    // Discover only the images with the correct prefix
+    const filteredImages = await discoverImages(prefix);
+    
+    // Only create results for images that actually exist
+    filteredImages.forEach((filename, index) => {
       // In Vite, files in public/ are served from root
       // URL encode the filename to handle spaces and special characters
       const imagePath = `/images/${encodeURIComponent(filename)}`;
@@ -105,11 +138,12 @@ export const DatasetSearchPage = () => {
     setIsSearching(true);
     setSelectedResults(new Set());
 
-    // Simulate search delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Add delay before displaying results
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     // Generate results using actual images from the images directory
-    const results = generateImageResults();
+    // This will dynamically discover and filter images based on the query
+    const results = await generateImageResults(searchQuery);
     console.log('Generated image results:', results.map(r => r.imageUrl));
     setSearchResults(results);
     setIsSearching(false);
@@ -333,7 +367,7 @@ export const DatasetSearchPage = () => {
                 type="text"
                 value={datasetLabel}
                 onChange={(e) => setDatasetLabel(e.target.value)}
-                placeholder="e.g., robot doing a mistake when picking up stuff"
+                placeholder="example: robot moving towards the container"
                 className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
               />
               <p className="text-xs text-slate-500 mt-2">
@@ -423,12 +457,12 @@ export const DatasetSearchPage = () => {
                         className="absolute inset-0 w-full h-full object-cover"
                         style={{ objectPosition: 'center' }}
                         onError={(e) => {
-                          console.error('Failed to load image:', result.imageUrl, 'Error:', e);
-                          // Fallback if image fails to load
-                          (e.target as HTMLImageElement).src = `https://via.placeholder.com/400x300/1e293b/64748b?text=Image+${result.id.slice(-4)}`;
-                        }}
-                        onLoad={() => {
-                          console.log('Successfully loaded image:', result.imageUrl);
+                          console.error('Failed to load image:', result.imageUrl);
+                          // Hide the image container if image fails to load
+                          const container = (e.target as HTMLImageElement).closest('.relative.group');
+                          if (container) {
+                            (container as HTMLElement).style.display = 'none';
+                          }
                         }}
                       />
                       {isSelected && (
