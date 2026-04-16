@@ -117,17 +117,17 @@ export const LandingPage = () => {
           scrolled ? 'bg-black/90 backdrop-blur border-b border-white/5' : 'bg-transparent'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-[4.5rem] flex items-center justify-between">
           {/* The Vortex button — top left */}
           <button
             onClick={() => navigate('/dashboard')}
             className="group flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
-            <div className="w-8 h-8 rounded overflow-hidden flex-shrink-0">
+            <div className="w-10 h-10 rounded overflow-hidden flex-shrink-0">
               <img src="/images/logo.png" alt="The Vortex" className="w-full h-full object-contain" />
             </div>
-            <span className="text-sm font-medium tracking-wide text-white">The Vortex</span>
-            <span className="text-xs text-slate-500 border border-slate-700 rounded px-1.5 py-0.5 group-hover:border-slate-500 transition-colors">
+            <span className="text-base font-semibold tracking-wide text-white">The Vortex</span>
+            <span className="text-xs text-slate-400 border border-slate-600 rounded px-2 py-0.5 group-hover:border-slate-400 group-hover:text-slate-300 transition-colors">
               Dashboard →
             </span>
           </button>
@@ -138,7 +138,7 @@ export const LandingPage = () => {
               <a
                 key={label}
                 href={`#${label.toLowerCase()}`}
-                className="text-sm text-slate-400 hover:text-white transition-colors tracking-wide"
+                className="text-sm text-slate-300 hover:text-white transition-colors tracking-wide"
               >
                 {label}
               </a>
@@ -446,7 +446,7 @@ export const LandingPage = () => {
       {/* ── MARQUEE ── */}
       <section className="border-y border-white/5 bg-white/[0.015] py-5 overflow-hidden">
         <motion.div
-          animate={{ x: [0, '-50%'] }}
+          animate={{ x: ['0%', '-50%'] }}
           transition={{ repeat: Infinity, duration: 22, ease: 'linear' }}
           className="flex gap-12 whitespace-nowrap text-xs text-slate-600 uppercase tracking-widest"
           style={{ width: 'max-content' }}
@@ -492,10 +492,10 @@ export const LandingPage = () => {
       <footer className="border-t border-white/5 py-12 px-6">
         <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded overflow-hidden flex-shrink-0">
+            <div className="w-8 h-8 rounded overflow-hidden flex-shrink-0">
               <img src="/images/logo.png" alt="The Vortex" className="w-full h-full object-contain" />
             </div>
-            <span className="text-sm text-slate-400">The Vortex</span>
+            <span className="text-base font-medium text-slate-300">The Vortex</span>
           </div>
           <p className="text-xs text-slate-700 text-center">
             ML Lifecycle Management Platform — built for robot intelligence at scale.
