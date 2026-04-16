@@ -15,20 +15,20 @@ import {
 import { motion } from 'framer-motion';
 
 const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/datasets', icon: Database, label: 'Datasets' },
-  { to: '/curated-datasets', icon: BookOpen, label: 'Curated Datasets' },
-  { to: '/search', icon: Sparkles, label: 'Search & Curate' },
-  { to: '/train', icon: Zap, label: 'Train' },
-  { to: '/validate', icon: FlaskConical, label: 'Validate' },
-  { to: '/export', icon: Package, label: 'Export' },
-  { to: '/deploy', icon: Rocket, label: 'Deploy' },
-  { to: '/history', icon: History, label: 'History' },
-  { to: '/connectors', icon: Plug, label: 'Connectors' },
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/dashboard/datasets', icon: Database, label: 'Datasets' },
+  { to: '/dashboard/curated-datasets', icon: BookOpen, label: 'Curated Datasets' },
+  { to: '/dashboard/search', icon: Sparkles, label: 'Search & Curate' },
+  { to: '/dashboard/train', icon: Zap, label: 'Train' },
+  { to: '/dashboard/validate', icon: FlaskConical, label: 'Validate' },
+  { to: '/dashboard/export', icon: Package, label: 'Export' },
+  { to: '/dashboard/deploy', icon: Rocket, label: 'Deploy' },
+  { to: '/dashboard/history', icon: History, label: 'History' },
+  { to: '/dashboard/connectors', icon: Plug, label: 'Connectors' },
 ];
 
 const bottomNavItems = [
-  { to: '/profile', icon: User, label: 'Profile' },
+  { to: '/dashboard/profile', icon: User, label: 'Profile' },
 ];
 
 export const Sidebar = () => {
@@ -62,7 +62,7 @@ export const Sidebar = () => {
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === '/'}
+              end={item.to === '/dashboard'}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 group ${
                   isActive

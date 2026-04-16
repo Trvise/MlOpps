@@ -19,7 +19,6 @@ export const DashboardPage = () => {
 
   const totalModels = models.length;
   const trainedModels = models.filter(m => m.metrics).length;
-  const validatedModels = models.filter(m => m.validation).length;
   const deployedModels = models.filter(m => m.status === 'deployed').length;
 
   const avgAccuracy = models.length > 0
@@ -92,28 +91,28 @@ export const DashboardPage = () => {
           <h2 className="text-xl font-medium text-white mb-6">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <button
-              onClick={() => navigate('/train')}
+              onClick={() => navigate('/dashboard/train')}
               className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
             >
               <Zap className="w-5 h-5" />
               New Training
             </button>
             <button
-              onClick={() => navigate('/validate')}
+              onClick={() => navigate('/dashboard/validate')}
               className="flex items-center justify-center gap-2 bg-slate-800/50 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-all border border-slate-700/50"
             >
               <FlaskConical className="w-5 h-5" />
               Validate Model
             </button>
             <button
-              onClick={() => navigate('/export')}
+              onClick={() => navigate('/dashboard/export')}
               className="flex items-center justify-center gap-2 bg-slate-800/50 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-all border border-slate-700/50"
             >
               <Package className="w-5 h-5" />
               Export Model
             </button>
             <button
-              onClick={() => navigate('/deploy')}
+              onClick={() => navigate('/dashboard/deploy')}
               className="flex items-center justify-center gap-2 bg-slate-800/50 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-medium transition-all border border-slate-700/50"
             >
               <Rocket className="w-5 h-5" />
@@ -161,7 +160,7 @@ export const DashboardPage = () => {
                       <AlertCircle className="w-12 h-12 text-slate-600 mx-auto mb-3" />
                       <p className="text-slate-400">No models yet. Create your first training run!</p>
                       <button
-                        onClick={() => navigate('/train')}
+                        onClick={() => navigate('/dashboard/train')}
                         className="mt-4 text-amber-400 hover:text-amber-300 font-medium"
                       >
                         Start Training →
@@ -175,7 +174,7 @@ export const DashboardPage = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="hover:bg-slate-800/20 transition-colors cursor-pointer"
-                      onClick={() => navigate('/history')}
+                      onClick={() => navigate('/dashboard/history')}
                     >
                       <td className="px-8 py-4 whitespace-nowrap">
                         <span className="text-sm font-mono text-amber-400">{model.version}</span>

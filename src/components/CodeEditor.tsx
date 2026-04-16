@@ -1,7 +1,6 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import Editor, { Monaco } from '@monaco-editor/react';
-import { Code, Save, Search, X } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Code, Save } from 'lucide-react';
 
 interface CodeEditorProps {
   value: string;

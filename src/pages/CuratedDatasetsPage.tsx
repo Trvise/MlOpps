@@ -10,7 +10,6 @@ import {
   Calendar,
   User,
   Sparkles,
-  Search,
   ArrowLeft
 } from 'lucide-react';
 import { formatDate, formatNumber } from '../lib/utils';
@@ -40,7 +39,7 @@ export const CuratedDatasetsPage = () => {
         {/* Header */}
         <div className="mb-12">
           <button
-            onClick={() => navigate('/datasets')}
+            onClick={() => navigate('/dashboard/datasets')}
             className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -189,7 +188,7 @@ export const CuratedDatasetsPage = () => {
               Search datasets and create curated versions to get started
             </p>
             <button
-              onClick={() => navigate('/datasets')}
+              onClick={() => navigate('/dashboard/datasets')}
               className="text-purple-400 hover:text-purple-300 font-medium"
             >
               Go to Datasets →

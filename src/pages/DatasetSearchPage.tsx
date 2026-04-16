@@ -32,7 +32,7 @@ export const DatasetSearchPage = () => {
   useEffect(() => {
     if (datasetId && !dataset) {
       // Dataset not found, redirect back to datasets page
-      navigate('/datasets');
+      navigate('/dashboard/datasets');
     }
   }, [datasetId, dataset, navigate]);
 
@@ -293,7 +293,7 @@ export const DatasetSearchPage = () => {
         {/* Header */}
         <div className="mb-8">
           <button
-            onClick={() => navigate('/datasets')}
+            onClick={() => navigate('/dashboard/datasets')}
             className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />

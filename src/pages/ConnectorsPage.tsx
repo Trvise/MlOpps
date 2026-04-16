@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Database, 
-  Plus, 
-  Trash2, 
-  Edit, 
-  CheckCircle2, 
-  X, 
-  Key,
+  Database,
+  Plus,
+  Trash2,
+  Edit,
+  X,
   Cloud,
   Plug,
   Server,

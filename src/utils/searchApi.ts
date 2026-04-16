@@ -65,8 +65,8 @@ export const uploadCsv = async (file: File): Promise<{ success: boolean; filenam
 
 // Simulate tokenization
 export const startTokenization = async (
-  skipFrames: number = 30,
-  maxFrames?: number
+  _skipFrames: number = 30,
+  _maxFrames?: number
 ): Promise<{ success: boolean; message: string }> => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -160,7 +160,7 @@ function extractVisualQuery(query: string): string {
 
 function extractDataCriteria(query: string): Array<{ field: string; operator: string; value: number }> {
   const criteria: Array<{ field: string; operator: string; value: number }> = [];
-  const numbers = query.match(/\d+(?:\.\d+)?/g) || [];
+  query.match(/\d+(?:\.\d+)?/g);
 
   if (query.includes('speed') || query.includes('kmph') || query.includes('kmh')) {
     const speedMatch = query.match(/(\d+(?:\.\d+)?)\s*(?:kmph|kmh|kph)/i);
