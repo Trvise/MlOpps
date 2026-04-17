@@ -32,13 +32,14 @@ export const CuratedDatasetsPage = () => {
         </div>
 
         {/* Stats Strip */}
-        <div className={`grid grid-cols-3 border-b ${BORDER}`}>
+        {/* Stats Strip */}
+        <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0 md:divide-x divide-white/[0.07] border-b ${BORDER}`}>
           {[
             { label: 'Total Curated', value: curatedDatasets.length },
             { label: 'Total Samples', value: curatedDatasets.reduce((s, d) => s + d.samples, 0).toLocaleString() },
             { label: 'Total Size', value: `${formatNumber(curatedDatasets.reduce((s, d) => s + d.size, 0) / 1000, 1)} GB` },
-          ].map(({ label, value }, i) => (
-            <div key={label} className={`py-6 ${i < 2 ? `border-r ${BORDER}` : ''} ${i > 0 ? 'px-8' : 'pr-8'}`}>
+          ].map(({ label, value }) => (
+            <div key={label} className="py-6 md:px-8 first:md:pl-0 last:md:pr-0">
               <div className={`text-xs ${DIMMER} uppercase tracking-widest mb-2`}>{label}</div>
               <div className="text-2xl font-light text-white">{value}</div>
             </div>

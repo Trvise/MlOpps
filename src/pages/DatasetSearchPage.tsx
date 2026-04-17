@@ -47,7 +47,7 @@ export const DatasetSearchPage = () => {
 
   if (!dataset) {
     return (
-      <div className="p-8">
+      <div className="p-4 sm:p-8 w-full overflow-x-hidden md:overflow-visible">
         <div className="text-center text-[#c8c8c8]">Dataset not found</div>
       </div>
     );
@@ -59,57 +59,57 @@ export const DatasetSearchPage = () => {
   const discoverImages = async (prefix: string): Promise<string[]> => {
     const discoveredImages: string[] = [];
     const maxAttempts = 20; // Try up to 20 images per prefix
-    
+
     // Check all images for the given prefix in parallel for better performance
     const checkPromises: Promise<{ filename: string; exists: boolean }>[] = [];
-    
+
     for (let i = 1; i <= maxAttempts; i++) {
       const filename = `${prefix}${i}.png`;
       const imagePath = `/images/${encodeURIComponent(filename)}`;
-      
+
       // Create a promise to check if image exists
       const checkPromise = fetch(imagePath, { method: 'HEAD' })
         .then(response => ({ filename, exists: response.ok }))
         .catch(() => ({ filename, exists: false }));
-      
+
       checkPromises.push(checkPromise);
     }
-    
+
     // Wait for all checks to complete
     const results = await Promise.all(checkPromises);
-    
+
     // Filter to only include existing images
     results.forEach(({ filename, exists }) => {
       if (exists) {
         discoveredImages.push(filename);
       }
     });
-    
+
     return discoveredImages;
   };
 
   // Generate search results using actual images from the images directory
   const generateImageResults = async (query: string): Promise<SearchResult[]> => {
     const results: SearchResult[] = [];
-    
+
     // Determine which prefix to use based on search query
     // If "drop" is in the query, show images starting with "image"
     // Otherwise, show images starting with "hold"
     const queryLower = query.toLowerCase();
     const prefix = queryLower.includes('drop') ? 'image' : 'hold';
-    
+
     // Discover only the images with the correct prefix
     const filteredImages = await discoverImages(prefix);
-    
+
     // Only create results for images that actually exist
     filteredImages.forEach((filename, index) => {
       // In Vite, files in public/ are served from root
       // URL encode the filename to handle spaces and special characters
       const imagePath = `/images/${encodeURIComponent(filename)}`;
-      
+
       // Generate random similarity between 0.70 and 0.98
       const randomSimilarity = (0.70 + Math.random() * 0.28).toFixed(3);
-      
+
       results.push({
         id: `result-${index}-${Date.now()}`,
         imageUrl: imagePath,
@@ -121,13 +121,13 @@ export const DatasetSearchPage = () => {
         },
       });
     });
-    
+
     // Shuffle the results to randomize the order
     for (let i = results.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [results[i], results[j]] = [results[j], results[i]];
     }
-    
+
     return results;
   };
 
@@ -179,7 +179,7 @@ export const DatasetSearchPage = () => {
     }
 
     const selectedResultData = searchResults.filter(r => selectedResults.has(r.id));
-    
+
     // Create curated dataset
     const curatedDataset = addDataset({
       name: `${dataset.name} - ${datasetLabel}`,
@@ -228,12 +228,12 @@ export const DatasetSearchPage = () => {
     // Show success toast
     setCreatedDatasetName(curatedDataset.name);
     setShowSuccessToast(true);
-    
+
     // Clear any existing timeout
     if (toastTimeoutRef.current) {
       clearTimeout(toastTimeoutRef.current);
     }
-    
+
     // Auto-dismiss toast after 5 seconds
     toastTimeoutRef.current = setTimeout(() => {
       setShowSuccessToast(false);
@@ -248,7 +248,7 @@ export const DatasetSearchPage = () => {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8 w-full overflow-x-hidden md:overflow-visible">
       {/* Success Toast Notification */}
       {showSuccessToast && (
         <motion.div
@@ -299,7 +299,7 @@ export const DatasetSearchPage = () => {
             <ArrowLeft className="w-4 h-4" />
             Back to Datasets
           </button>
-          
+
           <div className="flex items-center gap-4 mb-4">
             <div className="w-12 h-12 bg-white/[0.04] rounded-sm flex items-center justify-center">
               <Database className="w-6 h-6 text-amber-400" />
@@ -309,12 +309,12 @@ export const DatasetSearchPage = () => {
               <h1 className="text-3xl font-light text-white tracking-tight">{dataset.name}</h1>
             </div>
           </div>
-          
+
           <p className="text-[#c8c8c8] text-lg ml-16">{dataset.description}</p>
         </div>
 
         {/* Search Section */}
-        <div className="bg-transparent border border-white/[0.07] p-8 max-w-4xl">
+        <div className="bg-transparent border border-white/[0.07] p-4 md:p-8 max-w-4xl">
           <div className="mb-6">
             <h2 className="text-xl font-medium text-white mb-2 flex items-center gap-2">
               <Search className="w-5 h-5 text-purple-400" />
@@ -336,7 +336,7 @@ export const DatasetSearchPage = () => {
                 className="w-full bg-white/[0.04] border border-white/[0.07] rounded-sm pl-12 pr-4 py-4 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
               />
             </div>
-            
+
             <button
               type="submit"
               disabled={!searchQuery.trim() || isSearching}
@@ -443,11 +443,10 @@ export const DatasetSearchPage = () => {
                     key={result.id}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className={`relative group cursor-pointer rounded-sm overflow-hidden border-2 transition-all ${
-                      isSelected
+                    className={`relative group cursor-pointer rounded-sm overflow-hidden border-2 transition-all ${isSelected
                         ? 'border-purple-500 ring-2 ring-purple-500/50'
                         : 'border-white/[0.07] hover:border-white/[0.07]'
-                    }`}
+                      }`}
                     onClick={() => toggleSelectResult(result.id)}
                   >
                     <div className="relative bg-white/[0.04] overflow-hidden" style={{ aspectRatio: '16/9', width: '100%' }}>

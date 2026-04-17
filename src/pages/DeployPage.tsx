@@ -84,13 +84,14 @@ export const DeployPage = () => {
         </div>
 
         {/* Fleet stats strip */}
-        <div className={`grid grid-cols-3 border-b ${BORDER}`}>
+        {/* Fleet stats strip */}
+        <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0 md:divide-x divide-white/[0.07] border-b ${BORDER}`}>
           {[
             { label: 'Total Robots', value: robots.length },
             { label: 'Online', value: onlineCount, green: true },
             { label: 'Offline', value: offlineCount },
-          ].map(({ label, value, green }, i) => (
-            <div key={label} className={`py-6 ${i < 2 ? `border-r ${BORDER}` : ''} ${i > 0 ? 'px-8' : 'pr-8'}`}>
+          ].map(({ label, value, green }) => (
+            <div key={label} className="py-6 md:px-8 first:md:pl-0 last:md:pr-0">
               <div className={`text-xs ${DIMMER} uppercase tracking-widest mb-2`}>{label}</div>
               <div className={`text-2xl font-light ${green ? 'text-emerald-500' : 'text-white'}`}>{value}</div>
             </div>

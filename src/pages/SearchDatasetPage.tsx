@@ -122,33 +122,33 @@ export const SearchDatasetPage = () => {
       newAssignments.train = new Set(prev.train);
       newAssignments.test = new Set(prev.test);
       newAssignments.inference = new Set(prev.inference);
-      
+
       // Remove from other splits first
       selectedInstances.forEach(idx => {
         newAssignments.train.delete(idx);
         newAssignments.test.delete(idx);
         newAssignments.inference.delete(idx);
       });
-      
+
       // Add to selected split
       selectedInstances.forEach(idx => {
         newAssignments[split].add(idx);
       });
-      
+
       return newAssignments;
     });
   };
 
   const handleCreateDataset = () => {
     if (!videoFile || !csvFile) return;
-    
+
     // Check if we have any instances assigned to splits
     const totalAssigned = splitAssignments.train.size + splitAssignments.test.size + splitAssignments.inference.size;
     if (totalAssigned === 0) {
       alert('Please assign instances to at least one split (train, test, or inference)');
       return;
     }
-    
+
     if (datasetMode === 'new' && !datasetName.trim()) return;
     if (datasetMode === 'existing' && !selectedDatasetId) return;
 
@@ -168,10 +168,10 @@ export const SearchDatasetPage = () => {
 
     if (datasetMode === 'new') {
       const description = customDescription.trim() || undefined;
-      const tags = customTags.trim() 
+      const tags = customTags.trim()
         ? customTags.split(',').map(t => t.trim()).filter(t => t)
         : undefined;
-      
+
       // Create dataset with all splits
       const dataset = createSearchDatasetWithSplits(
         datasetName,
@@ -283,7 +283,7 @@ export const SearchDatasetPage = () => {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8 w-full overflow-x-hidden md:overflow-visible">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -316,13 +316,12 @@ export const SearchDatasetPage = () => {
               <div key={stepItem.key} className="flex items-center flex-1">
                 <div className="flex flex-col items-center flex-1">
                   <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
-                      isActive
-                        ? 'bg-purple-600 text-white'
-                        : isCompleted
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${isActive
+                      ? 'bg-purple-600 text-white'
+                      : isCompleted
                         ? 'bg-green-500 text-white'
                         : 'bg-white/[0.04] text-[#c8c8c8]'
-                    }`}
+                      }`}
                   >
                     <Icon className="w-6 h-6" />
                   </div>
@@ -344,7 +343,7 @@ export const SearchDatasetPage = () => {
         {step === 'upload' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-transparent border border-white/[0.07] p-8">
+              <div className="bg-transparent border border-white/[0.07] p-4 md:p-8">
                 <h2 className="text-xl font-medium text-white mb-6 flex items-center gap-2">
                   <FileVideo className="w-5 h-5" />
                   Upload Video
@@ -380,7 +379,7 @@ export const SearchDatasetPage = () => {
                 </label>
               </div>
 
-              <div className="bg-transparent border border-white/[0.07] p-8">
+              <div className="bg-transparent border border-white/[0.07] p-4 md:p-8">
                 <h2 className="text-xl font-medium text-white mb-6 flex items-center gap-2">
                   <FileSpreadsheet className="w-5 h-5" />
                   Upload CSV Data
@@ -434,7 +433,7 @@ export const SearchDatasetPage = () => {
 
         {/* Step 2: Tokenize */}
         {step === 'tokenize' && (
-          <div className="bg-transparent border border-white/[0.07] p-8 max-w-2xl">
+          <div className="bg-transparent border border-white/[0.07] p-4 md:p-8 max-w-2xl">
             <h2 className="text-xl font-medium text-white mb-6">Tokenize Video</h2>
             <div className="space-y-6">
               <div>
@@ -495,7 +494,7 @@ export const SearchDatasetPage = () => {
 
         {/* Step 3: Search */}
         {step === 'search' && (
-          <div className="bg-transparent border border-white/[0.07] p-8 max-w-4xl">
+          <div className="bg-transparent border border-white/[0.07] p-4 md:p-8 max-w-4xl">
             <h2 className="text-xl font-medium text-white mb-6">Agentic Search</h2>
             <div className="space-y-6">
               <div>
@@ -574,11 +573,10 @@ export const SearchDatasetPage = () => {
                         setDatasetMode('new');
                         setSelectedDatasetId('');
                       }}
-                      className={`px-4 py-2 rounded-sm font-medium transition-all ${
-                        datasetMode === 'new'
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-white/[0.04] text-[#c8c8c8] hover:bg-white/[0.04]'
-                      }`}
+                      className={`px-4 py-2 rounded-sm font-medium transition-all ${datasetMode === 'new'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-white/[0.04] text-[#c8c8c8] hover:bg-white/[0.04]'
+                        }`}
                     >
                       Create New Dataset
                     </button>
@@ -587,11 +585,10 @@ export const SearchDatasetPage = () => {
                         setDatasetMode('existing');
                         setDatasetName('');
                       }}
-                      className={`px-4 py-2 rounded-sm font-medium transition-all ${
-                        datasetMode === 'existing'
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-white/[0.04] text-[#c8c8c8] hover:bg-white/[0.04]'
-                      }`}
+                      className={`px-4 py-2 rounded-sm font-medium transition-all ${datasetMode === 'existing'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-white/[0.04] text-[#c8c8c8] hover:bg-white/[0.04]'
+                        }`}
                     >
                       Add to Existing Dataset
                     </button>
@@ -653,7 +650,7 @@ export const SearchDatasetPage = () => {
                   <label className="block text-sm font-medium text-white mb-2">
                     Assign Selected Instances to Splits
                   </label>
-                  <div className="grid grid-cols-3 gap-3 mb-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
                     <button
                       onClick={() => assignSelectedToSplit('train')}
                       disabled={selectedInstances.size === 0}
@@ -676,7 +673,7 @@ export const SearchDatasetPage = () => {
                       Assign to Inference ({selectedInstances.size})
                     </button>
                   </div>
-                  
+
                   {/* Split Summary */}
                   <div className="bg-white/[0.03] border border-white/[0.07] rounded-sm p-4">
                     <div className="text-sm font-medium text-white mb-2">Split Summary</div>
@@ -762,18 +759,17 @@ export const SearchDatasetPage = () => {
                     const isInTest = splitAssignments.test.has(index);
                     const isInInference = splitAssignments.inference.has(index);
                     const isAssigned = isInTrain || isInTest || isInInference;
-                    
+
                     return (
                       <div
                         key={index}
                         onClick={() => toggleInstance(index)}
-                        className={`p-4 rounded-sm border cursor-pointer transition-all relative ${
-                          selectedInstances.has(index)
-                            ? 'bg-purple-600/20 border-purple-500'
-                            : isAssigned
+                        className={`p-4 rounded-sm border cursor-pointer transition-all relative ${selectedInstances.has(index)
+                          ? 'bg-purple-600/20 border-purple-500'
+                          : isAssigned
                             ? 'bg-slate-700/50 border-slate-600'
                             : 'bg-white/[0.03] border-white/[0.07] hover:border-slate-600'
-                        }`}
+                          }`}
                       >
                         {/* Split badges */}
                         {(isInTrain || isInTest || isInInference) && (

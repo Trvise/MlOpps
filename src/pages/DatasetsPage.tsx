@@ -75,14 +75,15 @@ export const DatasetsPage = () => {
         </div>
 
         {/* Stats strip */}
-        <div className={`grid grid-cols-4 border-b ${BORDER}`}>
+        {/* Stats strip */}
+        <div className={`grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0 lg:divide-x divide-white/[0.07] border-b ${BORDER}`}>
           {[
             { label: 'Total Datasets', value: datasets.length, icon: Database },
             { label: 'Total Samples', value: totalSamples.toLocaleString(), icon: Image },
             { label: 'Total Size', value: `${formatNumber(totalSizeMB / 1000, 1)} GB`, icon: HardDrive },
             { label: 'Search-Based', value: searchBased, icon: Sparkles },
-          ].map(({ label, value, icon: Icon }, i) => (
-            <div key={label} className={`py-6 ${i < 3 ? `border-r ${BORDER}` : ''} ${i > 0 ? 'px-8' : 'pr-8'}`}>
+          ].map(({ label, value, icon: Icon }) => (
+            <div key={label} className="py-6 lg:px-8 first:lg:pl-0 last:lg:pr-0">
               <div className="flex items-center justify-between mb-2">
                 <div className={`text-xs ${DIMMER} uppercase tracking-widest`}>{label}</div>
                 <Icon className={`w-3.5 h-3.5 ${DIMMER}`} />
