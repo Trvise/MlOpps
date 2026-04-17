@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { Sidebar } from './components/Sidebar';

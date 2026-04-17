@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, Environment, Float, Html } from '@react-three/drei';
-import { useScroll, useTransform } from 'framer-motion';
+import { useScroll } from 'framer-motion';
 import * as THREE from 'three';
 
 // Preload the model
