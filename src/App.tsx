@@ -26,13 +26,23 @@ const DashboardShell = () => {
       <main className="ml-0 md:ml-64 min-h-screen bg-[#0c0c0c]">
         {/* Mobile Header */}
         <div className="md:hidden flex items-center justify-between p-4 border-b border-white/[0.07] bg-[#0c0c0c] sticky top-0 z-40">
-          <div className="flex items-center gap-2">
-            <img src="/images/logo.png" alt="" className="w-5 h-5 object-contain" />
-            <span className="text-sm font-medium text-white">Vortex</span>
+          <div className="flex items-center gap-4">
+            {!mobileMenuOpen && (
+              <button onClick={() => setMobileMenuOpen(true)} className="text-[#999] hover:text-white flex-shrink-0">
+                <Menu className="w-6 h-6" />
+              </button>
+            )}
+            <div className="flex items-center gap-2">
+              <img src="/images/logo.png" alt="" className="w-5 h-5 object-contain" />
+              <span className="text-base font-medium text-white tracking-tight">Vortex</span>
+            </div>
           </div>
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-[#999] hover:text-white">
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+
+          {mobileMenuOpen && (
+            <button onClick={() => setMobileMenuOpen(false)} className="text-[#999] hover:text-white flex-shrink-0">
+              <X className="w-6 h-6" />
+            </button>
+          )}
         </div>
         <Routes>
           <Route path="/" element={<DashboardPage />} />

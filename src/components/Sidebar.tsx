@@ -12,7 +12,6 @@ import {
   Sparkles,
   BookOpen
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 const BORDER = 'border-white/[0.07]';
 const DIM = 'text-[#999]';
@@ -53,10 +52,7 @@ export const Sidebar = ({ mobileMenuOpen, setMobileMenuOpen }: SidebarProps) => 
         />
       )}
 
-      <motion.div
-        initial={{ x: -300 }}
-        animate={{ x: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
+      <div
         className={`w-64 bg-[#0c0c0c] border-r ${BORDER} flex flex-col h-screen fixed left-0 top-0 z-50 transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
         {/* Logo */}
@@ -157,7 +153,7 @@ export const Sidebar = ({ mobileMenuOpen, setMobileMenuOpen }: SidebarProps) => 
             <span className={`text-[10px] font-mono ${DIMMER}`}>v0.1-demo</span>
           </div>
         </div>
-      </motion.div>
+      </div>
     </>
   );
 };

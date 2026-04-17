@@ -20,7 +20,7 @@ export const CuratedDatasetsPage = () => {
   const dataset = selectedDataset ? curatedDatasets.find(d => d.id === selectedDataset) : null;
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto w-full overflow-x-hidden md:overflow-visible">
       <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: 'easeOut' }}>
         {/* Header */}
         <div className={`pb-10 border-b ${BORDER}`}>
