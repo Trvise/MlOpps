@@ -41,11 +41,11 @@ const UPDATES = [
 ];
 
 const PIPELINE_STEPS = [
-  { label: 'Ingest',   desc: 'Connect any data source. Versioned, deduplicated, ready.' },
-  { label: 'Train',    desc: 'Kick off runs across PyTorch, TensorFlow, CasADi, LangChain.' },
+  { label: 'Ingest', desc: 'Connect any data source. Versioned, deduplicated, ready.' },
+  { label: 'Train', desc: 'Kick off runs across PyTorch, TensorFlow, CasADi, LangChain.' },
   { label: 'Validate', desc: 'Simulate in Isaac Sim, Gazebo, or Isaac Gym before shipping.' },
-  { label: 'Export',   desc: 'Optimise and package. ONNX, TensorRT, or native weights.' },
-  { label: 'Deploy',   desc: 'Push to the full fleet — ROS2, Docker, Orin, A100.' },
+  { label: 'Export', desc: 'Optimise and package. ONNX, TensorRT, or native weights.' },
+  { label: 'Deploy', desc: 'Push to the full fleet — ROS2, Docker, Orin, A100.' },
 ];
 
 const COMPONENTS = [
@@ -74,9 +74,9 @@ const COMPONENTS = [
 const NAV_SECTIONS = ['Platform', 'Pipeline', 'Components'] as const;
 
 const BORDER = 'border-white/[0.07]';
-const MUTED = 'text-[#666]';
-const DIM = 'text-[#555]';
-const DIMMER = 'text-[#444]';
+const MUTED = 'text-[#c8c8c8]';
+const DIM = 'text-[#999]';
+const DIMMER = 'text-[#777]';
 const HOVER_BG = 'hover:bg-white/[0.02]';
 
 export const LandingPage = () => {
@@ -98,9 +98,8 @@ export const LandingPage = () => {
 
       {/* ── NAV ── */}
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? `bg-[#0c0c0c]/95 backdrop-blur border-b ${BORDER}` : 'bg-transparent'
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? `bg-[#0c0c0c]/95 backdrop-blur border-b ${BORDER}` : 'bg-transparent'
+          }`}
       >
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
 
@@ -126,7 +125,7 @@ export const LandingPage = () => {
             ))}
             <button
               onClick={() => navigate('/dashboard')}
-              className={`text-sm ${DIM} hover:text-white transition-colors`}
+              className="text-sm text-black bg-[#E8B84B] hover:bg-[#cca341] px-4 py-2 transition-colors font-medium border border-[#E8B84B]"
             >
               Open Vortex
             </button>
@@ -160,7 +159,7 @@ export const LandingPage = () => {
             ))}
             <button
               onClick={() => navigate('/dashboard')}
-              className={`block text-sm ${DIM} hover:text-white transition-colors`}
+              className="block w-full text-center text-sm text-black bg-[#E8B84B] hover:bg-[#cca341] py-2 transition-colors font-medium"
             >
               Open Vortex
             </button>
@@ -169,8 +168,20 @@ export const LandingPage = () => {
       </header>
 
       {/* ── HERO ── */}
-      <section className="max-w-5xl mx-auto px-6 pt-36 pb-20">
+      <section className="relative px-6 pt-36 pb-20 overflow-hidden">
+        {/* Subtle Background Image */}
+        <div className="absolute inset-0 z-0 pointer-events-none select-none">
+          <img
+            src="/images/image1.png"
+            alt="Robot background"
+            className="w-full h-full object-cover opacity-[0.10] mix-blend-luminosity grayscale"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0c0c0c] via-[#0c0c0c]/80 to-transparent" />
+        </div>
+
         <motion.div
+          className="relative z-10 max-w-5xl mx-auto"
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: 'easeOut' }}
@@ -184,7 +195,7 @@ export const LandingPage = () => {
           </p>
           <button
             onClick={() => navigate('/dashboard')}
-            className={`text-sm text-white border-b ${BORDER} hover:border-white/30 pb-px transition-colors`}
+            className="text-sm text-black bg-[#E8B84B] hover:bg-[#cca341] px-6 py-3 transition-colors font-medium inline-flex items-center gap-2"
           >
             Open Vortex →
           </button>
@@ -233,66 +244,94 @@ export const LandingPage = () => {
       <div className={`border-t ${BORDER}`} />
 
       {/* ── PIPELINE ── */}
-      <section id="pipeline" className="max-w-5xl mx-auto px-6 py-14">
-        <p className={`text-xs ${DIM} uppercase tracking-widest mb-8`}>Pipeline</p>
-        <h2 className="text-2xl md:text-4xl font-light text-white leading-tight mb-12 max-w-md">
-          A clear path from raw data to running robot.
-        </h2>
+      <section id="pipeline" className="relative px-6 py-20 overflow-hidden">
+        {/* Subtle Background */}
+        <div className="absolute inset-0 z-0 pointer-events-none select-none">
+          <img
+            src="/images/image2.png"
+            alt=""
+            className="w-full h-full object-cover opacity-[0.07] mix-blend-luminosity grayscale"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-[#0c0c0c]" />
+          <div className="absolute inset-0 bg-[#0c0c0c]/60" />
+        </div>
 
-        <div>
-          {PIPELINE_STEPS.map((step, i) => (
-            <motion.div
-              key={step.label}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.07 }}
-              className={`group flex items-start gap-8 py-5 border-b ${BORDER} last:border-0 ${HOVER_BG} -mx-4 px-4 rounded transition-colors`}
-            >
-              <span className={`text-xs text-[#333] font-mono flex-shrink-0 w-7 mt-0.5 tabular-nums`}>
-                0{i + 1}
-              </span>
-              <div className="flex-1 flex flex-col md:flex-row md:items-center gap-1.5 md:gap-14">
-                <span className="text-sm font-medium text-white flex-shrink-0 w-24">{step.label}</span>
-                <span className={`text-sm ${MUTED} leading-relaxed`}>{step.desc}</span>
-              </div>
-            </motion.div>
-          ))}
+        <div className="relative z-10 max-w-5xl mx-auto">
+          <p className={`text-xs ${DIM} uppercase tracking-widest mb-8`}>Pipeline</p>
+          <h2 className="text-2xl md:text-4xl font-light text-white leading-tight mb-12 max-w-md">
+            A clear path from raw data to running robot.
+          </h2>
+
+          <div>
+            {PIPELINE_STEPS.map((step, i) => (
+              <motion.div
+                key={step.label}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.07 }}
+                className={`group flex items-start gap-8 py-5 border-b ${BORDER} last:border-0 ${HOVER_BG} -mx-4 px-4 rounded transition-colors`}
+              >
+                <span className={`text-xs text-[#333] font-mono flex-shrink-0 w-7 mt-0.5 tabular-nums`}>
+                  0{i + 1}
+                </span>
+                <div className="flex-1 flex flex-col md:flex-row md:items-center gap-1.5 md:gap-14">
+                  <span className="text-sm font-medium text-white flex-shrink-0 w-24">{step.label}</span>
+                  <span className={`text-sm ${MUTED} leading-relaxed`}>{step.desc}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
       <div className={`border-t ${BORDER}`} />
 
       {/* ── COMPONENTS ── */}
-      <section id="components" className="max-w-5xl mx-auto px-6 py-14">
-        <p className={`text-xs ${DIM} uppercase tracking-widest mb-8`}>Components</p>
-        <h2 className="text-2xl md:text-4xl font-light text-white leading-tight mb-12 max-w-md">
-          Four layers. One coherent stack.
-        </h2>
+      <section id="components" className="relative px-6 py-20">
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/[0.03] via-transparent to-transparent pointer-events-none" />
+        <div className="relative z-10 max-w-5xl mx-auto">
+          <p className={`text-xs ${DIM} uppercase tracking-widest mb-8`}>Components</p>
+          <h2 className="text-2xl md:text-4xl font-light text-white leading-tight mb-12 max-w-md">
+            Four layers. One coherent stack.
+          </h2>
 
-        <div className={`grid grid-cols-1 md:grid-cols-2 gap-px bg-white/[0.07] border ${BORDER} rounded overflow-hidden`}>
-          {COMPONENTS.map((c, i) => (
-            <motion.div
-              key={c.title}
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              className={`bg-[#0c0c0c] ${HOVER_BG} transition-colors p-8`}
-            >
-              <p className={`text-xs ${DIMMER} font-mono mb-3`}>{c.sub}</p>
-              <h3 className="text-sm font-medium text-white mb-3">{c.title}</h3>
-              <p className={`text-sm ${MUTED} leading-relaxed`}>{c.body}</p>
-            </motion.div>
-          ))}
+          <div className={`grid grid-cols-1 md:grid-cols-2 gap-px bg-white/[0.07] border ${BORDER} rounded overflow-hidden`}>
+            {COMPONENTS.map((c, i) => (
+              <motion.div
+                key={c.title}
+                initial={{ opacity: 0, y: 8 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className={`bg-[#0c0c0c] ${HOVER_BG} transition-colors p-8`}
+              >
+                <p className={`text-xs ${DIMMER} font-mono mb-3`}>{c.sub}</p>
+                <h3 className="text-sm font-medium text-white mb-3">{c.title}</h3>
+                <p className={`text-sm ${MUTED} leading-relaxed`}>{c.body}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
       <div className={`border-t ${BORDER}`} />
 
       {/* ── CTA ── */}
-      <section className="max-w-5xl mx-auto px-6 py-24">
+      <section className="relative px-6 py-32 overflow-hidden">
+        {/* Subtle Background Image */}
+        <div className="absolute inset-0 z-0 pointer-events-none select-none">
+          <img
+            src="/images/image3.png"
+            alt="CTA background"
+            className="w-full h-full object-cover opacity-[0.10] mix-blend-luminosity grayscale blur-sm"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-[#0c0c0c]" />
+          <div className="absolute inset-0 bg-[#0c0c0c]/50" />
+        </div>
+
         <motion.div
+          className="relative z-10 max-w-5xl mx-auto text-center md:text-left flex flex-col items-center md:items-start"
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -300,12 +339,12 @@ export const LandingPage = () => {
           <h2 className="text-3xl md:text-5xl font-light text-white mb-5 leading-tight">
             Ready to close the loop?
           </h2>
-          <p className={`${MUTED} text-base mb-10 max-w-sm`}>
+          <p className={`${MUTED} text-base md:text-lg mb-10 max-w-md`}>
             Take your robot ML pipeline from prototype to production with Vortex.
           </p>
           <button
             onClick={() => navigate('/dashboard')}
-            className={`text-sm text-white border-b ${BORDER} hover:border-white/30 pb-px transition-colors`}
+            className="text-sm text-black bg-[#E8B84B] hover:bg-[#cca341] px-6 py-3 transition-colors font-medium inline-flex items-center gap-2"
           >
             Open Vortex →
           </button>
@@ -324,7 +363,7 @@ export const LandingPage = () => {
           </p>
           <button
             onClick={() => navigate('/dashboard')}
-            className={`text-xs ${DIMMER} hover:text-white transition-colors`}
+            className="text-xs text-[#E8B84B] hover:text-[#cca341] transition-colors"
           >
             Vortex →
           </button>

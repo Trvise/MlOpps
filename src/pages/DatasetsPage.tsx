@@ -2,23 +2,15 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useDatasets } from '../store/useDatasets';
-import { 
-  Database, 
-  Plus, 
-  Download, 
-  Trash2, 
-  Eye,
-  X,
-  Upload,
-  Tag,
-  HardDrive,
-  Image,
-  Calendar,
-  User,
-  Sparkles,
-  Search
-} from 'lucide-react';
+import { Database, Plus, Download, Trash2, Eye, X, Upload, Tag, HardDrive, Image, Calendar, User, Sparkles, Search } from 'lucide-react';
 import { formatDate, formatNumber } from '../lib/utils';
+
+const BORDER = 'border-white/[0.07]';
+const MUTED = 'text-[#c8c8c8]';
+const DIM = 'text-[#999]';
+const DIMMER = 'text-[#777]';
+
+const INPUT_CLS = `w-full bg-transparent border ${BORDER} px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/20`;
 
 export const DatasetsPage = () => {
   const navigate = useNavigate();
@@ -26,56 +18,22 @@ export const DatasetsPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedDataset, setSelectedDataset] = useState<string | null>(null);
-
-  // Form state
   const [formData, setFormData] = useState({
-    name: '',
-    size: '',
-    samples: '',
-    format: 'COCO' as 'COCO' | 'YOLO' | 'TFRecord' | 'Custom',
-    description: '',
-    tags: '',
-    uploadedBy: 'admin',
-    classes: '',
-    resolution: '640x480',
-    augmented: false,
+    name: '', size: '', samples: '', format: 'COCO' as 'COCO' | 'YOLO' | 'TFRecord' | 'Custom',
+    description: '', tags: '', uploadedBy: 'admin', classes: '', resolution: '640x480', augmented: false,
   });
 
   const handleCreateDataset = () => {
     addDataset({
-      name: formData.name,
-      size: parseFloat(formData.size),
-      samples: parseInt(formData.samples),
-      format: formData.format,
-      description: formData.description,
+      name: formData.name, size: parseFloat(formData.size), samples: parseInt(formData.samples),
+      format: formData.format, description: formData.description,
       tags: formData.tags.split(',').map(t => t.trim()).filter(t => t),
       uploadedBy: formData.uploadedBy,
       s3Path: `s3://roboml/datasets/${formData.name.toLowerCase().replace(/\s+/g, '-')}/`,
-      splits: {
-        train: [],
-        test: [],
-        inference: [],
-      },
-      metadata: {
-        classes: formData.classes.split(',').map(c => c.trim()).filter(c => c),
-        resolution: formData.resolution,
-        augmented: formData.augmented,
-      },
+      splits: { train: [], test: [], inference: [] },
+      metadata: { classes: formData.classes.split(',').map(c => c.trim()).filter(c => c), resolution: formData.resolution, augmented: formData.augmented },
     });
-
-    // Reset form
-    setFormData({
-      name: '',
-      size: '',
-      samples: '',
-      format: 'COCO',
-      description: '',
-      tags: '',
-      uploadedBy: 'admin',
-      classes: '',
-      resolution: '640x480',
-      augmented: false,
-    });
+    setFormData({ name: '', size: '', samples: '', format: 'COCO', description: '', tags: '', uploadedBy: 'admin', classes: '', resolution: '640x480', augmented: false });
     setShowCreateModal(false);
   };
 
@@ -85,360 +43,170 @@ export const DatasetsPage = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    const dataset = datasets.find(d => d.id === id);
-    a.download = `${dataset?.version}-${dataset?.name.replace(/\s+/g, '-')}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const ds = datasets.find(d => d.id === id);
+    a.download = `${ds?.version}-${ds?.name.replace(/\s+/g, '-')}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  };
-
-  const handleViewDetails = (id: string) => {
-    setSelectedDataset(id);
-    setShowDetailsModal(true);
   };
 
   const dataset = selectedDataset ? datasets.find(d => d.id === selectedDataset) : null;
 
+  const totalSamples = datasets.reduce((s, d) => s + d.samples, 0);
+  const totalSizeMB = datasets.reduce((s, d) => s + d.size, 0);
+  const searchBased = datasets.filter(d => d.isSearchBased).length;
+
   return (
-    <div className="p-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+    <div className="p-8 max-w-5xl mx-auto">
+      <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: 'easeOut' }}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-12">
+        <div className={`pb-10 border-b ${BORDER} flex items-start justify-between`}>
           <div>
-            <h1 className="text-4xl font-light text-white mb-3 tracking-tight flex items-center gap-3">
-              <Database className="w-8 h-8 text-amber-400" />
-              Datasets
-            </h1>
-            <p className="text-lg text-slate-400">Manage training, validation, and test datasets</p>
+            <h1 className="text-4xl font-light text-white tracking-tight mb-2">Datasets</h1>
+            <p className={`text-sm ${MUTED}`}>Manage training, validation, and test datasets</p>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => navigate('/dashboard/search')}
-              className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
-            >
-              <Sparkles className="w-5 h-5" />
-              Curate with Search
+          <div className="flex items-center gap-6">
+            <button onClick={() => navigate('/dashboard/search')} className={`text-sm ${DIM} hover:text-white transition-colors flex items-center gap-1.5`}>
+              <Sparkles className="w-3.5 h-3.5" /> Curate with Search →
             </button>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
-            >
-              <Plus className="w-5 h-5" />
-              Upload Dataset
+            <button onClick={() => setShowCreateModal(true)} className={`text-sm text-white border-b ${BORDER} hover:border-white/30 pb-px transition-colors flex items-center gap-1.5`}>
+              <Plus className="w-3.5 h-3.5" /> Upload Dataset →
             </button>
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-slate-400 mb-1">Total Datasets</div>
-                <div className="text-3xl font-bold text-white">{datasets.length}</div>
+        {/* Stats strip */}
+        <div className={`grid grid-cols-4 border-b ${BORDER}`}>
+          {[
+            { label: 'Total Datasets', value: datasets.length, icon: Database },
+            { label: 'Total Samples', value: totalSamples.toLocaleString(), icon: Image },
+            { label: 'Total Size', value: `${formatNumber(totalSizeMB / 1000, 1)} GB`, icon: HardDrive },
+            { label: 'Search-Based', value: searchBased, icon: Sparkles },
+          ].map(({ label, value, icon: Icon }, i) => (
+            <div key={label} className={`py-6 ${i < 3 ? `border-r ${BORDER}` : ''} ${i > 0 ? 'px-8' : 'pr-8'}`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className={`text-xs ${DIMMER} uppercase tracking-widest`}>{label}</div>
+                <Icon className={`w-3.5 h-3.5 ${DIMMER}`} />
               </div>
-              <Database className="w-10 h-10 text-slate-700" />
+              <div className="text-2xl font-light text-white">{value}</div>
             </div>
-          </div>
-          <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-slate-400 mb-1">Total Samples</div>
-                <div className="text-3xl font-bold text-cyan-400">
-                  {datasets.reduce((sum, d) => sum + d.samples, 0).toLocaleString()}
-                </div>
-              </div>
-              <Image className="w-10 h-10 text-cyan-900" />
-            </div>
-          </div>
-          <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-slate-400 mb-1">Total Size</div>
-                <div className="text-3xl font-bold text-blue-400">
-                  {formatNumber(datasets.reduce((sum, d) => sum + d.size, 0) / 1000, 1)} GB
-                </div>
-              </div>
-              <HardDrive className="w-10 h-10 text-blue-900" />
-            </div>
-          </div>
-          <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-slate-400 mb-1">Search-Based</div>
-                <div className="text-3xl font-bold text-purple-400">
-                  {datasets.filter(d => d.isSearchBased).length}
-                </div>
-              </div>
-              <Sparkles className="w-10 h-10 text-purple-900" />
-            </div>
-          </div>
-        </div>
-
-        {/* Datasets Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {datasets.map((dataset) => (
-            <motion.div
-              key={dataset.id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-6 hover:border-slate-700/50 transition-all"
-            >
-              {/* Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <div className="font-mono text-xs text-amber-400 mb-1">{dataset.version}</div>
-                  <h3 className="text-lg font-semibold text-white mb-2">{dataset.name}</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {dataset.isSearchBased && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-purple-500/10 border border-purple-500/20 text-purple-400">
-                        <Sparkles className="w-3 h-3" />
-                        Search-Based
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <Database className="w-8 h-8 text-slate-700" />
-              </div>
-
-              {/* Description */}
-              <p className="text-sm text-slate-400 mb-4 line-clamp-2">{dataset.description}</p>
-
-              {/* Stats */}
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="bg-slate-800/50 rounded-lg p-3">
-                  <div className="text-xs text-slate-400">Samples</div>
-                  <div className="text-lg font-bold text-white">{dataset.samples.toLocaleString()}</div>
-                </div>
-                <div className="bg-slate-800/50 rounded-lg p-3">
-                  <div className="text-xs text-slate-400">Size</div>
-                  <div className="text-lg font-bold text-white">{formatNumber(dataset.size, 0)} MB</div>
-                </div>
-              </div>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {dataset.tags.slice(0, 3).map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 bg-slate-800 rounded text-xs text-slate-300">
-                    <Tag className="w-3 h-3" />
-                    {tag}
-                  </span>
-                ))}
-                {dataset.tags.length > 3 && (
-                  <span className="text-xs text-slate-500">+{dataset.tags.length - 3}</span>
-                )}
-              </div>
-
-              {/* Meta Info */}
-              <div className="text-xs text-slate-500 mb-4">
-                <div className="flex items-center gap-2 mb-1">
-                  <Calendar className="w-3 h-3" />
-                  {formatDate(dataset.createdAt)}
-                </div>
-                <div className="flex items-center gap-2">
-                  <User className="w-3 h-3" />
-                  {dataset.uploadedBy}
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => navigate(`/dashboard/datasets/${dataset.id}/search`)}
-                  className="flex-1 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
-                >
-                  <Search className="w-4 h-4" />
-                  Search
-                </button>
-                <button
-                  onClick={() => handleViewDetails(dataset.id)}
-                  className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all"
-                >
-                  <Eye className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleExportDataset(dataset.id)}
-                  className="flex items-center justify-center gap-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 px-4 py-2 rounded-lg text-sm font-medium transition-all"
-                >
-                  <Download className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => deleteDataset(dataset.id)}
-                  className="flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 px-4 py-2 rounded-lg text-sm font-medium transition-all"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </motion.div>
           ))}
         </div>
 
-        {datasets.length === 0 && (
-          <div className="bg-slate-900 border border-slate-800 rounded-lg p-12 text-center">
-            <Database className="w-16 h-16 text-slate-700 mx-auto mb-4" />
-            <p className="text-slate-400 mb-4">No datasets found</p>
-          </div>
-        )}
-      </motion.div>
-
-      {/* Create Dataset Modal */}
-      <AnimatePresence>
-        {showCreateModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
-            onClick={() => setShowCreateModal(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-slate-900 border border-slate-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                  <Upload className="w-6 h-6 text-amber-400" />
-                  Upload New Dataset
-                </h2>
-                <button
-                  onClick={() => setShowCreateModal(false)}
-                  className="text-slate-400 hover:text-white transition-colors"
+        {/* Datasets list */}
+        <div className="mt-10">
+          {datasets.length === 0 ? (
+            <div className={`border ${BORDER} p-12 text-center`}>
+              <Database className={`w-8 h-8 ${DIMMER} mx-auto mb-4`} />
+              <p className={`text-sm ${MUTED} mb-4`}>No datasets found</p>
+              <button onClick={() => setShowCreateModal(true)} className={`text-sm text-white border-b ${BORDER} hover:border-white/30 pb-px transition-colors`}>Upload your first dataset →</button>
+            </div>
+          ) : (
+            <div className={`border ${BORDER} divide-y divide-white/[0.07]`}>
+              {datasets.map((ds) => (
+                <motion.div
+                  key={ds.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="px-6 py-5 hover:bg-white/[0.02] transition-colors"
                 >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Dataset Name</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
-                    placeholder="e.g., Robot Navigation Dataset"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Format</label>
-                    <select
-                      value={formData.format}
-                      onChange={(e) => setFormData({ ...formData, format: e.target.value as any })}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
-                    >
-                      <option value="COCO">COCO</option>
-                      <option value="YOLO">YOLO</option>
-                      <option value="TFRecord">TFRecord</option>
-                      <option value="Custom">Custom</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Size (MB)</label>
-                    <input
-                      type="number"
-                      value={formData.size}
-                      onChange={(e) => setFormData({ ...formData, size: e.target.value })}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
-                      placeholder="2500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Samples</label>
-                    <input
-                      type="number"
-                      value={formData.samples}
-                      onChange={(e) => setFormData({ ...formData, samples: e.target.value })}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
-                      placeholder="15000"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Description</label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 h-24"
-                    placeholder="Describe your dataset..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Tags (comma-separated)</label>
-                  <input
-                    type="text"
-                    value={formData.tags}
-                    onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
-                    placeholder="navigation, indoor, obstacles"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Classes (comma-separated)</label>
-                  <input
-                    type="text"
-                    value={formData.classes}
-                    onChange={(e) => setFormData({ ...formData, classes: e.target.value })}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
-                    placeholder="obstacle, path, wall, door"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Resolution</label>
-                    <input
-                      type="text"
-                      value={formData.resolution}
-                      onChange={(e) => setFormData({ ...formData, resolution: e.target.value })}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500"
-                      placeholder="640x480"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Augmented</label>
-                    <div className="flex items-center h-[42px]">
-                      <input
-                        type="checkbox"
-                        checked={formData.augmented}
-                        onChange={(e) => setFormData({ ...formData, augmented: e.target.checked })}
-                        className="w-5 h-5 text-blue-500 border-slate-600 rounded focus:ring-blue-500 focus:ring-offset-slate-800"
-                      />
-                      <span className="ml-2 text-sm text-slate-300">Data augmentation applied</span>
+                  <div className="flex items-start justify-between gap-6">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="text-sm font-mono text-white">{ds.version}</span>
+                        {ds.isSearchBased && (
+                          <span className={`flex items-center gap-1 text-xs ${DIM}`}><Sparkles className="w-3 h-3" /> Search-Based</span>
+                        )}
+                      </div>
+                      <div className="text-base text-white font-light mb-1">{ds.name}</div>
+                      <p className={`text-sm ${MUTED} line-clamp-1 mb-2`}>{ds.description}</p>
+                      <div className={`flex items-center gap-5 text-xs ${DIMMER}`}>
+                        <span className="flex items-center gap-1"><Image className="w-3 h-3" />{ds.samples.toLocaleString()} samples</span>
+                        <span className="flex items-center gap-1"><HardDrive className="w-3 h-3" />{formatNumber(ds.size, 0)} MB</span>
+                        <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{formatDate(ds.createdAt)}</span>
+                        <span className="flex items-center gap-1"><User className="w-3 h-3" />{ds.uploadedBy}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {ds.tags.slice(0, 4).map(tag => (
+                          <span key={tag} className={`flex items-center gap-1 text-xs ${DIMMER} bg-white/[0.03] px-2 py-0.5`}>
+                            <Tag className="w-2.5 h-2.5" />{tag}
+                          </span>
+                        ))}
+                        {ds.tags.length > 4 && <span className={`text-xs ${DIMMER}`}>+{ds.tags.length - 4}</span>}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 flex-shrink-0">
+                      <button onClick={() => navigate(`/dashboard/datasets/${ds.id}/search`)} className={`text-xs ${DIM} hover:text-white transition-colors flex items-center gap-1`}>
+                        <Search className="w-3 h-3" /> Search →
+                      </button>
+                      <button onClick={() => { setSelectedDataset(ds.id); setShowDetailsModal(true); }} className={`text-xs ${DIM} hover:text-white transition-colors`}>
+                        <Eye className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => handleExportDataset(ds.id)} className={`text-xs ${DIM} hover:text-white transition-colors`}>
+                        <Download className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => deleteDataset(ds.id)} className={`text-xs text-[#777] hover:text-white transition-colors`}>
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
+      </motion.div>
 
-                <div className="flex gap-3 pt-4">
-                  <button
-                    onClick={() => setShowCreateModal(false)}
-                    className="flex-1 bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-lg font-medium transition-all"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleCreateDataset}
-                    disabled={!formData.name || !formData.size || !formData.samples}
-                    className="flex-1 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Create Dataset
+      {/* Create Modal */}
+      <AnimatePresence>
+        {showCreateModal && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowCreateModal(false)}>
+            <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              className={`bg-[#0c0c0c] border ${BORDER} p-8 max-w-xl w-full max-h-[90vh] overflow-y-auto`}>
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-2">
+                  <Upload className={`w-4 h-4 ${DIMMER}`} />
+                  <h2 className="text-lg font-light text-white">Upload Dataset</h2>
+                </div>
+                <button onClick={() => setShowCreateModal(false)} className={`${DIM} hover:text-white transition-colors`}><X className="w-4 h-4" /></button>
+              </div>
+              <div className="space-y-5">
+                {[
+                  { label: 'Dataset Name', key: 'name', placeholder: 'e.g., Robot Navigation Dataset' },
+                  { label: 'Size (MB)', key: 'size', placeholder: '2500', type: 'number' },
+                  { label: 'Samples', key: 'samples', placeholder: '15000', type: 'number' },
+                  { label: 'Tags (comma-separated)', key: 'tags', placeholder: 'navigation, indoor, obstacles' },
+                  { label: 'Classes (comma-separated)', key: 'classes', placeholder: 'obstacle, path, wall, door' },
+                  { label: 'Resolution', key: 'resolution', placeholder: '640x480' },
+                ].map(({ label, key, placeholder, type }) => (
+                  <div key={key}>
+                    <label className={`block text-xs ${DIMMER} uppercase tracking-widest mb-2`}>{label}</label>
+                    <input type={type || 'text'} value={(formData as any)[key]} onChange={e => setFormData({ ...formData, [key]: e.target.value })}
+                      className={INPUT_CLS} placeholder={placeholder} />
+                  </div>
+                ))}
+                <div>
+                  <label className={`block text-xs ${DIMMER} uppercase tracking-widest mb-2`}>Format</label>
+                  <select value={formData.format} onChange={e => setFormData({ ...formData, format: e.target.value as any })} className={INPUT_CLS}>
+                    {['COCO', 'YOLO', 'TFRecord', 'Custom'].map(f => <option key={f} value={f} className="bg-[#0c0c0c]">{f}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={`block text-xs ${DIMMER} uppercase tracking-widest mb-2`}>Description</label>
+                  <textarea value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })}
+                    className={`${INPUT_CLS} h-20 resize-none`} placeholder="Describe your dataset..." />
+                </div>
+                <div className="flex items-center gap-3">
+                  <input type="checkbox" checked={formData.augmented} onChange={e => setFormData({ ...formData, augmented: e.target.checked })} className="accent-white" />
+                  <span className={`text-sm ${MUTED}`}>Data augmentation applied</span>
+                </div>
+                <div className={`flex gap-6 pt-4 border-t ${BORDER}`}>
+                  <button onClick={() => setShowCreateModal(false)} className={`text-sm ${DIM} hover:text-white transition-colors`}>Cancel</button>
+                  <button onClick={handleCreateDataset} disabled={!formData.name || !formData.size || !formData.samples}
+                    className={`text-sm text-white border-b ${BORDER} hover:border-white/30 pb-px transition-colors disabled:opacity-40 disabled:cursor-not-allowed`}>
+                    Create Dataset →
                   </button>
                 </div>
               </div>
@@ -450,144 +218,51 @@ export const DatasetsPage = () => {
       {/* Details Modal */}
       <AnimatePresence>
         {showDetailsModal && dataset && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
-            onClick={() => setShowDetailsModal(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-slate-900 border border-slate-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-white">Dataset Details</h2>
-                <button
-                  onClick={() => setShowDetailsModal(false)}
-                  className="text-slate-400 hover:text-white transition-colors"
-                >
-                  <X className="w-6 h-6" />
-                </button>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowDetailsModal(false)}>
+            <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              className={`bg-[#0c0c0c] border ${BORDER} p-8 max-w-xl w-full max-h-[90vh] overflow-y-auto`}>
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-lg font-light text-white">Dataset Details</h2>
+                <button onClick={() => setShowDetailsModal(false)} className={`${DIM} hover:text-white`}><X className="w-4 h-4" /></button>
               </div>
-
-              <div className="space-y-6">
-                <div>
-                  <div className="text-xs text-slate-400 mb-1">Version</div>
-                  <div className="font-mono text-amber-400">{dataset.version}</div>
-                </div>
-
-                <div>
-                  <div className="text-xs text-slate-400 mb-1">Name</div>
-                  <div className="text-white font-semibold">{dataset.name}</div>
-                </div>
-
-                <div>
-                  <div className="text-xs text-slate-400 mb-1">Description</div>
-                  <div className="text-slate-300">{dataset.description}</div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-xs text-slate-400 mb-1">Format</div>
-                    <div className="text-white">{dataset.format}</div>
+              <div className={`divide-y ${BORDER.replace('border-', 'divide-')} space-y-0`}>
+                {[
+                  { label: 'Version', value: <span className="font-mono">{dataset.version}</span> },
+                  { label: 'Name', value: dataset.name },
+                  { label: 'Format', value: dataset.format },
+                  { label: 'Samples', value: dataset.samples.toLocaleString() },
+                  { label: 'Size', value: `${formatNumber(dataset.size, 0)} MB` },
+                  { label: 'Resolution', value: dataset.metadata?.resolution },
+                  { label: 'Augmented', value: dataset.metadata?.augmented ? 'Yes' : 'No' },
+                  { label: 'Uploaded By', value: dataset.uploadedBy },
+                  { label: 'Created', value: formatDate(dataset.createdAt) },
+                ].map(({ label, value }) => (
+                  <div key={label} className="py-3 flex items-baseline justify-between gap-4">
+                    <span className={`text-xs ${DIMMER} uppercase tracking-widest flex-shrink-0`}>{label}</span>
+                    <span className={`text-sm text-white text-right`}>{value}</span>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-xs text-slate-400 mb-1">Samples</div>
-                    <div className="text-white font-semibold">{dataset.samples.toLocaleString()}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-400 mb-1">Size</div>
-                    <div className="text-white font-semibold">{formatNumber(dataset.size, 0)} MB</div>
-                  </div>
-                </div>
-
+                ))}
                 {dataset.s3Path && (
-                  <div>
-                    <div className="text-xs text-slate-400 mb-1">S3 Path</div>
-                    <div className="font-mono text-sm text-slate-300 bg-slate-800 px-3 py-2 rounded">{dataset.s3Path}</div>
+                  <div className="py-3">
+                    <div className={`text-xs ${DIMMER} uppercase tracking-widest mb-2`}>S3 Path</div>
+                    <div className={`text-xs font-mono ${MUTED} bg-white/[0.02] px-3 py-2`}>{dataset.s3Path}</div>
                   </div>
                 )}
-
-                {dataset.isSearchBased && (
-                  <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Sparkles className="w-4 h-4 text-purple-400" />
-                      <div className="text-sm font-semibold text-purple-400">Search-Based Dataset</div>
-                    </div>
-                    <div className="text-xs text-slate-400 space-y-1">
-                      <div>Query: "{dataset.searchQuery}"</div>
-                      {dataset.sourceVideo && <div>Source Video: {dataset.sourceVideo}</div>}
-                      {dataset.searchInstances && (
-                        <div>Instances: {dataset.searchInstances.length} curated samples</div>
-                      )}
+                {dataset.metadata?.classes && dataset.metadata.classes.length > 0 && (
+                  <div className="py-3">
+                    <div className={`text-xs ${DIMMER} uppercase tracking-widest mb-2`}>Classes</div>
+                    <div className="flex flex-wrap gap-2">
+                      {dataset.metadata.classes.map(cls => <span key={cls} className={`text-xs ${MUTED} bg-white/[0.03] px-2 py-0.5`}>{cls}</span>)}
                     </div>
                   </div>
                 )}
-
-                {dataset.metadata && (
-                  <>
-                    {dataset.metadata.classes && dataset.metadata.classes.length > 0 && (
-                      <div>
-                        <div className="text-xs text-slate-400 mb-2">Classes</div>
-                        <div className="flex flex-wrap gap-2">
-                          {dataset.metadata.classes.map((cls) => (
-                            <span key={cls} className="px-2 py-1 bg-slate-800 rounded text-xs text-white">
-                              {cls}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <div className="text-xs text-slate-400 mb-1">Resolution</div>
-                        <div className="text-white">{dataset.metadata.resolution}</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-slate-400 mb-1">Augmented</div>
-                        <div className="text-white">{dataset.metadata.augmented ? 'Yes' : 'No'}</div>
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                <div>
-                  <div className="text-xs text-slate-400 mb-2">Tags</div>
-                  <div className="flex flex-wrap gap-2">
-                    {dataset.tags.map((tag) => (
-                      <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 bg-slate-800 rounded text-xs text-slate-300">
-                        <Tag className="w-3 h-3" />
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-xs text-slate-400 mb-1">Created</div>
-                    <div className="text-white">{formatDate(dataset.createdAt)}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs text-slate-400 mb-1">Uploaded By</div>
-                    <div className="text-white">{dataset.uploadedBy}</div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => handleExportDataset(dataset.id)}
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white px-6 py-3 rounded-lg font-medium transition-all shadow-lg shadow-blue-500/20"
-                >
-                  <Download className="w-5 h-5" />
-                  Export Dataset Info
+              </div>
+              <div className={`mt-6 pt-6 border-t ${BORDER}`}>
+                <button onClick={() => handleExportDataset(dataset.id)} className={`text-sm text-white border-b ${BORDER} hover:border-white/30 pb-px transition-colors flex items-center gap-1.5`}>
+                  <Download className="w-3.5 h-3.5" /> Export Dataset Info →
                 </button>
               </div>
             </motion.div>
@@ -597,4 +272,3 @@ export const DatasetsPage = () => {
     </div>
   );
 };
-

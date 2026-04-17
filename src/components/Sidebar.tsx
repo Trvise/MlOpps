@@ -1,10 +1,10 @@
-import { NavLink } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Zap, 
-  FlaskConical, 
-  Package, 
-  Rocket, 
+import { NavLink, useNavigate } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  Zap,
+  FlaskConical,
+  Package,
+  Rocket,
   History,
   Database,
   Plug,
@@ -13,6 +13,10 @@ import {
   BookOpen
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+const BORDER = 'border-white/[0.07]';
+const DIM = 'text-[#999]';
+const DIMMER = 'text-[#777]';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -32,49 +36,58 @@ const bottomNavItems = [
 ];
 
 export const Sidebar = () => {
+  const navigate = useNavigate();
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ x: -300 }}
       animate={{ x: 0 }}
-      className="w-64 bg-black border-r border-slate-900 flex flex-col h-screen fixed left-0 top-0"
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+      className={`w-64 bg-[#0c0c0c] border-r ${BORDER} flex flex-col h-screen fixed left-0 top-0`}
     >
       {/* Logo */}
-      <div className="p-6 border-b border-slate-900">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
-            <img 
-              src="/images/logo.png" 
+      <div className={`p-6 border-b ${BORDER}`}>
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-3 hover:opacity-70 transition-opacity w-full"
+        >
+          <div className="w-7 h-7 flex items-center justify-center overflow-hidden flex-shrink-0">
+            <img
+              src="/images/logo.png"
               alt="Vortex"
               className="w-full h-full object-contain"
             />
           </div>
-          <div>
-            <h1 className="text-xl font-light tracking-tight text-white">Vortex</h1>
-            <p className="text-xs text-slate-400 mt-1">ML Lifecycle Management</p>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h1 className="text-sm font-medium tracking-tight text-white">Vortex</h1>
+              <span className="text-[9px] font-mono font-medium tracking-widest uppercase text-[#E8B84B] border border-[#E8B84B]/30 px-1 py-0.5 leading-none">DEMO</span>
+            </div>
+            <p className={`text-xs ${DIMMER} mt-0.5`}>by Trvise</p>
           </div>
-        </div>
+        </button>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 p-4 overflow-y-auto">
-        <div className="space-y-1">
+        <div className={`text-[10px] ${DIMMER} uppercase tracking-widest px-3 mb-3`}>Workspace</div>
+        <div>
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.to === '/dashboard'}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 group ${
-                  isActive
-                    ? 'bg-blue-600/10 text-blue-400'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
+                `flex items-center gap-3 px-3 py-2.5 transition-all duration-150 group ${isActive
+                  ? 'text-white'
+                  : `${DIM} hover:text-white hover:bg-white/[0.02]`
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <item.icon className={`w-5 h-5 ${isActive ? 'text-blue-400' : 'group-hover:text-white'}`} />
-                  <span className="font-normal text-sm">{item.label}</span>
+                  <item.icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-[#E8B84B]' : `${DIM} group-hover:text-white`}`} />
+                  <span className="text-sm font-normal">{item.label}</span>
                 </>
               )}
             </NavLink>
@@ -82,43 +95,54 @@ export const Sidebar = () => {
         </div>
       </nav>
 
-      {/* Bottom Navigation - Profile */}
-      <div className="p-4 border-t border-slate-900">
-        <div className="space-y-1">
-          {bottomNavItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 group ${
-                  isActive
-                    ? 'bg-blue-600/10 text-blue-400'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <item.icon className={`w-5 h-5 ${isActive ? 'text-blue-400' : 'group-hover:text-white'}`} />
-                  <span className="font-normal text-sm">{item.label}</span>
-                </>
-              )}
-            </NavLink>
-          ))}
+      {/* Profile */}
+      <div className={`px-4 border-t ${BORDER}`}>
+        {bottomNavItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 transition-all duration-150 group ${isActive
+                ? 'text-white'
+                : `${DIM} hover:text-white hover:bg-white/[0.02]`
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <item.icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-[#E8B84B]' : `${DIM} group-hover:text-white`}`} />
+                <span className="text-sm font-normal">{item.label}</span>
+              </>
+            )}
+          </NavLink>
+        ))}
+      </div>
+
+      {/* SDK Coming Soon */}
+      <div className={`p-4 border-t ${BORDER}`}>
+        <div className={`border border-[#E8B84B]/20 bg-[#E8B84B]/[0.03] p-4`}>
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-1 h-1 rounded-full bg-[#E8B84B]" />
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#E8B84B]">Coming Soon</span>
+          </div>
+          <div className="text-xs text-white font-light mb-1">Trvise SDK</div>
+          <p className={`text-[11px] ${DIMMER} leading-relaxed`}>
+            Python & ROS 2 SDK for programmatic model lifecycle management.
+          </p>
+          <div className={`mt-3 text-[11px] ${DIMMER} font-mono`}>pip install trvise</div>
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-slate-900">
-        <div className="bg-slate-900/50 rounded-lg p-3">
-          <div className="text-xs text-slate-400">System Status</div>
-          <div className="flex items-center gap-2 mt-1">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="text-sm text-white">All Systems Operational</span>
+      {/* System Status */}
+      <div className={`px-6 py-4 border-t ${BORDER}`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+            <span className={`text-[11px] ${DIMMER}`}>All systems operational</span>
           </div>
+          <span className={`text-[10px] font-mono ${DIMMER}`}>v0.1-demo</span>
         </div>
       </div>
     </motion.div>
   );
 };
-

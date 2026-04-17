@@ -295,7 +295,7 @@ export const SearchDatasetPage = () => {
             <Sparkles className="w-8 h-8 text-purple-400" />
             Agentic Dataset Curation
           </h1>
-          <p className="text-lg text-slate-400">
+          <p className="text-lg text-[#c8c8c8]">
             Upload video & CSV, tokenize with CLIP, search for training instances, and create curated datasets
           </p>
         </div>
@@ -321,18 +321,18 @@ export const SearchDatasetPage = () => {
                         ? 'bg-purple-600 text-white'
                         : isCompleted
                         ? 'bg-green-500 text-white'
-                        : 'bg-slate-800 text-slate-400'
+                        : 'bg-white/[0.04] text-[#c8c8c8]'
                     }`}
                   >
                     <Icon className="w-6 h-6" />
                   </div>
-                  <span className={`text-sm mt-2 ${isActive ? 'text-white' : 'text-slate-400'}`}>
+                  <span className={`text-sm mt-2 ${isActive ? 'text-white' : 'text-[#c8c8c8]'}`}>
                     {stepItem.label}
                   </span>
                 </div>
                 {index < 3 && (
                   <div
-                    className={`h-1 flex-1 mx-2 ${isCompleted ? 'bg-green-500' : 'bg-slate-800'}`}
+                    className={`h-1 flex-1 mx-2 ${isCompleted ? 'bg-green-500' : 'bg-white/[0.04]'}`}
                   />
                 )}
               </div>
@@ -344,7 +344,7 @@ export const SearchDatasetPage = () => {
         {step === 'upload' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-8">
+              <div className="bg-transparent border border-white/[0.07] p-8">
                 <h2 className="text-xl font-medium text-white mb-6 flex items-center gap-2">
                   <FileVideo className="w-5 h-5" />
                   Upload Video
@@ -358,29 +358,29 @@ export const SearchDatasetPage = () => {
                 />
                 <label
                   htmlFor="video-upload"
-                  className="flex flex-col items-center justify-center border-2 border-dashed border-slate-700 rounded-lg p-12 cursor-pointer hover:border-purple-500 transition-colors"
+                  className="flex flex-col items-center justify-center border-2 border-dashed border-white/[0.07] rounded-sm p-12 cursor-pointer hover:border-purple-500 transition-colors"
                 >
                   {videoFile ? (
                     <>
                       <CheckCircle2 className="w-12 h-12 text-green-400 mb-4" />
                       <span className="text-white font-medium">{videoFile.name}</span>
                       {videoInfo && (
-                        <span className="text-sm text-slate-400 mt-2">
+                        <span className="text-sm text-[#c8c8c8] mt-2">
                           {videoInfo.duration.toFixed(1)}s • {videoInfo.width}x{videoInfo.height} • {videoInfo.fps.toFixed(1)} FPS
                         </span>
                       )}
                     </>
                   ) : (
                     <>
-                      <Upload className="w-12 h-12 text-slate-500 mb-4" />
-                      <span className="text-slate-400">Click to upload video</span>
-                      <span className="text-xs text-slate-500 mt-2">MP4, AVI, MOV, etc.</span>
+                      <Upload className="w-12 h-12 text-[#999] mb-4" />
+                      <span className="text-[#c8c8c8]">Click to upload video</span>
+                      <span className="text-xs text-[#999] mt-2">MP4, AVI, MOV, etc.</span>
                     </>
                   )}
                 </label>
               </div>
 
-              <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-8">
+              <div className="bg-transparent border border-white/[0.07] p-8">
                 <h2 className="text-xl font-medium text-white mb-6 flex items-center gap-2">
                   <FileSpreadsheet className="w-5 h-5" />
                   Upload CSV Data
@@ -394,23 +394,23 @@ export const SearchDatasetPage = () => {
                 />
                 <label
                   htmlFor="csv-upload"
-                  className="flex flex-col items-center justify-center border-2 border-dashed border-slate-700 rounded-lg p-12 cursor-pointer hover:border-purple-500 transition-colors"
+                  className="flex flex-col items-center justify-center border-2 border-dashed border-white/[0.07] rounded-sm p-12 cursor-pointer hover:border-purple-500 transition-colors"
                 >
                   {csvFile ? (
                     <>
                       <CheckCircle2 className="w-12 h-12 text-green-400 mb-4" />
                       <span className="text-white font-medium">{csvFile.name}</span>
                       {csvInfo && (
-                        <span className="text-sm text-slate-400 mt-2">
+                        <span className="text-sm text-[#c8c8c8] mt-2">
                           {csvInfo.rows.toLocaleString()} rows • {csvInfo.columnCount} columns
                         </span>
                       )}
                     </>
                   ) : (
                     <>
-                      <Upload className="w-12 h-12 text-slate-500 mb-4" />
-                      <span className="text-slate-400">Click to upload CSV</span>
-                      <span className="text-xs text-slate-500 mt-2">Must include timestamp column</span>
+                      <Upload className="w-12 h-12 text-[#999] mb-4" />
+                      <span className="text-[#c8c8c8]">Click to upload CSV</span>
+                      <span className="text-xs text-[#999] mt-2">Must include timestamp column</span>
                     </>
                   )}
                 </label>
@@ -422,7 +422,7 @@ export const SearchDatasetPage = () => {
               <div className="flex justify-center">
                 <button
                   onClick={() => setStep('tokenize')}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-medium transition-all flex items-center gap-2"
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-sm font-medium transition-all flex items-center gap-2"
                 >
                   Continue to Tokenization
                   <Play className="w-5 h-5" />
@@ -434,11 +434,11 @@ export const SearchDatasetPage = () => {
 
         {/* Step 2: Tokenize */}
         {step === 'tokenize' && (
-          <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-8 max-w-2xl">
+          <div className="bg-transparent border border-white/[0.07] p-8 max-w-2xl">
             <h2 className="text-xl font-medium text-white mb-6">Tokenize Video</h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-white mb-2">
                   Frame Skip Interval
                 </label>
                 <input
@@ -446,19 +446,19 @@ export const SearchDatasetPage = () => {
                   value={skipFrames}
                   onChange={(e) => setSkipFrames(e.target.value)}
                   disabled={isTokenizing}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white"
+                  className="w-full bg-white/[0.04] border border-white/[0.07] rounded-sm px-4 py-2 text-white"
                   placeholder="30 (1 frame per second at 30fps)"
                 />
-                <p className="text-xs text-slate-500 mt-2">
+                <p className="text-xs text-[#999] mt-2">
                   Lower values = more frames = better search but slower processing
                 </p>
               </div>
 
               {isTokenizing ? (
                 <div className="space-y-4">
-                  <div className="bg-slate-800 rounded-lg p-4">
+                  <div className="bg-white/[0.04] rounded-sm p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-slate-300">Processing frames...</span>
+                      <span className="text-sm text-white">Processing frames...</span>
                       <span className="text-sm text-purple-400">{tokenizationProgress}%</span>
                     </div>
                     <div className="w-full bg-slate-700 rounded-full h-2">
@@ -473,7 +473,7 @@ export const SearchDatasetPage = () => {
                 <button
                   onClick={handleTokenize}
                   disabled={!videoFile}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-sm font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Play className="w-5 h-5" />
                   Start Tokenization
@@ -481,11 +481,11 @@ export const SearchDatasetPage = () => {
               )}
 
               {tokenizationProgress === 100 && !isTokenizing && (
-                <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 flex items-center gap-3">
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-sm p-4 flex items-center gap-3">
                   <CheckCircle2 className="w-5 h-5 text-blue-400 flex-shrink-0" />
                   <div>
                     <div className="text-blue-400 font-medium">Tokenization Complete!</div>
-                    <div className="text-sm text-slate-400">Search system ready. Proceeding to search...</div>
+                    <div className="text-sm text-[#c8c8c8]">Search system ready. Proceeding to search...</div>
                   </div>
                 </div>
               )}
@@ -495,11 +495,11 @@ export const SearchDatasetPage = () => {
 
         {/* Step 3: Search */}
         {step === 'search' && (
-          <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-8 max-w-4xl">
+          <div className="bg-transparent border border-white/[0.07] p-8 max-w-4xl">
             <h2 className="text-xl font-medium text-white mb-6">Agentic Search</h2>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-white mb-2">
                   Natural Language Query
                 </label>
                 <input
@@ -508,10 +508,10 @@ export const SearchDatasetPage = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && !isSearching && handleSearch()}
                   disabled={isSearching}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-white/[0.04] border border-white/[0.07] rounded-sm px-4 py-3 text-white focus:outline-none focus:border-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="e.g., car at 50 kmph with acceleration over 10 m/s²"
                 />
-                <p className="text-xs text-slate-500 mt-2">
+                <p className="text-xs text-[#999] mt-2">
                   Examples: "vehicle with speed greater than 100", "manufacturing scene at 10 kmph"
                 </p>
               </div>
@@ -519,7 +519,7 @@ export const SearchDatasetPage = () => {
               <button
                 onClick={handleSearch}
                 disabled={isSearching || !searchQuery.trim()}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-sm font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSearching ? (
                   <>
@@ -535,8 +535,8 @@ export const SearchDatasetPage = () => {
               </button>
 
               {decomposition && (
-                <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                  <h3 className="text-sm font-semibold text-slate-300 mb-2">Query Decomposition</h3>
+                <div className="bg-white/[0.03] border border-white/[0.07] rounded-sm p-4">
+                  <h3 className="text-sm font-semibold text-white mb-2">Query Decomposition</h3>
                   <div className="space-y-2 text-sm">
                     <div>
                       <span className="text-purple-400">Visual:</span>{' '}
@@ -560,12 +560,12 @@ export const SearchDatasetPage = () => {
         {/* Step 4: Curate */}
         {step === 'curate' && (
           <div className="space-y-6">
-            <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-8">
+            <div className="bg-transparent border border-white/[0.07] p-8">
               <h2 className="text-xl font-medium text-white mb-6">Curate Dataset</h2>
               <div className="space-y-4">
                 {/* Dataset Mode Selection */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-white mb-2">
                     Dataset Action
                   </label>
                   <div className="flex gap-4">
@@ -574,10 +574,10 @@ export const SearchDatasetPage = () => {
                         setDatasetMode('new');
                         setSelectedDatasetId('');
                       }}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      className={`px-4 py-2 rounded-sm font-medium transition-all ${
                         datasetMode === 'new'
                           ? 'bg-purple-600 text-white'
-                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                          : 'bg-white/[0.04] text-[#c8c8c8] hover:bg-white/[0.04]'
                       }`}
                     >
                       Create New Dataset
@@ -587,10 +587,10 @@ export const SearchDatasetPage = () => {
                         setDatasetMode('existing');
                         setDatasetName('');
                       }}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                      className={`px-4 py-2 rounded-sm font-medium transition-all ${
                         datasetMode === 'existing'
                           ? 'bg-purple-600 text-white'
-                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                          : 'bg-white/[0.04] text-[#c8c8c8] hover:bg-white/[0.04]'
                       }`}
                     >
                       Add to Existing Dataset
@@ -601,14 +601,14 @@ export const SearchDatasetPage = () => {
                 {/* New Dataset Name */}
                 {datasetMode === 'new' && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Dataset Name
                     </label>
                     <input
                       type="text"
                       value={datasetName}
                       onChange={(e) => setDatasetName(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
+                      className="w-full bg-white/[0.04] border border-white/[0.07] rounded-sm px-4 py-2 text-white focus:outline-none focus:border-purple-500"
                       placeholder="e.g., High-Speed Vehicle Instances"
                     />
                   </div>
@@ -617,13 +617,13 @@ export const SearchDatasetPage = () => {
                 {/* Existing Dataset Selection */}
                 {datasetMode === 'existing' && (
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                    <label className="block text-sm font-medium text-white mb-2">
                       Select Dataset
                     </label>
                     <select
                       value={selectedDatasetId}
                       onChange={(e) => setSelectedDatasetId(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
+                      className="w-full bg-white/[0.04] border border-white/[0.07] rounded-sm px-4 py-2 text-white focus:outline-none focus:border-purple-500"
                     >
                       <option value="">Choose a dataset...</option>
                       {datasets
@@ -641,7 +641,7 @@ export const SearchDatasetPage = () => {
                         })}
                     </select>
                     {datasets.filter(d => d.isSearchBased).length === 0 && (
-                      <p className="text-xs text-slate-500 mt-2">
+                      <p className="text-xs text-[#999] mt-2">
                         No search-based datasets found. Create a new one instead.
                       </p>
                     )}
@@ -650,51 +650,51 @@ export const SearchDatasetPage = () => {
 
                 {/* Split Assignment */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label className="block text-sm font-medium text-white mb-2">
                     Assign Selected Instances to Splits
                   </label>
                   <div className="grid grid-cols-3 gap-3 mb-3">
                     <button
                       onClick={() => assignSelectedToSplit('train')}
                       disabled={selectedInstances.size === 0}
-                      className="px-4 py-3 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-700 text-white"
+                      className="px-4 py-3 rounded-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-700 text-white"
                     >
                       Assign to Train ({selectedInstances.size})
                     </button>
                     <button
                       onClick={() => assignSelectedToSplit('test')}
                       disabled={selectedInstances.size === 0}
-                      className="px-4 py-3 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-green-600 hover:bg-green-700 text-white"
+                      className="px-4 py-3 rounded-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-green-600 hover:bg-green-700 text-white"
                     >
                       Assign to Test ({selectedInstances.size})
                     </button>
                     <button
                       onClick={() => assignSelectedToSplit('inference')}
                       disabled={selectedInstances.size === 0}
-                      className="px-4 py-3 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-purple-600 hover:bg-purple-700 text-white"
+                      className="px-4 py-3 rounded-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-purple-600 hover:bg-purple-700 text-white"
                     >
                       Assign to Inference ({selectedInstances.size})
                     </button>
                   </div>
                   
                   {/* Split Summary */}
-                  <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                    <div className="text-sm font-medium text-slate-300 mb-2">Split Summary</div>
+                  <div className="bg-white/[0.03] border border-white/[0.07] rounded-sm p-4">
+                    <div className="text-sm font-medium text-white mb-2">Split Summary</div>
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
-                        <div className="text-slate-400">Train</div>
+                        <div className="text-[#c8c8c8]">Train</div>
                         <div className="text-blue-400 font-semibold text-lg">{splitAssignments.train.size}</div>
                       </div>
                       <div>
-                        <div className="text-slate-400">Test</div>
+                        <div className="text-[#c8c8c8]">Test</div>
                         <div className="text-green-400 font-semibold text-lg">{splitAssignments.test.size}</div>
                       </div>
                       <div>
-                        <div className="text-slate-400">Inference</div>
+                        <div className="text-[#c8c8c8]">Inference</div>
                         <div className="text-purple-400 font-semibold text-lg">{splitAssignments.inference.size}</div>
                       </div>
                     </div>
-                    <div className="mt-2 text-xs text-slate-500">
+                    <div className="mt-2 text-xs text-[#999]">
                       Total assigned: {splitAssignments.train.size + splitAssignments.test.size + splitAssignments.inference.size} instances
                     </div>
                   </div>
@@ -704,32 +704,32 @@ export const SearchDatasetPage = () => {
                 {datasetMode === 'new' && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">
-                        Description <span className="text-xs text-slate-500">(optional)</span>
+                      <label className="block text-sm font-medium text-white mb-2">
+                        Description <span className="text-xs text-[#999]">(optional)</span>
                       </label>
                       <textarea
                         value={customDescription}
                         onChange={(e) => setCustomDescription(e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 h-24 resize-none"
+                        className="w-full bg-white/[0.04] border border-white/[0.07] rounded-sm px-4 py-2 text-white focus:outline-none focus:border-purple-500 h-24 resize-none"
                         placeholder={`Default: Curated dataset from agentic search: "${searchQuery}"`}
                       />
-                      <p className="text-xs text-slate-500 mt-1">
+                      <p className="text-xs text-[#999] mt-1">
                         Leave empty to use default description based on search query
                       </p>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">
-                        Tags <span className="text-xs text-slate-500">(optional, comma-separated)</span>
+                      <label className="block text-sm font-medium text-white mb-2">
+                        Tags <span className="text-xs text-[#999]">(optional, comma-separated)</span>
                       </label>
                       <input
                         type="text"
                         value={customTags}
                         onChange={(e) => setCustomTags(e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500"
+                        className="w-full bg-white/[0.04] border border-white/[0.07] rounded-sm px-4 py-2 text-white focus:outline-none focus:border-purple-500"
                         placeholder="e.g., high-speed, vehicles, urban (default: search-based, curated, agentic)"
                       />
-                      <p className="text-xs text-slate-500 mt-1">
+                      <p className="text-xs text-[#999] mt-1">
                         Leave empty to use default tags: search-based, curated, agentic
                       </p>
                     </div>
@@ -737,7 +737,7 @@ export const SearchDatasetPage = () => {
                 )}
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-300">
+                  <span className="text-sm text-white">
                     {selectedInstances.size} of {searchResults.length} instances selected
                   </span>
                   <div className="flex gap-2">
@@ -767,12 +767,12 @@ export const SearchDatasetPage = () => {
                       <div
                         key={index}
                         onClick={() => toggleInstance(index)}
-                        className={`p-4 rounded-lg border cursor-pointer transition-all relative ${
+                        className={`p-4 rounded-sm border cursor-pointer transition-all relative ${
                           selectedInstances.has(index)
                             ? 'bg-purple-600/20 border-purple-500'
                             : isAssigned
                             ? 'bg-slate-700/50 border-slate-600'
-                            : 'bg-slate-800/50 border-slate-700 hover:border-slate-600'
+                            : 'bg-white/[0.03] border-white/[0.07] hover:border-slate-600'
                         }`}
                       >
                         {/* Split badges */}
@@ -784,7 +784,7 @@ export const SearchDatasetPage = () => {
                           </div>
                         )}
                         <div className="flex items-start justify-between mb-2">
-                          <span className="text-xs text-slate-400">#{index + 1}</span>
+                          <span className="text-xs text-[#c8c8c8]">#{index + 1}</span>
                           <span className="text-xs text-purple-400">
                             {(result.similarity * 100).toFixed(1)}% match
                           </span>
@@ -792,7 +792,7 @@ export const SearchDatasetPage = () => {
                         <div className="text-sm text-white mb-2">
                           {result.timestamp.toFixed(2)}s
                         </div>
-                        <div className="space-y-1 text-xs text-slate-400">
+                        <div className="space-y-1 text-xs text-[#c8c8c8]">
                           {Object.entries(result.dataValues).slice(0, 3).map(([key, value]) => (
                             <div key={key}>
                               {key}: {typeof value === 'number' ? value.toFixed(2) : value}
@@ -811,7 +811,7 @@ export const SearchDatasetPage = () => {
                     (datasetMode === 'new' && !datasetName.trim()) ||
                     (datasetMode === 'existing' && !selectedDatasetId)
                   }
-                  className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-sm font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <CheckCircle2 className="w-5 h-5" />
                   {datasetMode === 'new'

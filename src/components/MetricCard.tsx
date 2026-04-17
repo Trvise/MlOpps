@@ -10,33 +10,22 @@ interface MetricCardProps {
   className?: string;
 }
 
-export const MetricCard = ({ label, value, icon: Icon, trend, className }: MetricCardProps) => {
-  const trendColor = {
-    up: 'text-green-400',
-    down: 'text-red-400',
-    neutral: 'text-slate-400',
-  };
-
+export const MetricCard = ({ label, value, icon: Icon, className }: MetricCardProps) => {
   return (
     <motion.div
-      whileHover={{ scale: 1.01 }}
+      whileHover={{ backgroundColor: 'rgba(255,255,255,0.02)' }}
       className={cn(
-        'bg-slate-900/50 border border-slate-800/50 rounded-xl p-6 hover:border-slate-700/50 transition-colors',
+        'border-b border-white/[0.07] py-6 px-0 transition-colors',
         className
       )}
     >
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-sm text-slate-400 mb-1">{label}</div>
-          <div className={cn('text-2xl font-bold', trend ? trendColor[trend] : 'text-white')}>
-            {value}
-          </div>
+          <div className="text-xs text-[#777] uppercase tracking-widest mb-3">{label}</div>
+          <div className="text-2xl font-light text-[#E8B84B]">{value}</div>
         </div>
-        <div className="w-12 h-12 bg-slate-800/50 rounded-lg flex items-center justify-center">
-          <Icon className="w-5 h-5 text-blue-400" />
-        </div>
+        <Icon className="w-4 h-4 text-[#E8B84B] mt-1 flex-shrink-0" />
       </div>
     </motion.div>
   );
 };
-

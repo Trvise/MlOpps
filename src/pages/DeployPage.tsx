@@ -6,90 +6,54 @@ import { useHistory } from '../store/useHistory';
 import { simulateDeployment } from '../utils/jobOrchestration';
 import { LogViewer } from '../components/LogViewer';
 import { ProgressBar } from '../components/ProgressBar';
-import { Rocket, CheckCircle2, Circle, AlertCircle, Undo2 } from 'lucide-react';
+import { CheckCircle2, Circle, Undo2 } from 'lucide-react';
 import { formatDate } from '../lib/utils';
+
+const BORDER = 'border-white/[0.07]';
+const MUTED = 'text-[#c8c8c8]';
+const DIM = 'text-[#999]';
+const DIMMER = 'text-[#777]';
 
 export const DeployPage = () => {
   const { models, startDeployment, completeDeployment, setJobProgress, clearJob, currentJob } = useModels();
   const { robots, initializeRobots, updateRobotModel } = useRobots();
   const { addEvent } = useHistory();
-  
+
   const [selectedModelId, setSelectedModelId] = useState('');
   const [selectedRobots, setSelectedRobots] = useState<string[]>([]);
   const [isDeploying, setIsDeploying] = useState(false);
   const [deploySuccess, setDeploySuccess] = useState(false);
 
-  useEffect(() => {
-    initializeRobots();
-  }, [initializeRobots]);
+  useEffect(() => { initializeRobots(); }, [initializeRobots]);
 
   const exportedModels = models.filter(m => m.export);
   const selectedModel = models.find(m => m.id === selectedModelId);
 
   const handleRobotSelect = (robotId: string) => {
-    setSelectedRobots(prev => 
-      prev.includes(robotId) 
-        ? prev.filter(id => id !== robotId)
-        : [...prev, robotId]
-    );
+    setSelectedRobots(prev => prev.includes(robotId) ? prev.filter(id => id !== robotId) : [...prev, robotId]);
   };
 
   const handleDeploy = () => {
     if (!selectedModelId || selectedRobots.length === 0) return;
-
     const model = models.find(m => m.id === selectedModelId);
     if (!model) return;
-
-    // Determine deployment type based on component type
     let deploymentType: 'ROS2' | 'Docker' | 'Orin' | 'A100' = 'ROS2';
-    if (model.componentType === 'Policy/Control' || model.componentType === 'Perception') {
-      deploymentType = 'Orin'; // Edge deployment
-    } else if (model.componentType === 'High-level reasoning') {
-      deploymentType = 'A100'; // Cloud/GPU deployment
-    }
-
-    // Start deployment
+    if (model.componentType === 'Policy/Control' || model.componentType === 'Perception') deploymentType = 'Orin';
+    else if (model.componentType === 'High-level reasoning') deploymentType = 'A100';
     startDeployment(selectedModelId);
     setIsDeploying(true);
     setDeploySuccess(false);
-
-    // Add history event
-    addEvent({
-      modelVersion: model.version,
-      type: 'Deploy',
-      details: `Started deployment to ${selectedRobots.length} robot(s)`,
-      metadata: { robotIds: selectedRobots, deploymentType, componentType: model.componentType },
-    });
-
-    // Simulate deployment
+    addEvent({ modelVersion: model.version, type: 'Deploy', details: `Started deployment to ${selectedRobots.length} robot(s)`, metadata: { robotIds: selectedRobots, deploymentType, componentType: model.componentType } });
     simulateDeployment(
-      (progress, logs) => {
-        setJobProgress(progress, logs);
-      },
+      (progress, logs) => { setJobProgress(progress, logs); },
       () => {
-        // Update robot models
-        selectedRobots.forEach(robotId => {
-          updateRobotModel(robotId, model.version);
-        });
-
-        // Complete deployment
+        selectedRobots.forEach(robotId => updateRobotModel(robotId, model.version));
         completeDeployment(selectedModelId, selectedRobots, deploymentType);
         clearJob();
         setIsDeploying(false);
         setDeploySuccess(true);
-
-        // Add completion event
-        addEvent({
-          modelVersion: model.version,
-          type: 'Deploy',
-          details: `Deployed ${model.componentType} component to ${selectedRobots.length} robot(s) via ${deploymentType === 'ROS2' ? 'ROS2' : deploymentType === 'Orin' ? 'Dockerized ROS2 on Orin' : 'A100 cluster'}`,
-          metadata: { robotIds: selectedRobots, deploymentType, componentType: model.componentType },
-        });
-
-        setTimeout(() => {
-          setDeploySuccess(false);
-          setSelectedRobots([]);
-        }, 3000);
+        addEvent({ modelVersion: model.version, type: 'Deploy', details: `Deployed to ${selectedRobots.length} robot(s) via ${deploymentType}`, metadata: { robotIds: selectedRobots, deploymentType, componentType: model.componentType } });
+        setTimeout(() => { setDeploySuccess(false); setSelectedRobots([]); }, 3000);
       },
       selectedRobots.length
     );
@@ -98,277 +62,167 @@ export const DeployPage = () => {
   const handleRollback = (robotId: string) => {
     const robot = robots.find(r => r.id === robotId);
     if (!robot) return;
-
-    // Find previous model version
     const currentVersionNum = parseInt(robot.currentModelVersion.replace('M-', ''), 10);
     const previousVersion = `M-${String(currentVersionNum - 1).padStart(3, '0')}`;
     const previousModel = models.find(m => m.version === previousVersion);
-
     if (previousModel) {
       updateRobotModel(robotId, previousVersion);
-      addEvent({
-        modelVersion: previousVersion,
-        type: 'Rollback',
-        details: `Rolled back ${robot.name} to ${previousVersion}`,
-      });
+      addEvent({ modelVersion: previousVersion, type: 'Rollback', details: `Rolled back ${robot.name} to ${previousVersion}` });
     }
   };
 
+  const onlineCount = robots.filter(r => r.status === 'online').length;
+  const offlineCount = robots.filter(r => r.status === 'offline').length;
+
   return (
-    <div className="p-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+    <div className="p-8 max-w-5xl mx-auto">
+      <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: 'easeOut' }}>
         {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-4xl font-light text-white mb-3 tracking-tight flex items-center gap-3">
-            <Rocket className="w-8 h-8 text-green-400" />
-            Deploy to Fleet
-          </h1>
-          <p className="text-lg text-slate-400">Deploy components to robot fleet via ROS2/Docker on Orin or A100 cluster</p>
+        <div className={`pb-10 border-b ${BORDER}`}>
+          <h1 className="text-4xl font-light text-white tracking-tight mb-2">Deploy to Fleet</h1>
+          <p className={`text-sm ${MUTED}`}>Push components to robot fleet via ROS2, Docker on Orin, or A100 cluster</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Deployment Form */}
+        {/* Fleet stats strip */}
+        <div className={`grid grid-cols-3 border-b ${BORDER}`}>
+          {[
+            { label: 'Total Robots', value: robots.length },
+            { label: 'Online', value: onlineCount, green: true },
+            { label: 'Offline', value: offlineCount },
+          ].map(({ label, value, green }, i) => (
+            <div key={label} className={`py-6 ${i < 2 ? `border-r ${BORDER}` : ''} ${i > 0 ? 'px-8' : 'pr-8'}`}>
+              <div className={`text-xs ${DIMMER} uppercase tracking-widest mb-2`}>{label}</div>
+              <div className={`text-2xl font-light ${green ? 'text-emerald-500' : 'text-white'}`}>{value}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-10">
+          {/* Config */}
           <div className="space-y-6">
-            <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-8">
-              <h2 className="text-xl font-medium text-white mb-6">Deployment Configuration</h2>
-              
-              <div className="space-y-6">
-                {/* Model Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Select Model
-                  </label>
-                  <select
-                    value={selectedModelId}
-                    onChange={(e) => setSelectedModelId(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-green-500"
-                  >
-                    <option value="">Choose an exported model...</option>
-                    {exportedModels.map(model => (
-                      <option key={model.id} value={model.id}>
-                        {model.version} - {model.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+            <p className={`text-xs ${DIMMER} uppercase tracking-widest`}>Deployment Configuration</p>
 
-                {/* Selected Model Info */}
-                {selectedModel && (
-                  <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                    <div className="text-sm text-slate-400 mb-2">Selected Model</div>
-                    <div className="font-mono text-cyan-400 mb-2">{selectedModel.version}</div>
-                    <div className="text-sm text-slate-300 mb-2">{selectedModel.name}</div>
-                    <div className="text-xs text-blue-400 mb-2">Component: {selectedModel.componentType}</div>
-                    <div className="flex gap-4 text-xs text-slate-300">
-                      <div>Format: {selectedModel.export?.format}</div>
-                      <div>Size: {selectedModel.export?.fileSizeMB.toFixed(1)} MB</div>
-                    </div>
-                    {selectedModel.export?.exportVersion && (
-                      <div className="text-xs text-yellow-400 mt-1">
-                        Export: {selectedModel.export.exportVersion}
-                      </div>
-                    )}
-                    <div className="text-xs text-slate-500 mt-2">
-                      Deployment: {selectedModel.componentType === 'Policy/Control' || selectedModel.componentType === 'Perception' 
-                        ? 'Dockerized ROS2 nodes on Orin' 
-                        : selectedModel.componentType === 'High-level reasoning'
-                        ? 'A100 cluster'
-                        : 'ROS2 nodes'}
-                    </div>
-                  </div>
-                )}
-
-                {/* Robot Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Select Robots ({selectedRobots.length} selected)
-                  </label>
-                  <div className="space-y-2 max-h-64 overflow-y-auto border border-slate-700 rounded-lg p-3 bg-slate-800/30">
-                    {robots.map(robot => (
-                      <label
-                        key={robot.id}
-                        className="flex items-center gap-3 p-3 bg-slate-800 hover:bg-slate-700 rounded-lg cursor-pointer transition-colors"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedRobots.includes(robot.id)}
-                          onChange={() => handleRobotSelect(robot.id)}
-                          className="w-4 h-4 text-green-500 border-slate-600 rounded focus:ring-green-500 focus:ring-offset-slate-800"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-white">{robot.name}</span>
-                            <span className="text-xs font-mono text-slate-400">({robot.id})</span>
-                            {robot.status === 'online' ? (
-                              <Circle className="w-2 h-2 fill-green-500 text-green-500" />
-                            ) : (
-                              <Circle className="w-2 h-2 fill-slate-500 text-slate-500" />
-                            )}
-                          </div>
-                          <div className="text-xs text-slate-400 mt-1">
-                            Current: {robot.currentModelVersion}
-                          </div>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Deploy Button */}
-                <button
-                onClick={handleDeploy}
-                disabled={isDeploying || !selectedModelId || selectedRobots.length === 0}
-                className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            <div>
+              <label className={`block text-xs ${DIMMER} uppercase tracking-widest mb-2`}>Select Model</label>
+              <select
+                value={selectedModelId}
+                onChange={(e) => setSelectedModelId(e.target.value)}
+                className={`w-full bg-transparent border ${BORDER} px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white/20`}
               >
-                  {isDeploying ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Deploying...
-                    </>
-                  ) : (
-                    <>
-                      <Rocket className="w-5 h-5" />
-                      Deploy to {selectedRobots.length} Robot{selectedRobots.length !== 1 ? 's' : ''}
-                    </>
-                  )}
-                </button>
+                <option value="" className="bg-[#0c0c0c]">Choose an exported model...</option>
+                {exportedModels.map(model => (
+                  <option key={model.id} value={model.id} className="bg-[#0c0c0c]">{model.version} — {model.name}</option>
+                ))}
+              </select>
+            </div>
 
-                {deploySuccess && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 flex items-center gap-3"
-                  >
-                    <CheckCircle2 className="w-6 h-6 text-green-400" />
-                    <div>
-                      <div className="text-green-400 font-medium">Deployment Successful!</div>
-                      <div className="text-sm text-slate-400">Model rolled out to fleet</div>
+            {selectedModel && (
+              <div className={`border ${BORDER} p-4`}>
+                <div className={`text-xs ${DIMMER} uppercase tracking-widest mb-2`}>Selected</div>
+                <div className="text-sm font-mono text-white">{selectedModel.version}</div>
+                <div className={`text-sm ${MUTED}`}>{selectedModel.name}</div>
+                <div className={`text-xs ${DIM} mt-1`}>Component: {selectedModel.componentType}</div>
+                <div className={`text-xs ${DIM}`}>Format: {selectedModel.export?.format} · {selectedModel.export?.fileSizeMB.toFixed(1)} MB</div>
+              </div>
+            )}
+
+            <div>
+              <label className={`block text-xs ${DIMMER} uppercase tracking-widest mb-2`}>
+                Select Robots ({selectedRobots.length} selected)
+              </label>
+              <div className={`border ${BORDER} divide-y divide-white/[0.07] max-h-64 overflow-y-auto`}>
+                {robots.map(robot => (
+                  <label key={robot.id} className={`flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/[0.02] transition-colors`}>
+                    <input
+                      type="checkbox"
+                      checked={selectedRobots.includes(robot.id)}
+                      onChange={() => handleRobotSelect(robot.id)}
+                      className="w-3.5 h-3.5 accent-white"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-white">{robot.name}</span>
+                        <span className={`text-xs font-mono ${DIMMER}`}>{robot.id}</span>
+                        <Circle className={`w-1.5 h-1.5 ${robot.status === 'online' ? 'fill-emerald-500 text-emerald-500' : 'fill-[#555] text-[#999]'}`} />
+                      </div>
+                      <div className={`text-xs ${DIM} mt-0.5`}>Current: {robot.currentModelVersion}</div>
                     </div>
-                  </motion.div>
-                )}
+                  </label>
+                ))}
               </div>
             </div>
+
+            <button
+              onClick={handleDeploy}
+              disabled={isDeploying || !selectedModelId || selectedRobots.length === 0}
+              className={`text-sm text-white border-b ${BORDER} hover:border-white/30 pb-px transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2`}
+            >
+              {isDeploying ? (
+                <><div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" /> Deploying...</>
+              ) : `Deploy to ${selectedRobots.length || '—'} Robot${selectedRobots.length !== 1 ? 's' : ''} →`}
+            </button>
+
+            {deploySuccess && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                <span className={`text-sm ${MUTED}`}>Deployment successful — fleet updated</span>
+              </motion.div>
+            )}
           </div>
 
-          {/* Fleet Status */}
+          {/* Fleet Status + Logs */}
           <div className="space-y-6">
             {isDeploying && currentJob && (
               <>
-                <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Deployment Progress</h3>
+                <div className={`border ${BORDER} p-6`}>
+                  <p className={`text-xs ${DIMMER} uppercase tracking-widest mb-4`}>Deployment Progress</p>
                   <ProgressBar progress={currentJob.progress} />
                 </div>
                 <LogViewer logs={currentJob.logs} title="Deployment Logs" />
               </>
             )}
 
-            <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl overflow-hidden">
-              <div className="px-8 py-6 border-b border-slate-800/50">
-                <h2 className="text-xl font-medium text-white">Fleet Status</h2>
-              </div>
-              <div className="p-6">
-                <div className="space-y-3">
-                  {robots.map(robot => (
-                    <motion.div
-                      key={robot.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4 hover:border-slate-700 transition-colors"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-medium text-white">{robot.name}</span>
-                            {robot.status === 'online' ? (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-500/10 border border-green-500/20 rounded text-xs text-green-400">
-                                <Circle className="w-2 h-2 fill-green-400" />
-                                Online
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-700 border border-slate-600 rounded text-xs text-slate-400">
-                                <Circle className="w-2 h-2 fill-slate-500" />
-                                Offline
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-xs text-slate-400 mb-1">{robot.id}</div>
-                          <div className="text-xs">
-                            <span className="text-slate-400">Model: </span>
-                            <span className="font-mono text-cyan-400">{robot.currentModelVersion}</span>
-                            {(() => {
-                              const robotModel = models.find(m => m.version === robot.currentModelVersion);
-                              return robotModel ? (
-                                <span className="text-slate-300 ml-2">- {robotModel.name}</span>
-                              ) : null;
-                            })()}
-                          </div>
-                          <div className="text-xs text-slate-500 mt-1">
-                            Last sync: {formatDate(robot.lastSync)}
-                          </div>
+            <div>
+              <p className={`text-xs ${DIMMER} uppercase tracking-widest mb-4`}>Fleet Status</p>
+              <div className={`border ${BORDER} divide-y divide-white/[0.07]`}>
+                {robots.map(robot => (
+                  <motion.div
+                    key={robot.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="px-4 py-4 hover:bg-white/[0.02] transition-colors"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm text-white">{robot.name}</span>
+                          <Circle className={`w-1.5 h-1.5 ${robot.status === 'online' ? 'fill-emerald-500 text-emerald-500' : 'fill-[#555] text-[#999]'}`} />
+                          <span className={`text-xs ${robot.status === 'online' ? 'text-emerald-500' : DIM}`}>{robot.status}</span>
                         </div>
-                        <button
-                          onClick={() => handleRollback(robot.id)}
-                          disabled={robot.currentModelVersion === 'M-001'}
-                          className="flex items-center gap-1 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Rollback to previous version"
-                        >
-                          <Undo2 className="w-3 h-3" />
-                          Rollback
-                        </button>
+                        <div className={`text-xs ${DIMMER} mb-0.5`}>{robot.id}</div>
+                        <div className="text-xs">
+                          <span className={DIM}>Model: </span>
+                          <span className="font-mono text-white">{robot.currentModelVersion}</span>
+                        </div>
+                        <div className={`text-xs ${DIMMER} mt-0.5`}>Last sync: {formatDate(robot.lastSync)}</div>
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
+                      <button
+                        onClick={() => handleRollback(robot.id)}
+                        disabled={robot.currentModelVersion === 'M-001'}
+                        className={`flex items-center gap-1 text-xs ${DIM} hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed ml-3`}
+                        title="Rollback"
+                      >
+                        <Undo2 className="w-3 h-3" />
+                        Rollback
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             </div>
           </div>
         </div>
-
-        {/* Deployment Statistics */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6"
-        >
-          <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-slate-400 mb-1">Total Robots</div>
-                <div className="text-3xl font-bold text-white">{robots.length}</div>
-              </div>
-              <Rocket className="w-10 h-10 text-slate-700" />
-            </div>
-          </div>
-          <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-slate-400 mb-1">Online</div>
-                <div className="text-3xl font-bold text-green-400">
-                  {robots.filter(r => r.status === 'online').length}
-                </div>
-              </div>
-              <CheckCircle2 className="w-10 h-10 text-green-900" />
-            </div>
-          </div>
-          <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-slate-400 mb-1">Offline</div>
-                <div className="text-3xl font-bold text-slate-400">
-                  {robots.filter(r => r.status === 'offline').length}
-                </div>
-              </div>
-              <AlertCircle className="w-10 h-10 text-slate-700" />
-            </div>
-          </div>
-        </motion.div>
       </motion.div>
     </div>
   );
 };
-

@@ -48,7 +48,7 @@ export const DatasetSearchPage = () => {
   if (!dataset) {
     return (
       <div className="p-8">
-        <div className="text-center text-slate-400">Dataset not found</div>
+        <div className="text-center text-[#c8c8c8]">Dataset not found</div>
       </div>
     );
   }
@@ -258,11 +258,11 @@ export const DatasetSearchPage = () => {
           transition={{ duration: 0.3, ease: 'easeOut' }}
           className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 max-w-md w-full mx-4"
         >
-          <div className="bg-green-500/10 backdrop-blur-sm border border-green-500/20 rounded-lg p-4 shadow-xl flex items-center gap-3">
+          <div className="bg-green-500/10 backdrop-blur-sm border border-green-500/20 rounded-sm p-4 shadow-xl flex items-center gap-3">
             <CheckCircle2 className="w-6 h-6 text-green-400 flex-shrink-0" />
             <div className="flex-1">
               <div className="text-green-400 font-medium">Dataset Created Successfully</div>
-              <div className="text-sm text-slate-400 mt-1">
+              <div className="text-sm text-[#c8c8c8] mt-1">
                 {createdDatasetName} has been added to your datasets
               </div>
             </div>
@@ -274,7 +274,7 @@ export const DatasetSearchPage = () => {
                 }
                 setShowSuccessToast(false);
               }}
-              className="text-slate-400 hover:text-white transition-colors"
+              className="text-[#c8c8c8] hover:text-white transition-colors"
               aria-label="Close notification"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -294,14 +294,14 @@ export const DatasetSearchPage = () => {
         <div className="mb-8">
           <button
             onClick={() => navigate('/dashboard/datasets')}
-            className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
+            className="flex items-center gap-2 text-[#c8c8c8] hover:text-white mb-6 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Datasets
           </button>
           
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-white/[0.04] rounded-sm flex items-center justify-center">
               <Database className="w-6 h-6 text-amber-400" />
             </div>
             <div>
@@ -310,37 +310,37 @@ export const DatasetSearchPage = () => {
             </div>
           </div>
           
-          <p className="text-slate-400 text-lg ml-16">{dataset.description}</p>
+          <p className="text-[#c8c8c8] text-lg ml-16">{dataset.description}</p>
         </div>
 
         {/* Search Section */}
-        <div className="bg-slate-900/50 border border-slate-800/50 rounded-xl p-8 max-w-4xl">
+        <div className="bg-transparent border border-white/[0.07] p-8 max-w-4xl">
           <div className="mb-6">
             <h2 className="text-xl font-medium text-white mb-2 flex items-center gap-2">
               <Search className="w-5 h-5 text-purple-400" />
               Search Dataset
             </h2>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[#c8c8c8]">
               Search through {dataset.samples.toLocaleString()} samples in this dataset
             </p>
           </div>
 
           <form onSubmit={handleSearch} className="space-y-4">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#c8c8c8]" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Enter your search query (e.g., 'car at 50 kmph', 'high speed vehicle')..."
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-12 pr-4 py-4 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                className="w-full bg-white/[0.04] border border-white/[0.07] rounded-sm pl-12 pr-4 py-4 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
               />
             </div>
             
             <button
               type="submit"
               disabled={!searchQuery.trim() || isSearching}
-              className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+              className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-white/[0.04] disabled:text-[#999] disabled:cursor-not-allowed text-white px-6 py-3 rounded-sm font-medium transition-all flex items-center justify-center gap-2"
             >
               {isSearching ? (
                 <>
@@ -358,8 +358,8 @@ export const DatasetSearchPage = () => {
 
           {/* Dataset Label Input */}
           {searchResults.length > 0 && (
-            <div className="mt-6 pt-6 border-t border-slate-800">
-              <label className="flex items-center gap-2 text-sm font-medium text-slate-300 mb-2">
+            <div className="mt-6 pt-6 border-t border-white/[0.07]">
+              <label className="flex items-center gap-2 text-sm font-medium text-white mb-2">
                 <Tag className="w-4 h-4" />
                 Dataset Label
               </label>
@@ -368,31 +368,31 @@ export const DatasetSearchPage = () => {
                 value={datasetLabel}
                 onChange={(e) => setDatasetLabel(e.target.value)}
                 placeholder="example: robot moving towards the container"
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                className="w-full bg-white/[0.04] border border-white/[0.07] rounded-sm px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
               />
-              <p className="text-xs text-slate-500 mt-2">
+              <p className="text-xs text-[#999] mt-2">
                 Label this curated dataset to describe the selected results
               </p>
             </div>
           )}
 
           {/* Dataset Info */}
-          <div className="mt-8 pt-8 border-t border-slate-800">
+          <div className="mt-8 pt-8 border-t border-white/[0.07]">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
-                <div className="text-slate-400 mb-1">Samples</div>
+                <div className="text-[#c8c8c8] mb-1">Samples</div>
                 <div className="text-white font-semibold">{dataset.samples.toLocaleString()}</div>
               </div>
               <div>
-                <div className="text-slate-400 mb-1">Format</div>
+                <div className="text-[#c8c8c8] mb-1">Format</div>
                 <div className="text-white font-semibold">{dataset.format}</div>
               </div>
               <div>
-                <div className="text-slate-400 mb-1">Size</div>
+                <div className="text-[#c8c8c8] mb-1">Size</div>
                 <div className="text-white font-semibold">{formatNumber(dataset.size / 1000, 1)} GB</div>
               </div>
               <div>
-                <div className="text-slate-400 mb-1">Version</div>
+                <div className="text-[#c8c8c8] mb-1">Version</div>
                 <div className="text-amber-400 font-mono font-semibold">{dataset.version}</div>
               </div>
             </div>
@@ -407,27 +407,27 @@ export const DatasetSearchPage = () => {
                 <h2 className="text-2xl font-medium text-white mb-2">
                   Search Results ({searchResults.length})
                 </h2>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-[#c8c8c8]">
                   {selectedResults.size} of {searchResults.length} selected
                 </p>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={selectAllResults}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-medium transition-all"
+                  className="px-4 py-2 bg-white/[0.04] hover:bg-white/[0.04] text-white rounded-sm text-sm font-medium transition-all"
                 >
                   Select All
                 </button>
                 <button
                   onClick={clearSelection}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-sm font-medium transition-all"
+                  className="px-4 py-2 bg-white/[0.04] hover:bg-white/[0.04] text-white rounded-sm text-sm font-medium transition-all"
                 >
                   Clear
                 </button>
                 <button
                   onClick={handleCreateCuratedDataset}
                   disabled={!datasetLabel.trim() || selectedResults.size === 0}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-all flex items-center gap-2"
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-white/[0.04] disabled:text-[#999] disabled:cursor-not-allowed text-white rounded-sm text-sm font-medium transition-all flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
                   Create Dataset
@@ -443,14 +443,14 @@ export const DatasetSearchPage = () => {
                     key={result.id}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className={`relative group cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                    className={`relative group cursor-pointer rounded-sm overflow-hidden border-2 transition-all ${
                       isSelected
                         ? 'border-purple-500 ring-2 ring-purple-500/50'
-                        : 'border-slate-800 hover:border-slate-700'
+                        : 'border-white/[0.07] hover:border-white/[0.07]'
                     }`}
                     onClick={() => toggleSelectResult(result.id)}
                   >
-                    <div className="relative bg-slate-800 overflow-hidden" style={{ aspectRatio: '16/9', width: '100%' }}>
+                    <div className="relative bg-white/[0.04] overflow-hidden" style={{ aspectRatio: '16/9', width: '100%' }}>
                       <img
                         src={result.imageUrl}
                         alt={`Search result ${result.metadata?.filename || result.id}`}
