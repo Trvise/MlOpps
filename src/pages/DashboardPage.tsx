@@ -42,7 +42,7 @@ export const DashboardPage = () => {
     : 0;
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto overflow-hidden text-ellipsis">
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
@@ -80,9 +80,9 @@ export const DashboardPage = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className={`py-10 border-b ${BORDER}`}>
+        <div className={`py-6 md:py-10 border-b ${BORDER}`}>
           <p className={`text-xs ${DIMMER} uppercase tracking-widest mb-6`}>Quick Actions</p>
-          <div className="flex flex-wrap gap-8">
+          <div className="flex flex-wrap gap-4 md:gap-8">
             {[
               { label: 'New Training Run', path: '/dashboard/train', icon: Zap },
               { label: 'Validate Model', path: '/dashboard/validate', icon: FlaskConical },
@@ -101,58 +101,59 @@ export const DashboardPage = () => {
           </div>
         </div>
 
-        {/* Models Table */}
-        <div className="mt-10">
+        <div className="mt-8 md:mt-10 overflow-hidden text-ellipsis w-[calc(100vw-2rem)] md:w-auto">
           <p className={`text-xs ${DIMMER} uppercase tracking-widest mb-6`}>All Models</p>
-          <div className={`border ${BORDER}`}>
-            {/* Table header */}
-            <div className={`grid grid-cols-7 gap-0 border-b ${BORDER} px-6 py-3`}>
-              {['Version', 'Framework', 'Dataset', 'Accuracy', 'Loss', 'Status', 'Created'].map(col => (
-                <div key={col} className={`text-xs ${DIMMER} uppercase tracking-widest`}>{col}</div>
-              ))}
-            </div>
-
-            {/* Table body */}
-            {models.length === 0 ? (
-              <div className="px-6 py-16 text-center">
-                <AlertCircle className={`w-8 h-8 ${DIMMER} mx-auto mb-4`} />
-                <p className={`text-sm ${MUTED} mb-4`}>No models yet. Create your first training run.</p>
-                <button
-                  onClick={() => navigate('/dashboard/train')}
-                  className={`text-sm text-white border-b ${BORDER} hover:border-white/30 pb-px transition-colors`}
-                >
-                  Start Training →
-                </button>
+          <div className={`border ${BORDER} overflow-x-auto overflow-y-hidden`}>
+            <div className="min-w-[800px]">
+              {/* Table header */}
+              <div className={`grid grid-cols-7 gap-0 border-b ${BORDER} px-6 py-3`}>
+                {['Version', 'Framework', 'Dataset', 'Accuracy', 'Loss', 'Status', 'Created'].map(col => (
+                  <div key={col} className={`text-xs ${DIMMER} uppercase tracking-widest`}>{col}</div>
+                ))}
               </div>
-            ) : (
-              models.map((model, i) => (
-                <motion.div
-                  key={model.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: i * 0.04 }}
-                  className={`grid grid-cols-7 gap-0 px-6 py-4 border-b last:border-0 ${BORDER} hover:bg-white/[0.02] transition-colors cursor-pointer`}
-                  onClick={() => navigate('/dashboard/history')}
-                >
-                  <div className="text-sm font-mono text-white">{model.version}</div>
-                  <div>
-                    <div className={`text-sm text-white`}>{model.framework}</div>
-                    <div className={`text-xs ${DIMMER} mt-0.5`}>{model.componentType}</div>
-                  </div>
-                  <div className={`text-sm font-mono ${DIM}`}>{model.datasetVersion}</div>
-                  <div className="text-sm text-white">
-                    {model.metrics ? `${formatNumber(model.metrics.accuracy * 100, 2)}%` : '—'}
-                  </div>
-                  <div className={`text-sm ${MUTED}`}>
-                    {model.metrics ? formatNumber(model.metrics.loss, 3) : '—'}
-                  </div>
-                  <div className={`text-xs font-mono ${getStatusStyle(model.status)}`}>
-                    {model.status}
-                  </div>
-                  <div className={`text-sm ${DIMMER}`}>{formatDate(model.createdAt)}</div>
-                </motion.div>
-              ))
-            )}
+
+              {/* Table body */}
+              {models.length === 0 ? (
+                <div className="px-6 py-16 text-center">
+                  <AlertCircle className={`w-8 h-8 ${DIMMER} mx-auto mb-4`} />
+                  <p className={`text-sm ${MUTED} mb-4`}>No models yet. Create your first training run.</p>
+                  <button
+                    onClick={() => navigate('/dashboard/train')}
+                    className={`text-sm text-white border-b ${BORDER} hover:border-white/30 pb-px transition-colors`}
+                  >
+                    Start Training →
+                  </button>
+                </div>
+              ) : (
+                models.map((model, i) => (
+                  <motion.div
+                    key={model.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: i * 0.04 }}
+                    className={`grid grid-cols-7 gap-0 px-6 py-4 border-b last:border-0 ${BORDER} hover:bg-white/[0.02] transition-colors cursor-pointer`}
+                    onClick={() => navigate('/dashboard/history')}
+                  >
+                    <div className="text-sm font-mono text-white">{model.version}</div>
+                    <div>
+                      <div className={`text-sm text-white`}>{model.framework}</div>
+                      <div className={`text-xs ${DIMMER} mt-0.5`}>{model.componentType}</div>
+                    </div>
+                    <div className={`text-sm font-mono ${DIM}`}>{model.datasetVersion}</div>
+                    <div className="text-sm text-white">
+                      {model.metrics ? `${formatNumber(model.metrics.accuracy * 100, 2)}%` : '—'}
+                    </div>
+                    <div className={`text-sm ${MUTED}`}>
+                      {model.metrics ? formatNumber(model.metrics.loss, 3) : '—'}
+                    </div>
+                    <div className={`text-xs font-mono ${getStatusStyle(model.status)}`}>
+                      {model.status}
+                    </div>
+                    <div className={`text-sm ${DIMMER}`}>{formatDate(model.createdAt)}</div>
+                  </motion.div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </motion.div>
