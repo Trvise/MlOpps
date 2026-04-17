@@ -174,7 +174,7 @@ export const LandingPage = () => {
           <img
             src="/images/image1.png"
             alt="Robot background"
-            className="w-full h-full object-cover opacity-[0.10] mix-blend-luminosity grayscale"
+            className="w-full h-full object-cover opacity-[0.25] grayscale"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#0c0c0c] via-[#0c0c0c]/80 to-transparent" />
@@ -250,10 +250,10 @@ export const LandingPage = () => {
           <img
             src="/images/image2.png"
             alt=""
-            className="w-full h-full object-cover opacity-[0.07] mix-blend-luminosity grayscale"
+            className="w-full h-full object-cover opacity-[0.25] grayscale"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-[#0c0c0c]" />
-          <div className="absolute inset-0 bg-[#0c0c0c]/60" />
+          <div className="absolute inset-0 bg-[#0c0c0c]/80" />
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto">
@@ -324,10 +324,10 @@ export const LandingPage = () => {
           <img
             src="/images/image3.png"
             alt="CTA background"
-            className="w-full h-full object-cover opacity-[0.10] mix-blend-luminosity grayscale blur-sm"
+            className="w-full h-full object-cover opacity-[0.25] grayscale blur-sm"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-[#0c0c0c]" />
-          <div className="absolute inset-0 bg-[#0c0c0c]/50" />
+          <div className="absolute inset-0 bg-[#0c0c0c]/70" />
         </div>
 
         <motion.div
