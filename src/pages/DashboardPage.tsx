@@ -42,7 +42,7 @@ export const DashboardPage = () => {
     : 0;
 
   return (
-    <div className="p-4 md:p-8 max-w-5xl mx-auto overflow-hidden text-ellipsis">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto w-full overflow-x-hidden md:overflow-visible">
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
@@ -64,17 +64,17 @@ export const DashboardPage = () => {
         </div>
 
         {/* Metrics Grid */}
-        <div className={`grid grid-cols-2 lg:grid-cols-4 gap-0 border-b ${BORDER} mb-0`}>
-          <div className={`border-r ${BORDER} pr-8 pt-8`}>
+        <div className={`grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0 lg:divide-x divide-white/[0.07] border-b ${BORDER} pb-10 mb-0`}>
+          <div className="lg:pl-0 lg:pr-8">
             <MetricCard label="Total Models" value={totalModels} icon={Package} />
           </div>
-          <div className={`border-r ${BORDER} px-8 pt-8`}>
+          <div className="lg:px-8">
             <MetricCard label="Trained Models" value={trainedModels} icon={Zap} />
           </div>
-          <div className={`border-r ${BORDER} px-8 pt-8`}>
+          <div className="lg:px-8">
             <MetricCard label="Deployed" value={deployedModels} icon={Rocket} />
           </div>
-          <div className="pl-8 pt-8">
+          <div className="lg:pl-8">
             <MetricCard label="Avg Accuracy" value={`${formatNumber(avgAccuracy * 100, 1)}%`} icon={CheckCircle2} />
           </div>
         </div>
@@ -101,7 +101,7 @@ export const DashboardPage = () => {
           </div>
         </div>
 
-        <div className="mt-8 md:mt-10 overflow-hidden text-ellipsis w-[calc(100vw-2rem)] md:w-auto">
+        <div className="mt-8 md:mt-10 overflow-hidden w-full md:w-auto">
           <p className={`text-xs ${DIMMER} uppercase tracking-widest mb-6`}>All Models</p>
           <div className={`border ${BORDER} overflow-x-auto overflow-y-hidden`}>
             <div className="min-w-[800px]">

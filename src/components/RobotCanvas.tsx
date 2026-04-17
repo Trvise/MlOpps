@@ -62,19 +62,26 @@ function RobotModel({ scrollYProgress }: { scrollYProgress: any }) {
 
         // Smooth interpolation could be done with framer-motion useSpring, 
         // but direct application of scroll works if scroll is smooth.
-        // Initial rotation: facing left/front.
-        const targetRotationY = -Math.PI / 4 + scroll * Math.PI * 2;
-        const targetRotationX = scroll * 0.5;
-
-        // Movement: Starts right, moves to center-left
+        // Base Movement: Starts right, moves to center-left
         const targetPositionX = 3 - scroll * 5;
         const targetPositionY = -2 + scroll * 1.5;
 
-        // Apply lerp for smooth stopping
-        groupRef.current.rotation.y += (targetRotationY - groupRef.current.rotation.y) * 0.1;
-        groupRef.current.rotation.x += (targetRotationX - groupRef.current.rotation.x) * 0.1;
+        // Apply lerp to base position
         groupRef.current.position.x += (targetPositionX - groupRef.current.position.x) * 0.1;
         groupRef.current.position.y += (targetPositionY - groupRef.current.position.y) * 0.1;
+
+        // Pivot base to stay grounded and relatively forward
+        const baseTargetRotY = -Math.PI / 4 - scroll * 0.2;
+        groupRef.current.rotation.y += (baseTargetRotY - groupRef.current.rotation.y) * 0.1;
+
+        // Articulate just the robot arm!
+        const armJoint = scene.getObjectByName('top') || scene.getObjectByName('LP_Top_low') || scene.getObjectByName('polySurface718');
+        if (armJoint) {
+            const targetArmRotY = scroll * Math.PI * 2;
+            const targetArmRotX = scroll * 0.8;
+            armJoint.rotation.y += (targetArmRotY - armJoint.rotation.y) * 0.1;
+            armJoint.rotation.x += (targetArmRotX - armJoint.rotation.x) * 0.1;
+        }
     });
 
     return (
