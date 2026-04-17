@@ -44,12 +44,12 @@ export const Sidebar = () => {
           <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
             <img 
               src="/images/logo.png" 
-              alt="The Vortex Logo" 
+              alt="Vortex"
               className="w-full h-full object-contain"
             />
           </div>
           <div>
-            <h1 className="text-xl font-light tracking-tight text-white">The Vortex</h1>
+            <h1 className="text-xl font-light tracking-tight text-white">Vortex</h1>
             <p className="text-xs text-slate-400 mt-1">ML Lifecycle Management</p>
           </div>
         </div>
