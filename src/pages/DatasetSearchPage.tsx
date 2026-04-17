@@ -25,7 +25,7 @@ export const DatasetSearchPage = () => {
   const [selectedResults, setSelectedResults] = useState<Set<string>>(new Set());
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [createdDatasetName, setCreatedDatasetName] = useState('');
-  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const dataset = datasetId ? getDataset(datasetId) : null;
 
