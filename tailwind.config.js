@@ -17,6 +17,20 @@ export default {
     },
     extend: {
       colors: {
+        // Remap slate to match the Trvise/Vortex palette
+        slate: {
+          50:  '#f0f0f0',
+          100: '#d0d0d0',
+          200: '#aaaaaa',
+          300: '#888888',
+          400: '#666666',
+          500: '#555555',
+          600: '#444444',
+          700: '#2a2a2a',
+          800: '#1a1a1a',
+          900: '#111111',
+          950: '#0c0c0c',
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

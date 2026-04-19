@@ -85,6 +85,16 @@ export const LandingPage = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEntering, setIsEntering] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
+  const [autoPlay, setAutoPlay] = useState(true);
+
+  useEffect(() => {
+    if (!autoPlay) return;
+    const timer = setInterval(() => {
+      setActiveTab((prev) => (prev + 1) % 3);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [autoPlay]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -179,77 +189,224 @@ export const LandingPage = () => {
           )}
         </header>
 
-        {/* ── HERO ── */}
-        <section className="relative px-6 pt-36 pb-20 overflow-hidden">
-          {/* Subtle Background Image */}
-          <div className="absolute inset-0 z-0 pointer-events-none select-none">
-            <img
-              src="/images/image1.png"
-              alt="Robot background"
-              className="w-full h-full object-cover opacity-[0.25] grayscale"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0c0c0c] via-[#0c0c0c]/80 to-transparent" />
+        {/* ── IMMERSIVE HERO ── */}
+        <section className="relative w-full min-h-[92vh] flex flex-col items-center justify-center overflow-hidden pt-10">
+          {/* Subtle Background Gradient Overlay */}
+          <div className="absolute inset-0 z-0 pointer-events-none select-none mix-blend-overlay">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-transparent opacity-80" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-[#0c0c0c]/40 to-[#0c0c0c] opacity-90" />
           </div>
 
           <motion.div
-            className="relative z-10 max-w-5xl mx-auto bg-[#0c0c0c]/40 backdrop-blur-md p-8 md:p-12 rounded-[2rem] border border-white/[0.04] flex flex-col items-center text-center"
-            initial={{ opacity: 0, y: 14 }}
+            className="relative z-10 flex flex-col items-center text-center mt-20 px-6 max-w-5xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, ease: 'easeOut' }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h1 className="text-5xl md:text-7xl font-light tracking-tight text-white leading-[1.08] mb-7 max-w-2xl">
-              Trvise
+            <h1 className="text-4xl md:text-6xl font-light tracking-tight text-white leading-[1.1] mb-20 drop-shadow-2xl">
+              General-purpose AI infrastructure<br className="hidden md:block" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-[#E8B84B] font-medium"> for the physical world.</span>
             </h1>
-            <p className={`${MUTED} text-base md:text-lg leading-relaxed max-w-lg mb-10`}>
-              End-to-end ML model lifecycle management for real-world robotics. From raw sensor data
-              to full fleet deployment — powered by Vortex.
-            </p>
+
+            {/* Simulated Animated Dashboard Mockup */}
+            <motion.div
+              onMouseEnter={() => setAutoPlay(false)}
+              onMouseLeave={() => setAutoPlay(true)}
+              className="w-full max-w-4xl relative z-20 mt-4 rounded-xl border border-white/10 bg-[#0c0c0c]/90 backdrop-blur-xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6)]"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 1, ease: 'easeOut' }}
+            >
+              {/* Window Controls & Tabs */}
+              <div className="h-12 border-b border-white/10 flex items-center px-4 bg-white/[0.02] justify-between relative overflow-hidden">
+                <div className="flex gap-2 min-w-[60px]">
+                  <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                </div>
+
+                {/* Carousel Navigation Tabs */}
+                <div className="flex text-xs font-mono tracking-widest h-full">
+                  {['01 Curate', '02 Train', '03 Deploy'].map((tab, idx) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(idx)}
+                      className={`px-3 md:px-5 h-full flex items-center transition-colors relative ${activeTab === idx ? 'text-white' : 'text-[#555] hover:text-[#888]'}`}
+                    >
+                      {tab}
+                      {activeTab === idx && (
+                        <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#E8B84B]" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+                <div className="hidden md:block min-w-[60px]"></div>
+              </div>
+
+              <div className="p-6 md:p-10 text-left min-h-[380px] relative overflow-hidden">
+                {/* STATE 0: CURATE */}
+                {activeTab === 0 && (
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col gap-6 w-full">
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <div className="text-[10px] text-[#E8B84B] font-mono uppercase tracking-widest mb-2 flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-[#E8B84B]" /> Semantic Search Engine</div>
+                        <div className="text-xl md:text-2xl text-white font-light">Query: "Robot arm dropping object"</div>
+                      </div>
+                      <div className="text-right hidden md:block">
+                        <div className="text-xs text-[#888] font-mono mb-1">Results</div>
+                        <div className="text-lg text-white">4,209 Sequences</div>
+                      </div>
+                    </div>
+                    <div className="h-px w-full bg-white/10"></div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {[
+                        '/images/image1.png', '/images/image2.png', '/images/image3.png',
+                        '/images/image4.png', '/images/image5.png', '/images/image6.png'
+                      ].map((img, i) => (
+                        <div key={i} className="aspect-video bg-[#0c0c0c] border border-white/5 rounded overflow-hidden relative group cursor-pointer">
+                          <img src={img} className="w-full h-full object-cover opacity-50 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" alt={`Dataset sequence ${i}`} />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                          <div className="absolute bottom-2 left-2 text-[8px] bg-[#E8B84B] px-1.5 py-0.5 rounded font-mono text-black font-semibold tracking-wide shadow-[0_0_10px_rgba(232,184,75,0.4)]">100% Match</div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* STATE 1: TRAIN */}
+                {activeTab === 1 && (
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col gap-6 w-full">
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <div className="text-[10px] text-emerald-400 font-mono uppercase tracking-widest mb-2 flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Distributed Runs</div>
+                        <div className="text-xl md:text-2xl text-white font-light">Train Policy (Run: epoch-102)</div>
+                      </div>
+                      <button className="hidden md:block px-4 py-2 border border-white/20 text-white text-xs rounded hover:bg-white/5 transition-colors">Abort Run</button>
+                    </div>
+                    <div className="h-px w-full bg-white/10"></div>
+                    <div className="flex flex-col md:flex-row gap-6 md:h-40">
+                      <div className="flex-1 bg-[#0a0a0a] border border-white/5 rounded p-4 font-mono text-[10px] text-emerald-500 overflow-hidden flex flex-col gap-1.5 justify-end">
+                        <div>[00:14:02] GPU:0 loaded params (1.2B)</div>
+                        <div>[00:14:05] Starting epoch 10...</div>
+                        <div>[00:14:12] Loss: 0.041 | Val: 0.082</div>
+                        <div>[00:14:19] Loss: 0.039 | Val: 0.076</div>
+                        <div className="text-white bg-white/10 w-max px-1">[00:14:26] Loss: 0.034 | Val: 0.071</div>
+                      </div>
+                      <div className="w-full md:w-24 flex md:flex-col gap-3 justify-center">
+                        <div className="flex-1 bg-white/5 p-2 rounded border border-white/10">
+                          <div className="text-[9px] text-[#888] uppercase mb-1 flex justify-between"><span>GPU 0</span> <span>99%</span></div>
+                          <div className="h-1 bg-black rounded-full overflow-hidden"><div className="h-full bg-emerald-500 w-[99%]"></div></div>
+                        </div>
+                        <div className="flex-1 bg-white/5 p-2 rounded border border-white/10">
+                          <div className="text-[9px] text-[#888] uppercase mb-1 flex justify-between"><span>GPU 1</span> <span>94%</span></div>
+                          <div className="h-1 bg-black rounded-full overflow-hidden"><div className="h-full bg-emerald-500 w-[94%]"></div></div>
+                        </div>
+                        <div className="flex-1 bg-white/5 p-2 rounded border border-white/10">
+                          <div className="text-[9px] text-[#888] uppercase mb-1 flex justify-between"><span>GPU 2</span> <span>97%</span></div>
+                          <div className="h-1 bg-black rounded-full overflow-hidden"><div className="h-full bg-emerald-500 w-[97%]"></div></div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* STATE 2: DEPLOY */}
+                {activeTab === 2 && (
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col gap-6 w-full">
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <div className="text-[10px] text-blue-400 font-mono uppercase tracking-widest mb-2 flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-400" /> Fleet Orchestration</div>
+                        <div className="text-xl md:text-2xl text-white font-light">124 Robots Online</div>
+                      </div>
+                      <button className="px-4 md:px-5 py-2 md:py-2.5 bg-[#E8B84B] text-black text-xs font-semibold rounded hover:bg-yellow-400 transition-colors shadow-lg">Push Update</button>
+                    </div>
+                    <div className="h-px w-full bg-white/10"></div>
+                    <div className="flex flex-col gap-3">
+                      {[
+                        { name: "Unit-A4 · Spot", status: "Online", sync: "100%", ver: "v2.0.1" },
+                        { name: "Unit-B2 · XDog", status: "Syncing", sync: "84%", ver: "v2.0.1" },
+                        { name: "Unit-C9 · Arm", status: "Online", sync: "100%", ver: "v2.0.1" }
+                      ].map((bot, i) => (
+                        <div key={i} className="flex flex-wrap items-center justify-between p-3.5 bg-white/[0.03] border border-white/5 rounded-lg hover:border-white/20 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-2.5 h-2.5 rounded-full ${bot.status === 'Online' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-yellow-400 animate-pulse'}`}></div>
+                            <span className="text-sm text-white font-mono">{bot.name}</span>
+                          </div>
+                          <div className="flex items-center gap-6">
+                            <span className="text-xs text-[#888] font-mono hidden md:block">{bot.ver}</span>
+                            <span className="text-xs text-[#888] w-12">{bot.status}</span>
+                            <div className="w-24 h-1.5 bg-black rounded-full overflow-hidden">
+                              <div className="h-full bg-blue-400 transition-all duration-1000" style={{ width: bot.sync }}></div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 1 }} className="mt-20 z-20 relative mb-12">
             <button
               onClick={handleOpenVortex}
-              className="text-sm text-black bg-[#E8B84B] hover:bg-[#cca341] px-6 py-3 transition-colors font-medium inline-flex items-center gap-2"
+              className="group relative px-10 py-5 bg-white/5 backdrop-blur-md border border-white/10 text-white font-medium text-sm overflow-hidden rounded-full hover:border-transparent transition-all duration-300"
             >
-              Open Vortex →
+              <span className="relative z-10 flex items-center gap-3 tracking-widest uppercase transition-colors duration-300 group-hover:text-black">ENTER VORTEX <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
+              <div className="absolute inset-0 bg-[#E8B84B] transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
             </button>
+          </motion.div>
+
+          {/* Magnetic scroll indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5, duration: 1 }}
+            className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-3 z-10"
+          >
+            <span className="text-[10px] uppercase font-mono tracking-widest text-[#777] mix-blend-difference">Scroll to Discover</span>
+            <div className="w-px h-12 bg-gradient-to-b from-white/30 to-transparent overflow-hidden object-left-bottom origin-bottom animate-pulse mix-blend-difference" />
           </motion.div>
         </section>
 
         <div className={`border-t ${BORDER}`} />
 
-        {/* ── PLATFORM UPDATES FEED ── */}
-        <section id="platform" className="max-w-5xl mx-auto p-8 md:p-12 bg-[#0c0c0c]/40 backdrop-blur-md rounded-[2rem] border border-white/[0.04] my-10 flex flex-col items-center">
-          <p className={`text-xs ${DIM} uppercase tracking-widest mb-10 text-center`}>Platform Updates</p>
+        {/* ── THE IMPACT / METRICS ── */}
+        <section className="relative px-6 py-24 overflow-hidden bg-[#0c0c0c]/80 backdrop-blur-sm z-10">
+          <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-start gap-16 md:gap-24">
+            <div className="flex-1">
+              <span className="text-[#E8B84B] font-mono text-xs uppercase tracking-widest mb-4 block">The Core Problem</span>
+              <h2 className="text-3xl md:text-5xl font-light text-white leading-tight mb-8">
+                80% of robotics projects fail at deployment.
+              </h2>
+              <p className="text-lg text-[#a0a0a0] leading-relaxed mb-6">
+                According to industry benchmarks, ML engineering teams spend <span className="text-white font-medium">70% of their time wrangling disjointed tools</span>—shuffling rosbags, managing fragmented training clusters, and manually flashing physical hardware.
+              </p>
+              <p className="text-lg text-[#a0a0a0] leading-relaxed">
+                Vortex unifies the entire lifecycle. We drop the simulation-to-reality transfer time by an order of magnitude, so you can focus on building intelligent policies, not internal infrastructure.
+              </p>
+            </div>
 
-          <div>
-            {UPDATES.map((u, i) => (
-              <motion.div
-                key={u.title}
-                initial={{ opacity: 0, y: 6 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.07 }}
-                className={`group flex flex-col md:flex-row md:items-start gap-3 md:gap-10 py-6 border-b ${BORDER} last:border-0 ${HOVER_BG} -mx-4 px-4 rounded transition-colors`}
-              >
-                <div className="flex-shrink-0 md:w-28 flex md:flex-col gap-3 md:gap-1.5 items-center md:items-start">
-                  <span className={`text-xs ${DIMMER} font-mono tabular-nums`}>{u.date}</span>
-                  <span className={`text-xs ${DIM} bg-white/[0.05] px-2 py-0.5 rounded-sm leading-tight`}>
-                    {u.tag}
-                  </span>
-                  {u.isNew && (
-                    <span className="text-xs text-emerald-500 font-medium">New</span>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-medium text-white mb-1.5 group-hover:text-slate-200 transition-colors">
-                    {u.title}
-                  </h3>
-                  <p className={`text-sm ${MUTED} leading-relaxed`}>{u.desc}</p>
-                </div>
-                <div className={`hidden md:block text-[#333] group-hover:${MUTED} transition-colors text-sm pt-0.5 flex-shrink-0`}>
-                  →
-                </div>
-              </motion.div>
-            ))}
+            <div className="flex-1 grid grid-cols-2 gap-x-8 gap-y-12 md:pl-16 relative">
+              <div className="hidden md:block absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-white/20 via-white/5 to-transparent"></div>
+              <div>
+                <div className="text-5xl md:text-6xl font-light text-white mb-2">70<span className="text-3xl text-[#E8B84B]">%</span></div>
+                <div className="text-[10px] uppercase tracking-widest font-mono text-[#888]">Time Saved on Infra</div>
+              </div>
+              <div>
+                <div className="text-5xl md:text-6xl font-light text-white mb-2">10<span className="text-3xl text-[#E8B84B]">x</span></div>
+                <div className="text-[10px] uppercase tracking-widest font-mono text-[#888]">Sim-to-Real Speed</div>
+              </div>
+              <div>
+                <div className="text-5xl md:text-6xl font-light text-white mb-2">0</div>
+                <div className="text-[10px] uppercase tracking-widest font-mono text-[#888]">Manual OTA Flashes</div>
+              </div>
+              <div>
+                <div className="text-5xl md:text-6xl font-light text-white mb-2">ALL</div>
+                <div className="text-[10px] uppercase tracking-widest font-mono text-[#888]">Hardware Supported</div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -324,6 +481,45 @@ export const LandingPage = () => {
                 </motion.div>
               ))}
             </div>
+          </div>
+        </section>
+
+        <div className={`border-t ${BORDER}`} />
+
+        {/* ── PLATFORM UPDATES FEED ── */}
+        <section id="platform" className="relative z-20 max-w-5xl mx-auto p-8 md:p-12 bg-black/[0.85] backdrop-blur-2xl rounded-[2rem] border border-white/10 my-16 flex flex-col items-center shadow-[0_30px_60px_rgba(0,0,0,0.8)]">
+          <p className={`text-xs ${DIM} uppercase tracking-widest mb-10 text-center`}>Platform Updates</p>
+
+          <div>
+            {UPDATES.map((u, i) => (
+              <motion.div
+                key={u.title}
+                initial={{ opacity: 0, y: 6 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.07 }}
+                className={`group flex flex-col md:flex-row md:items-start gap-3 md:gap-10 py-6 border-b ${BORDER} last:border-0 ${HOVER_BG} -mx-4 px-4 rounded transition-colors`}
+              >
+                <div className="flex-shrink-0 md:w-28 flex md:flex-col gap-3 md:gap-1.5 items-center md:items-start">
+                  <span className={`text-xs ${DIMMER} font-mono tabular-nums`}>{u.date}</span>
+                  <span className={`text-xs ${DIM} bg-white/[0.05] px-2 py-0.5 rounded-sm leading-tight`}>
+                    {u.tag}
+                  </span>
+                  {u.isNew && (
+                    <span className="text-xs text-emerald-500 font-medium">New</span>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-medium text-white mb-1.5 group-hover:text-slate-200 transition-colors">
+                    {u.title}
+                  </h3>
+                  <p className={`text-sm ${MUTED} leading-relaxed`}>{u.desc}</p>
+                </div>
+                <div className={`hidden md:block text-[#333] group-hover:${MUTED} transition-colors text-sm pt-0.5 flex-shrink-0`}>
+                  →
+                </div>
+              </motion.div>
+            ))}
           </div>
         </section>
 

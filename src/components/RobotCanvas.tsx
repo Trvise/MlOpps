@@ -1,15 +1,16 @@
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, Environment, Float, Html } from '@react-three/drei';
+import { useGLTF, Environment, Float, Html, useAnimations } from '@react-three/drei';
 import { useScroll } from 'framer-motion';
 import * as THREE from 'three';
 
 // Preload the model
-useGLTF.preload('/robot_arm.glb');
+useGLTF.preload('/RobotExpressive.glb');
 
 function RobotModel({ scrollYProgress }: { scrollYProgress: any }) {
-    const { scene } = useGLTF('/robot_arm.glb');
+    const { scene, animations } = useGLTF('/RobotExpressive.glb');
     const groupRef = useRef<THREE.Group>(null);
+    const { actions } = useAnimations(animations, groupRef);
     const [isEntering, setIsEntering] = React.useState(false);
     const enterProgress = useRef(0);
 
@@ -19,17 +20,25 @@ function RobotModel({ scrollYProgress }: { scrollYProgress: any }) {
         return () => window.removeEventListener('enter-vortex', handleEnter);
     }, []);
 
-    // Set initial materials to match the cinematic dark/silver/gold aesthetic
+    // Play idle animation and force cinematic materials
     React.useEffect(() => {
+        if (actions['Idle']) {
+            actions['Idle'].reset().play();
+        }
+
         scene.traverse((child) => {
             if (child instanceof THREE.Mesh) {
-                // Optional: tweak materials for a darker, more cinematic look
-                // child.material.metalness = 0.8;
-                // child.material.roughness = 0.2;
-                // child.material.envMapIntensity = 1.0;
+                // Force an insanely dark, reflective sci-fi aesthetic
+                const newMat = new THREE.MeshStandardMaterial({
+                    color: new THREE.Color('#050505'),
+                    metalness: 0.9,
+                    roughness: 0.2,
+                    envMapIntensity: 2.0,
+                });
+                child.material = newMat;
             }
         });
-    }, [scene]);
+    }, [scene, actions]);
 
     useFrame((_, delta) => {
         if (!groupRef.current) return;
@@ -44,8 +53,8 @@ function RobotModel({ scrollYProgress }: { scrollYProgress: any }) {
             const p = Math.min(enterProgress.current / 1.2, 1);
             const easeIn = p * p * p; // cubic ease in for zoom
 
-            // Glide softly to dead center
-            groupRef.current.position.y += (0 - groupRef.current.position.y) * 0.08;
+            // Glide softly to dead center horizontally, but drop Y significantly to target the brain area
+            groupRef.current.position.y += (-3.5 - groupRef.current.position.y) * 0.08;
             groupRef.current.position.x += (0 - groupRef.current.position.x) * 0.08;
 
             // Push into camera lens smoothly, accelerating to envelope the screen
@@ -53,39 +62,46 @@ function RobotModel({ scrollYProgress }: { scrollYProgress: any }) {
 
             // Slowly rotate to face the camera straight on
             groupRef.current.rotation.y += (0 - groupRef.current.rotation.y) * 0.05;
-            groupRef.current.rotation.x += (0 - groupRef.current.rotation.x) * 0.05;
+            groupRef.current.rotation.x += (0.1 - groupRef.current.rotation.x) * 0.05;
             return;
         }
 
-        // Map scroll progress (0 to 1) to rotation and position
         const scroll = scrollYProgress.get();
+        // Cap the movement to the first 40% of the page
+        const turnProgress = Math.min(scroll / 0.4, 1);
 
-        // Smooth interpolation could be done with framer-motion useSpring, 
-        // but direct application of scroll works if scroll is smooth.
-        // Base Movement: Starts right, moves to center-left
-        const targetPositionX = 3 - scroll * 5;
-        const targetPositionY = -2 + scroll * 1.5;
-
-        // Apply lerp to base position
+        // Base Movement: Smoothly float and rotate the entire humanoid based on turnProgress
+        const targetPositionX = 0; // Perfectly centered on screen
+        const targetPositionY = -2.5 + turnProgress * 1.5; // Rise up slightly while walking
         groupRef.current.position.x += (targetPositionX - groupRef.current.position.x) * 0.1;
         groupRef.current.position.y += (targetPositionY - groupRef.current.position.y) * 0.1;
 
-        // Pivot base to stay grounded and relatively forward
-        const baseTargetRotY = -Math.PI / 4 - scroll * 0.2;
-        groupRef.current.rotation.y += (baseTargetRotY - groupRef.current.rotation.y) * 0.1;
+        const baseTargetRotY = -Math.PI / 4 - turnProgress * Math.PI; // Dramatic spin to face user
+        groupRef.current.rotation.y += (baseTargetRotY - groupRef.current.rotation.y) * 0.05;
 
-        // Articulate just the robot arm!
-        const armJoint = scene.getObjectByName('top') || scene.getObjectByName('LP_Top_low') || scene.getObjectByName('polySurface718');
-        if (armJoint) {
-            const targetArmRotY = scroll * Math.PI * 2;
-            const targetArmRotX = scroll * 0.8;
-            armJoint.rotation.y += (targetArmRotY - armJoint.rotation.y) * 0.1;
-            armJoint.rotation.x += (targetArmRotX - armJoint.rotation.x) * 0.1;
+        // Tilt forward slightly during walk
+        const targetRotX = turnProgress * 0.2;
+        groupRef.current.rotation.x += (targetRotX - groupRef.current.rotation.x) * 0.1;
+
+        // Dynamically blend between Idle and Walking only during the turn phase
+        const walkAction = actions['Walking'];
+        const idleAction = actions['Idle'];
+
+        if (walkAction && idleAction) {
+            const isWalkingPhase = scroll > 0.01 && scroll < 0.4;
+            // Fast toggle between walk cycle vs idle
+            if (isWalkingPhase && !walkAction.isRunning()) {
+                walkAction.reset().play();
+                walkAction.crossFadeFrom(idleAction, 0.5, true);
+            } else if (!isWalkingPhase && walkAction.isRunning()) {
+                idleAction.reset().play();
+                idleAction.crossFadeFrom(walkAction, 0.5, true);
+            }
         }
     });
 
     return (
-        <group ref={groupRef} position={[3, -2, -2]} scale={2.5}>
+        <group ref={groupRef} position={[0, -2.5, -2]} scale={2.2}>
             <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
                 <primitive object={scene} />
 

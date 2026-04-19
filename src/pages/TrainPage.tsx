@@ -14,7 +14,7 @@ export const TrainPage = () => {
   const { models, addModel, startTraining, completeTraining, setJobProgress, clearJob, currentJob } = useModels();
   const { addEvent } = useHistory();
   const { datasets } = useDatasets();
-  
+
   const [trainingMode, setTrainingMode] = useState<'new' | 'improve'>('new');
   const [selectedBaseModel, setSelectedBaseModel] = useState('');
   const [modelName, setModelName] = useState('');
@@ -133,7 +133,7 @@ export const TrainPage = () => {
   // Generate YAML config from form state
   const generateYamlConfig = () => {
     const dataset = datasets.find(d => d.id === selectedDataset);
-    
+
     let config = `# ${componentType} Component Training Configuration
 # Press Ctrl+F to search in code, Ctrl+S to save changes
 # Edit this configuration file to customize your training parameters
@@ -289,7 +289,7 @@ checkpoint:
   useEffect(() => {
     const yaml = generateYamlConfig();
     setConfigYaml(yaml);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     componentType, framework, selectedDataset, datasets,
     // Perception
@@ -436,14 +436,14 @@ checkpoint:
     const datasetVersion = dataset?.version || 'DS-001';
 
     // If improving, get the base model
-    const baseModel = trainingMode === 'improve' && selectedBaseModel 
+    const baseModel = trainingMode === 'improve' && selectedBaseModel
       ? models.find(m => m.id === selectedBaseModel)
       : null;
 
     // Build component config and hyperparameters based on component type
     const componentConfig: any = {};
     let hyperparams: Record<string, string | number> = {};
-    
+
     // If improving, track the parent model
     if (baseModel) {
       componentConfig.parentModelId = baseModel.id;
@@ -530,7 +530,7 @@ checkpoint:
     const trainingDetails = baseModel
       ? `Started improving ${componentType} component from ${baseModel.version} with ${framework}`
       : `Started training ${componentType} component with ${framework}`;
-    
+
     addEvent({
       modelVersion: newModel.version,
       type: 'Train',
@@ -539,21 +539,21 @@ checkpoint:
         componentType,
         framework,
         hyperparams,
-        ...(baseModel && { 
+        ...(baseModel && {
           parentModelVersion: baseModel.version,
-          parentModelId: baseModel.id 
+          parentModelId: baseModel.id
         }),
       },
     });
 
     // Simulate training
-    const totalEpochs = componentType === 'Perception' 
+    const totalEpochs = componentType === 'Perception'
       ? parseInt(perceptionEpochs)
       : componentType === 'Policy/Control'
-      ? parseInt(policyIterations)
-      : componentType === 'Planner'
-      ? parseInt(mpcMaxIterations)
-      : parseInt(llmEpochs);
+        ? parseInt(policyIterations)
+        : componentType === 'Planner'
+          ? parseInt(mpcMaxIterations)
+          : parseInt(llmEpochs);
 
     simulateTraining(
       (progress, logs) => {
@@ -564,7 +564,7 @@ checkpoint:
         clearJob();
         setIsTraining(false);
         setTrainingComplete(true);
-        
+
         // Add completion event
         addEvent({
           modelVersion: newModel.version,
@@ -607,11 +607,10 @@ checkpoint:
                 setModelName('');
               }}
               disabled={isTraining}
-              className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
-                trainingMode === 'new'
-                  ? 'bg-blue-600/20 border-blue-500 text-blue-400'
+              className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${trainingMode === 'new'
+                  ? 'bg-[#E8B84B]/10 border-[#E8B84B]/50 text-[#E8B84B]'
                   : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               <Zap className="w-6 h-6" />
               <span className="text-sm font-medium">Create New Model</span>
@@ -619,11 +618,10 @@ checkpoint:
             <button
               onClick={() => setTrainingMode('improve')}
               disabled={isTraining}
-              className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${
-                trainingMode === 'improve'
-                  ? 'bg-blue-600/20 border-blue-500 text-blue-400'
+              className={`flex flex-col items-center gap-2 p-4 rounded-lg border transition-all ${trainingMode === 'improve'
+                  ? 'bg-[#E8B84B]/10 border-[#E8B84B]/50 text-[#E8B84B]'
                   : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               <CheckCircle2 className="w-6 h-6" />
               <span className="text-sm font-medium">Improve Existing Model</span>
@@ -639,8 +637,7 @@ checkpoint:
               <select
                 value={selectedBaseModel}
                 onChange={(e) => setSelectedBaseModel(e.target.value)}
-                disabled={isTraining}
-                className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#E8B84B] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <option value="">Choose a model to improve...</option>
                 {models
@@ -671,22 +668,20 @@ checkpoint:
           <div className="bg-slate-900 border border-slate-800 rounded-lg p-1 inline-flex gap-1">
             <button
               onClick={() => setViewMode('code')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-normal transition-all ${
-                viewMode === 'code'
-                  ? 'bg-blue-600 text-white'
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm transition-all ${viewMode === 'code'
+                  ? 'bg-[#E8B84B] text-black font-medium'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
-              }`}
+                }`}
             >
               <Code className="w-4 h-4" />
               Code Editor
             </button>
             <button
               onClick={() => setViewMode('form')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-normal transition-all ${
-                viewMode === 'form'
-                  ? 'bg-blue-600 text-white'
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm transition-all ${viewMode === 'form'
+                  ? 'bg-[#E8B84B] text-black font-medium'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
-              }`}
+                }`}
             >
               <Settings className="w-4 h-4" />
               Form
@@ -705,7 +700,7 @@ checkpoint:
             onChange={(e) => setModelName(e.target.value)}
             disabled={isTraining}
             placeholder="Enter a name for your model..."
-            className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-[#E8B84B] focus:ring-1 focus:ring-[#E8B84B] disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -718,7 +713,7 @@ checkpoint:
             value={selectedDataset}
             onChange={(e) => setSelectedDataset(e.target.value)}
             disabled={isTraining}
-            className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#E8B84B] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <option value="">Choose a training dataset...</option>
             {trainingDatasets.map(dataset => (
@@ -757,7 +752,7 @@ checkpoint:
                   title="Model Training Configuration"
                 />
               </div>
-              
+
               {/* Start Training Button - Fixed at bottom */}
               <div className="flex-shrink-0">
                 <button
@@ -839,7 +834,7 @@ checkpoint:
             {/* Training Form */}
             <div className="bg-slate-900 border border-slate-800 rounded-lg p-6">
               <h2 className="text-xl font-semibold text-white mb-6">Training Configuration</h2>
-              
+
               <div className="space-y-6">
                 {/* Component Type Selection */}
                 <div>
@@ -864,35 +859,32 @@ checkpoint:
                   <label className="block text-sm font-medium text-slate-300 mb-2">
                     Framework
                   </label>
-                  <div className={`grid gap-3 ${
-                    componentType === 'Planner' || componentType === 'High-level reasoning' 
-                      ? 'grid-cols-1' 
+                  <div className={`grid gap-3 ${componentType === 'Planner' || componentType === 'High-level reasoning'
+                      ? 'grid-cols-1'
                       : 'grid-cols-2'
-                  }`}>
+                    }`}>
                     {componentType !== 'Planner' && componentType !== 'High-level reasoning' && (
                       <>
-                    <button
-                      onClick={() => setFramework('PyTorch')}
-                      disabled={isTraining}
-                      className={`px-4 py-3 rounded-lg font-medium transition-all ${
-                        framework === 'PyTorch'
-                          ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg shadow-blue-500/20'
-                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                      } disabled:opacity-50 disabled:cursor-not-allowed`}
-                    >
-                      PyTorch
-                    </button>
-                    <button
-                      onClick={() => setFramework('TensorFlow')}
-                      disabled={isTraining}
-                      className={`px-4 py-3 rounded-lg font-medium transition-all ${
-                        framework === 'TensorFlow'
-                          ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg shadow-blue-500/20'
-                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                      } disabled:opacity-50 disabled:cursor-not-allowed`}
-                    >
-                      TensorFlow
-                    </button>
+                        <button
+                          onClick={() => setFramework('PyTorch')}
+                          disabled={isTraining}
+                          className={`px-4 py-3 rounded-lg font-medium transition-all ${framework === 'PyTorch'
+                              ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg shadow-blue-500/20'
+                              : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                            } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                          PyTorch
+                        </button>
+                        <button
+                          onClick={() => setFramework('TensorFlow')}
+                          disabled={isTraining}
+                          className={`px-4 py-3 rounded-lg font-medium transition-all ${framework === 'TensorFlow'
+                              ? 'bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg shadow-blue-500/20'
+                              : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                            } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                          TensorFlow
+                        </button>
                       </>
                     )}
                     {componentType === 'Planner' && (
@@ -1003,12 +995,12 @@ checkpoint:
                           <label className="block text-sm font-medium text-slate-300 mb-2">Value Coefficient</label>
                           <input type="number" step="0.1" value={rlValueCoef} onChange={(e) => setRlValueCoef(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
                         </div>
-                <div>
+                        <div>
                           <label className="block text-sm font-medium text-slate-300 mb-2">Entropy Coefficient</label>
                           <input type="number" step="0.001" value={rlEntropyCoef} onChange={(e) => setRlEntropyCoef(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
                         </div>
                       </div>
-                </div>
+                    </div>
                   </>
                 )}
 
@@ -1041,12 +1033,12 @@ checkpoint:
                           <label className="block text-sm font-medium text-slate-300 mb-2">Velocity Weight</label>
                           <input type="number" step="0.1" value={mpcVelocityWeight} onChange={(e) => setMpcVelocityWeight(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
                         </div>
-                <div>
+                        <div>
                           <label className="block text-sm font-medium text-slate-300 mb-2">Control Weight</label>
                           <input type="number" step="0.1" value={mpcControlWeight} onChange={(e) => setMpcControlWeight(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
                         </div>
                       </div>
-                </div>
+                    </div>
                   </>
                 )}
 
@@ -1084,12 +1076,12 @@ checkpoint:
                           <label className="block text-sm font-medium text-slate-300 mb-2">Top P</label>
                           <input type="number" step="0.01" value={llmTopP} onChange={(e) => setLlmTopP(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
                         </div>
-                <div>
+                        <div>
                           <label className="block text-sm font-medium text-slate-300 mb-2">Top K</label>
                           <input type="number" value={llmTopK} onChange={(e) => setLlmTopK(e.target.value)} disabled={isTraining} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50" />
                         </div>
                       </div>
-                </div>
+                    </div>
                   </>
                 )}
 
