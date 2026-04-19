@@ -13,6 +13,8 @@ function RobotModel({ scrollYProgress }: { scrollYProgress: any }) {
     const { actions } = useAnimations(animations, groupRef);
     const [isEntering, setIsEntering] = React.useState(false);
     const enterProgress = useRef(0);
+    const lastScroll = useRef(0);
+    const scrollTimer = useRef(0);
 
     React.useEffect(() => {
         const handleEnter = () => setIsEntering(true);
@@ -67,6 +69,17 @@ function RobotModel({ scrollYProgress }: { scrollYProgress: any }) {
         }
 
         const scroll = scrollYProgress.get();
+
+        // Detect active scrolling state via delta
+        if (Math.abs(scroll - lastScroll.current) > 0.0001) {
+            scrollTimer.current = 0.15; // 150ms buffer
+        } else {
+            scrollTimer.current = Math.max(0, scrollTimer.current - delta);
+        }
+        lastScroll.current = scroll;
+
+        const isActivelyScrolling = scrollTimer.current > 0;
+
         // Cap the movement to the first 40% of the page
         const turnProgress = Math.min(scroll / 0.4, 1);
 
@@ -88,7 +101,7 @@ function RobotModel({ scrollYProgress }: { scrollYProgress: any }) {
         const idleAction = actions['Idle'];
 
         if (walkAction && idleAction) {
-            const isWalkingPhase = scroll > 0.01 && scroll < 0.4;
+            const isWalkingPhase = scroll > 0.01 && scroll < 0.4 && isActivelyScrolling;
             // Fast toggle between walk cycle vs idle
             if (isWalkingPhase && !walkAction.isRunning()) {
                 walkAction.reset().play();
