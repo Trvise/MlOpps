@@ -91,7 +91,7 @@ export const LandingPage = () => {
   useEffect(() => {
     if (!autoPlay) return;
     const timer = setInterval(() => {
-      setActiveTab((prev) => (prev + 1) % 3);
+      setActiveTab((prev) => (prev + 1) % 5);
     }, 4000);
     return () => clearInterval(timer);
   }, [autoPlay]);
@@ -226,8 +226,8 @@ export const LandingPage = () => {
                 </div>
 
                 {/* Carousel Navigation Tabs */}
-                <div className="flex text-xs font-mono tracking-widest h-full">
-                  {['01 Curate', '02 Train', '03 Deploy'].map((tab, idx) => (
+                <div className="flex text-[10px] md:text-xs font-mono tracking-widest h-full overflow-x-auto no-scrollbar whitespace-nowrap scroll-smooth">
+                  {['01 Collect', '02 Curate', '03 Train', '04 Validate', '05 Deploy'].map((tab, idx) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(idx)}
@@ -244,8 +244,48 @@ export const LandingPage = () => {
               </div>
 
               <div className="p-6 md:p-10 text-left min-h-[380px] relative overflow-hidden">
-                {/* STATE 0: CURATE */}
+                {/* STATE 0: COLLECT */}
                 {activeTab === 0 && (
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col gap-6 w-full">
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <div className="text-[10px] text-fuchsia-400 font-mono uppercase tracking-widest mb-2 flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse" /> Telemetry Stream</div>
+                        <div className="text-xl md:text-2xl text-white font-light">Ingesting 5 simultaneous feeds</div>
+                      </div>
+                      <div className="text-right hidden md:block">
+                        <div className="text-xs text-[#888] font-mono mb-1">Incoming Bandwidth</div>
+                        <div className="text-lg text-white">4.2 GB/s</div>
+                      </div>
+                    </div>
+                    <div className="h-px w-full bg-white/10"></div>
+                    <div className="flex flex-col gap-3">
+                      {[
+                        { name: "Camera Array Primary", type: "RGB-D", status: "Active", hz: "60Hz" },
+                        { name: "Lidar Point Cloud", type: "PCD", status: "Active", hz: "10Hz" },
+                        { name: "Joint States", type: "Proprioception", status: "Active", hz: "500Hz" },
+                      ].map((feed, i) => (
+                        <div key={i} className="flex justify-between items-center p-3 border border-white/5 rounded-lg bg-white/[0.02]">
+                          <div className="flex items-center gap-3">
+                            <div className="hidden md:block w-8 h-8 rounded bg-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center font-mono text-[10px]">
+                              {feed.type.substring(0, 3)}
+                            </div>
+                            <div>
+                              <div className="text-sm text-white font-medium">{feed.name}</div>
+                              <div className="text-[10px] text-[#888] font-mono">{feed.type}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-6">
+                            <span className="text-xs text-[#888] font-mono hidden md:block">{feed.hz}</span>
+                            <span className="text-xs text-fuchsia-400 border border-fuchsia-400/30 bg-fuchsia-400/10 px-2 py-0.5 rounded">{feed.status}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* STATE 1: CURATE */}
+                {activeTab === 1 && (
                   <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col gap-6 w-full">
                     <div className="flex items-end justify-between">
                       <div>
@@ -273,8 +313,8 @@ export const LandingPage = () => {
                   </motion.div>
                 )}
 
-                {/* STATE 1: TRAIN */}
-                {activeTab === 1 && (
+                {/* STATE 2: TRAIN */}
+                {activeTab === 2 && (
                   <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col gap-6 w-full">
                     <div className="flex items-end justify-between">
                       <div>
@@ -310,8 +350,43 @@ export const LandingPage = () => {
                   </motion.div>
                 )}
 
-                {/* STATE 2: DEPLOY */}
-                {activeTab === 2 && (
+                {/* STATE 3: VALIDATE */}
+                {activeTab === 3 && (
+                  <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col gap-6 w-full">
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <div className="text-[10px] text-purple-400 font-mono uppercase tracking-widest mb-2 flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-purple-400" /> Evaluation Cluster</div>
+                        <div className="text-xl md:text-2xl text-white font-light">Sim-to-Real Benchmark</div>
+                      </div>
+                      <div className="text-right hidden md:block">
+                        <div className="text-xs text-[#888] font-mono mb-1">Success Rate</div>
+                        <div className="text-lg text-emerald-400">99.8%</div>
+                      </div>
+                    </div>
+                    <div className="h-px w-full bg-white/10"></div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="bg-white/[0.03] border border-white/5 p-4 rounded-lg">
+                        <div className="text-[10px] text-[#888] uppercase tracking-widest mb-2">Collision Rate</div>
+                        <div className="text-2xl font-light text-white">0.01%</div>
+                      </div>
+                      <div className="bg-white/[0.03] border border-white/5 p-4 rounded-lg">
+                        <div className="text-[10px] text-[#888] uppercase tracking-widest mb-2">Speed Delta</div>
+                        <div className="text-2xl font-light text-white">+12%</div>
+                      </div>
+                      <div className="bg-white/[0.03] border border-white/5 p-4 rounded-lg col-span-2">
+                        <div className="text-[10px] text-[#888] uppercase tracking-widest mb-2">Generalization Score</div>
+                        <div className="w-full h-8 flex items-end gap-1">
+                          {[40, 60, 45, 80, 95, 99, 98, 99].map((h, i) => (
+                            <div key={i} className="flex-1 bg-purple-500/80 rounded-t-sm transition-all duration-500 hover:bg-purple-400" style={{ height: `${h}%` }}></div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* STATE 4: DEPLOY */}
+                {activeTab === 4 && (
                   <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col gap-6 w-full">
                     <div className="flex items-end justify-between">
                       <div>
