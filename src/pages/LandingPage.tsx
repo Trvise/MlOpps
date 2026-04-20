@@ -72,7 +72,7 @@ const COMPONENTS = [
   },
 ];
 
-const NAV_SECTIONS = ['Platform', 'Pipeline', 'Components'] as const;
+const NAV_SECTIONS = ['Pipeline', 'Components', 'Platform'] as const;
 
 const BORDER = 'border-white/[0.07]';
 const MUTED = 'text-[#c8c8c8]';
@@ -126,13 +126,10 @@ export const LandingPage = () => {
           <div className="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
 
             {/* Brand — stays on landing */}
-            <button
-              onClick={() => navigate('/')}
-              className="flex items-center gap-3 hover:opacity-60 transition-opacity"
-            >
-              <img src="/images/logo.png" alt="Trvise" className="w-10 h-10 object-contain" />
-              <span className="text-xl font-medium tracking-tight">Trvise</span>
-            </button>
+            <div className="flex items-center gap-3 cursor-pointer select-none group" onClick={() => window.scrollTo(0, 0)}>
+              <img src="/images/logo.png" alt="Trvise Logo" className="w-10 h-10 object-contain group-hover:opacity-80 transition-opacity" />
+              <span className="text-xl font-medium tracking-tight text-white group-hover:opacity-80 transition-opacity">Trvise</span>
+            </div>
 
             {/* Desktop nav */}
             <nav className="hidden md:flex items-center gap-7">
