@@ -264,7 +264,7 @@ export const LandingPage = () => {
                         { name: "Lidar Point Cloud", type: "PCD", status: "Active", hz: "10Hz" },
                         { name: "Joint States", type: "Proprioception", status: "Active", hz: "500Hz" },
                       ].map((feed, i) => (
-                        <div key={i} className="flex justify-between items-center p-3 border border-white/5 rounded-lg bg-white/[0.02]">
+                        <div key={i} className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0 p-3 border border-white/5 rounded-lg bg-white/[0.02]">
                           <div className="flex items-center gap-3">
                             <div className="hidden md:block w-8 h-8 rounded bg-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center font-mono text-[10px]">
                               {feed.type.substring(0, 3)}
@@ -423,7 +423,7 @@ export const LandingPage = () => {
             </motion.div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 1 }} className="mt-20 z-20 relative mb-12">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 1 }} className="mt-20 z-20 relative mb-12 flex flex-col items-center">
             <button
               onClick={handleOpenVortex}
               className="group relative px-10 py-5 bg-white/5 backdrop-blur-md border border-white/10 text-white font-medium text-sm overflow-hidden rounded-full hover:border-transparent transition-all duration-300"
@@ -447,6 +447,15 @@ export const LandingPage = () => {
 
         <div className={`border-t ${BORDER}`} />
 
+        {/* ── BACKED BY INVESTORS ── */}
+        <section className="w-full py-8 md:py-12 bg-black border-y border-white/[0.05] relative z-20 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-24 px-6 md:px-0">
+          <span className="text-[10px] uppercase font-mono tracking-widest text-[#666]">Backed By</span>
+          <div className="flex gap-10 md:gap-24 items-center justify-center">
+            <img src="/images/ef.png" className="h-12 md:h-16 object-contain" alt="Entrepreneurs First" />
+            <img src="/images/canopy.png" className="h-16 md:h-20 object-contain" alt="Founders Canopy" />
+          </div>
+        </section>
+
         {/* ── THE IMPACT / METRICS ── */}
         <section className="relative px-6 py-24 overflow-hidden bg-[#0c0c0c]/80 backdrop-blur-sm z-10">
           <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-start gap-16 md:gap-24">
@@ -466,19 +475,19 @@ export const LandingPage = () => {
             <div className="flex-1 grid grid-cols-2 gap-x-8 gap-y-12 md:pl-16 relative">
               <div className="hidden md:block absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-white/20 via-white/5 to-transparent"></div>
               <div>
-                <div className="text-5xl md:text-6xl font-light text-white mb-2">70<span className="text-3xl text-[#E8B84B]">%</span></div>
+                <div className="text-4xl md:text-6xl font-light text-white mb-2">70<span className="text-2xl md:text-3xl text-[#E8B84B]">%</span></div>
                 <div className="text-[10px] uppercase tracking-widest font-mono text-[#888]">Time Saved on Infra</div>
               </div>
               <div>
-                <div className="text-5xl md:text-6xl font-light text-white mb-2">10<span className="text-3xl text-[#E8B84B]">x</span></div>
+                <div className="text-4xl md:text-6xl font-light text-white mb-2">10<span className="text-2xl md:text-3xl text-[#E8B84B]">x</span></div>
                 <div className="text-[10px] uppercase tracking-widest font-mono text-[#888]">Sim-to-Real Speed</div>
               </div>
               <div>
-                <div className="text-5xl md:text-6xl font-light text-white mb-2">0</div>
+                <div className="text-4xl md:text-6xl font-light text-white mb-2">0</div>
                 <div className="text-[10px] uppercase tracking-widest font-mono text-[#888]">Manual OTA Flashes</div>
               </div>
               <div>
-                <div className="text-5xl md:text-6xl font-light text-white mb-2">ALL</div>
+                <div className="text-4xl md:text-6xl font-light text-white mb-2">ALL</div>
                 <div className="text-[10px] uppercase tracking-widest font-mono text-[#888]">Hardware Supported</div>
               </div>
             </div>
