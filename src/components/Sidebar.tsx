@@ -73,7 +73,7 @@ export const Sidebar = ({ mobileMenuOpen, setMobileMenuOpen }: SidebarProps) => 
                 <h1 className="text-sm font-medium tracking-tight text-white">Vortex</h1>
                 <span className="text-[9px] font-mono font-medium tracking-widest uppercase text-[#E8B84B] border border-[#E8B84B]/30 px-1 py-0.5 leading-none">DEMO</span>
               </div>
-              <p className={`text-xs ${DIMMER} mt-0.5`}>by Trvise</p>
+              <p className={`text-xs ${DIMMER} mt-0.5`}>by Terravortex</p>
             </div>
           </button>
         </div>
@@ -135,7 +135,7 @@ export const Sidebar = ({ mobileMenuOpen, setMobileMenuOpen }: SidebarProps) => 
               <div className="w-1 h-1 rounded-full bg-[#E8B84B]" />
               <span className="text-[10px] font-mono uppercase tracking-widest text-[#E8B84B]">Coming Soon</span>
             </div>
-            <div className="text-xs text-white font-light mb-1">Trvise SDK</div>
+            <div className="text-xs text-white font-light mb-1">Terravortex SDK</div>
             <p className={`text-[11px] ${DIMMER} leading-relaxed`}>
               Python & ROS 2 SDK for programmatic model lifecycle management.
             </p>

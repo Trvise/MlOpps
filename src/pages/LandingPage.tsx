@@ -114,7 +114,7 @@ export const LandingPage = () => {
   };
 
   return (
-    <div className="bg-[#0c0c0c] text-white min-h-screen font-sans antialiased relative">
+    <div className="bg-black text-[#f1f1f1] font-sans selection:bg-[#E8B84B] selection:text-black min-h-screen overflow-x-hidden w-full relative">
       <RobotCanvas />
 
       <div className={`relative z-10 w-full pointer-events-none *:pointer-events-auto transition-opacity duration-1000 ${isEntering ? 'opacity-0' : 'opacity-100'}`}>
@@ -127,8 +127,8 @@ export const LandingPage = () => {
 
             {/* Brand — stays on landing */}
             <div className="flex items-center gap-3 cursor-pointer select-none group" onClick={() => window.scrollTo(0, 0)}>
-              <img src="/images/logo.png" alt="Trvise Logo" className="w-10 h-10 object-contain group-hover:opacity-80 transition-opacity" />
-              <span className="text-xl font-medium tracking-tight text-white group-hover:opacity-80 transition-opacity">Trvise</span>
+              <img src="/images/logo.png" alt="Terravortex Logo" className="w-10 h-10 object-contain group-hover:opacity-80 transition-opacity" />
+              <span className="text-xl font-medium tracking-tight text-white group-hover:opacity-80 transition-opacity">Terravortex</span>
             </div>
 
             {/* Desktop nav */}
@@ -187,7 +187,7 @@ export const LandingPage = () => {
         </header>
 
         {/* ── IMMERSIVE HERO ── */}
-        <section className="relative w-full min-h-[92vh] flex flex-col items-center justify-center overflow-hidden pt-10">
+        <section className="relative w-full min-h-[92vh] flex flex-col items-center justify-center overflow-hidden pt-20 md:pt-10 pb-32 md:pb-0">
           {/* Subtle Background Gradient Overlay */}
           <div className="absolute inset-0 z-0 pointer-events-none select-none mix-blend-overlay">
             <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-transparent opacity-80" />
@@ -195,13 +195,13 @@ export const LandingPage = () => {
           </div>
 
           <motion.div
-            className="relative z-10 flex flex-col items-center text-center mt-20 px-6 max-w-5xl mx-auto"
+            className="relative z-10 flex flex-col items-center text-center mt-12 md:mt-20 px-4 md:px-6 w-full max-w-5xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h1 className="text-4xl md:text-6xl font-light tracking-tight text-white leading-[1.1] mb-20 drop-shadow-2xl">
-              General-purpose AI infrastructure<br className="hidden md:block" />
+            <h1 className="text-2xl sm:text-4xl md:text-6xl font-light tracking-tight text-white leading-[1.3] md:leading-[1.1] mb-12 md:mb-20 bg-black/40 md:bg-transparent backdrop-blur-md md:backdrop-blur-none p-4 rounded-xl md:p-0 md:rounded-none drop-shadow-2xl break-words w-full">
+              General-purpose AI infrastructure <br className="hidden md:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-[#E8B84B] font-medium"> for the physical world.</span>
             </h1>
 
@@ -209,7 +209,7 @@ export const LandingPage = () => {
             <motion.div
               onMouseEnter={() => setAutoPlay(false)}
               onMouseLeave={() => setAutoPlay(true)}
-              className="w-full max-w-4xl relative z-20 mt-4 rounded-xl border border-white/10 bg-[#0c0c0c]/90 backdrop-blur-xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6)]"
+              className="w-full max-w-4xl relative z-20 mt-4 rounded-xl border border-white/10 bg-[#0c0c0c]/90 backdrop-blur-xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6)] min-w-0"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 1, ease: 'easeOut' }}
@@ -223,12 +223,12 @@ export const LandingPage = () => {
                 </div>
 
                 {/* Carousel Navigation Tabs */}
-                <div className="flex text-[10px] md:text-xs font-mono tracking-widest h-full overflow-x-auto no-scrollbar whitespace-nowrap scroll-smooth">
+                <div className="flex text-[9px] md:text-xs font-mono tracking-widest h-full overflow-x-auto no-scrollbar whitespace-nowrap scroll-smooth">
                   {['01 Collect', '02 Curate', '03 Train', '04 Validate', '05 Deploy'].map((tab, idx) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(idx)}
-                      className={`px-3 md:px-5 h-full flex items-center transition-colors relative ${activeTab === idx ? 'text-white' : 'text-[#555] hover:text-[#888]'}`}
+                      className={`px-3 md:px-5 h-full shrink-0 flex items-center transition-colors relative ${activeTab === idx ? 'text-white' : 'text-[#555] hover:text-[#888]'}`}
                     >
                       {tab}
                       {activeTab === idx && (
@@ -244,12 +244,12 @@ export const LandingPage = () => {
                 {/* STATE 0: COLLECT */}
                 {activeTab === 0 && (
                   <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col gap-6 w-full">
-                    <div className="flex items-end justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                       <div>
                         <div className="text-[10px] text-fuchsia-400 font-mono uppercase tracking-widest mb-2 flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse" /> Telemetry Stream</div>
                         <div className="text-xl md:text-2xl text-white font-light">Ingesting 5 simultaneous feeds</div>
                       </div>
-                      <div className="text-right hidden md:block">
+                      <div className="text-left sm:text-right border-t sm:border-t-0 border-white/5 pt-2 sm:pt-0 block">
                         <div className="text-xs text-[#888] font-mono mb-1">Incoming Bandwidth</div>
                         <div className="text-lg text-white">4.2 GB/s</div>
                       </div>
@@ -261,18 +261,18 @@ export const LandingPage = () => {
                         { name: "Lidar Point Cloud", type: "PCD", status: "Active", hz: "10Hz" },
                         { name: "Joint States", type: "Proprioception", status: "Active", hz: "500Hz" },
                       ].map((feed, i) => (
-                        <div key={i} className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0 p-3 border border-white/5 rounded-lg bg-white/[0.02]">
+                        <div key={i} className="flex flex-col sm:flex-row flex-wrap sm:items-center justify-between gap-y-3 p-3 border border-white/5 rounded-lg bg-white/[0.02]">
                           <div className="flex items-center gap-3">
-                            <div className="hidden md:block w-8 h-8 rounded bg-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center font-mono text-[10px]">
+                            <div className="w-8 h-8 rounded bg-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center font-mono text-[10px] shrink-0">
                               {feed.type.substring(0, 3)}
                             </div>
                             <div>
-                              <div className="text-sm text-white font-medium">{feed.name}</div>
-                              <div className="text-[10px] text-[#888] font-mono">{feed.type}</div>
+                              <div className="text-sm text-white font-medium leading-none mb-1">{feed.name}</div>
+                              <div className="text-[10px] text-[#888] font-mono leading-none">{feed.type}</div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-6">
-                            <span className="text-xs text-[#888] font-mono hidden md:block">{feed.hz}</span>
+                          <div className="flex items-center gap-4 w-full md:w-auto mt-1 md:mt-0 pt-2 md:pt-0 border-t border-white/5 md:border-0 justify-between md:justify-end">
+                            <span className="text-xs text-[#888] font-mono">{feed.hz}</span>
                             <span className="text-xs text-fuchsia-400 border border-fuchsia-400/30 bg-fuchsia-400/10 px-2 py-0.5 rounded">{feed.status}</span>
                           </div>
                         </div>
@@ -645,7 +645,7 @@ export const LandingPage = () => {
           <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <img src="/images/logo.png" alt="" className="w-5 h-5 object-contain opacity-60" />
-              <span className={`text-sm ${DIM}`}>Trvise</span>
+              <span className={`text-sm ${DIM}`}>Terravortex</span>
             </div>
             <p className={`text-xs text-[#333] text-center`}>
               ML lifecycle management for robot intelligence at scale.
