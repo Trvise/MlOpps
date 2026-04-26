@@ -76,37 +76,34 @@ export function LandingPage() {
         {/* 1. Hero Section */}
         <section className="relative min-h-screen items-center justify-center pt-24 pb-12 px-6 flex flex-col overflow-hidden">
           {/* Gradients */}
-          <div className="absolute inset-x-0 bottom-0 top-0 opacity-20 dark:opacity-30 bg-gradient-to-b from-transparent via-white dark:via-black to-white dark:to-black pointer-events-none z-0 transition-colors duration-500"></div>
-          <div className="absolute inset-0 bg-white/20 dark:bg-black/40 z-10 pointer-events-none transition-colors duration-500"></div>
-
-          {/* Strong center aura text backdrop for maximum legibility over the 3D model */}
-          <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none mt-[8vh]">
-            <div className="w-[120%] sm:w-[90%] md:w-[70%] h-[50vh] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white dark:from-black via-white/70 dark:via-black/80 to-transparent blur-3xl opacity-100 rounded-full"></div>
-          </div>
+          <div className="absolute inset-x-0 bottom-0 top-0 opacity-20 dark:opacity-40 bg-gradient-to-b from-transparent via-white dark:via-black to-white dark:to-black pointer-events-none z-0 transition-colors duration-500"></div>
+          <div className="absolute inset-0 bg-white/20 dark:bg-black/50 z-10 pointer-events-none transition-colors duration-500"></div>
 
           {/* 3D Robot Background */}
-          <div className="absolute inset-0 opacity-100 dark:opacity-80 z-0">
+          <div className="absolute inset-0 opacity-100 dark:opacity-60 z-0 [mask-image:radial-gradient(ellipse_at_center,transparent_0%,black_100%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,transparent_0%,black_100%)]">
             <RobotCanvas isLightMode={isLightMode} />
           </div>
 
-          <div className="relative z-20 max-w-5xl mx-auto flex flex-col items-center text-center mt-12 md:mt-0 px-4">
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="font-sans font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight mb-6 sm:mb-8 leading-tight text-gray-900 dark:text-white drop-shadow-xl"
-            >
-              Unplanned downtime costs millions.<br />
-              <span className="block mt-2 md:mt-4 xl:mt-6"><span className="text-[#C9A84C]">We stop it</span> before it starts.</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-lg md:text-2xl text-gray-800 dark:text-white max-w-3xl mb-12 font-semibold leading-relaxed drop-shadow-md"
-            >
-              Autonomous robots that inspect your floor 24/7 — catching anomalies before they cascade into catastrophic failure.
-            </motion.p>
+          <div className="relative z-20 max-w-5xl mx-auto flex flex-col items-center text-center mt-12 md:mt-0 px-4 w-full">
+            <div className="bg-white/85 dark:bg-black/80 backdrop-blur-xl px-4 py-12 sm:px-8 md:px-12 md:py-16 rounded-2xl shadow-[0_0_60px_rgba(0,0,0,0.15)] dark:shadow-[0_0_60px_rgba(0,0,0,0.8)] border border-black/10 dark:border-white/10 w-full max-w-5xl flex flex-col items-center">
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="font-sans font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight mb-6 sm:mb-8 leading-tight text-gray-900 dark:text-white drop-shadow-xl"
+              >
+                Unplanned downtime costs millions.<br />
+                <span className="block mt-2 md:mt-4 xl:mt-6"><span className="text-[#C9A84C]">We stop it</span> before it starts.</span>
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="text-lg md:text-2xl text-gray-800 dark:text-gray-200 max-w-3xl font-semibold leading-relaxed drop-shadow-md"
+              >
+                Autonomous robots that inspect your floor 24/7 — catching anomalies before they cascade into catastrophic failure.
+              </motion.p>
+            </div>
           </div>
         </section>
 
