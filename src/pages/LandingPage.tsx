@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings2, Eye, BellRing, Menu, X, Sun, Moon } from 'lucide-react';
@@ -8,6 +8,29 @@ export function LandingPage() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLightMode, setIsLightMode] = useState(false);
+
+  const text1 = "Unplanned downtime costs millions.";
+  const text2 = "We stop it before it starts.";
+  const [displayedText1, setDisplayedText1] = useState("");
+  const [displayedText2, setDisplayedText2] = useState("");
+
+  useEffect(() => {
+    let current1 = 0;
+    let current2 = 0;
+
+    const interval = setInterval(() => {
+      if (current1 < text1.length) {
+        setDisplayedText1(text1.slice(0, current1 + 1));
+        current1++;
+      } else if (current2 < text2.length) {
+        setDisplayedText2(text2.slice(0, current2 + 1));
+        current2++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 40);
+    return () => clearInterval(interval);
+  }, []);
 
   const scrollTo = (id: string) => {
     setIsMenuOpen(false);
@@ -89,10 +112,22 @@ export function LandingPage() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="font-sans font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight mb-6 sm:mb-8 leading-tight text-gray-900 dark:text-white drop-shadow-sm"
+                className="font-sans font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight mb-6 sm:mb-8 leading-tight text-gray-900 dark:text-white drop-shadow-sm min-h-[3em] sm:min-h-0"
               >
-                Unplanned downtime costs millions.<br />
-                <span className="block mt-2 md:mt-4 xl:mt-6"><span className="text-[#C9A84C]">We stop it</span> before it starts.</span>
+                {displayedText1}
+                <span className={`${displayedText1.length < text1.length ? 'animate-pulse' : 'hidden'}`}>|</span>
+                <br />
+                <span className="block mt-2 md:mt-4 xl:mt-6">
+                  {displayedText2.includes('We stop it') ? (
+                    <>
+                      <span className="text-[#C9A84C]">We stop it</span>
+                      {displayedText2.split('We stop it')[1]}
+                    </>
+                  ) : (
+                    displayedText2
+                  )}
+                  {displayedText1.length === text1.length && <span className="animate-pulse">|</span>}
+                </span>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -141,17 +176,17 @@ export function LandingPage() {
               <div className="bg-gray-50 dark:bg-[#111] p-8 border-l-4 border-[#C9A84C] flex flex-col rounded-sm shadow-md ring-1 ring-black/5 dark:ring-white/5 transition-colors">
                 <Eye className="w-8 h-8 text-[#C9A84C] mb-6" />
                 <h3 className="font-sans font-semibold text-2xl tracking-tight mb-3">Always-On Patrol</h3>
-                <p className="text-gray-600 dark:text-gray-400 font-medium leading-relaxed">Robot navigates the factory floor 24/7, scanning every machine with thermal, acoustic, and visual sensors.</p>
+                <p className="text-gray-600 dark:text-gray-400 font-medium leading-relaxed">Continuous 24/7 scanning via thermal, acoustic, and visual sensors.</p>
               </div>
               <div className="bg-gray-50 dark:bg-[#111] p-8 border-l-4 border-[#1A3BFF] flex flex-col rounded-sm shadow-md ring-1 ring-black/5 dark:ring-white/5 transition-colors">
                 <BellRing className="w-8 h-8 text-[#1A3BFF] mb-6" />
                 <h3 className="font-sans font-semibold text-2xl tracking-tight mb-3">Predictive Alerting</h3>
-                <p className="text-gray-600 dark:text-gray-400 font-medium leading-relaxed">ML models learn each machine's health baseline and flag anomalies before they cascade into failures.</p>
+                <p className="text-gray-600 dark:text-gray-400 font-medium leading-relaxed">ML models learn baselines and flag anomalies before failures.</p>
               </div>
               <div className="bg-gray-50 dark:bg-[#111] p-8 border-l-4 border-gray-400 dark:border-white/20 flex flex-col rounded-sm shadow-md ring-1 ring-black/5 dark:ring-white/5 transition-colors">
                 <Settings2 className="w-8 h-8 text-gray-700 dark:text-white mb-6" />
-                <h3 className="font-sans font-semibold text-2xl tracking-tight mb-3">Zero Infrastructure Changes</h3>
-                <p className="text-gray-600 dark:text-gray-400 font-medium leading-relaxed">Deploys in days. No retrofitting. No sensor installation. Just drop it on the floor and go.</p>
+                <h3 className="font-sans font-semibold text-2xl tracking-tight mb-3">Zero Infrastructure</h3>
+                <p className="text-gray-600 dark:text-gray-400 font-medium leading-relaxed">Deploys in days. No retrofitting required. Just drop and go.</p>
               </div>
             </div>
           </div>
@@ -162,7 +197,7 @@ export function LandingPage() {
           <div className="max-w-6xl mx-auto flex flex-col items-center">
             <h2 className="font-sans font-bold text-4xl md:text-5xl tracking-tight mb-6 text-center">Our Perception Prototype</h2>
             <p className="font-medium text-gray-600 dark:text-gray-400 text-lg md:text-xl max-w-3xl text-center mb-16 leading-relaxed">
-              Previously built by our team as <span className="text-[#1A3BFF] font-bold">TRINA, a nursing robot</span>, this advanced perception platform serves as the direct inspiration for our upcoming <span className="text-[#C9A84C] font-bold">industrial factory product line</span>.
+              Our functional prototype, TRINA, was built by our team for a deep healthcare project. We are now compacting and ruggedizing this exact same core perception layer for our <span className="text-[#C9A84C] font-bold">industrial product line</span>.
             </p>
 
             <div className="w-full flex flex-col lg:flex-row gap-8 lg:gap-12 justify-center">
@@ -204,28 +239,29 @@ export function LandingPage() {
 
         {/* 6. Product Roadmap */}
         <section id="roadmap" className="relative z-10 py-24 px-6 bg-gray-50 dark:bg-[#050505] border-t border-black/5 dark:border-white/5 transition-colors duration-500">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="md:w-1/3">
-                <h2 className="font-sans font-bold text-4xl md:text-5xl tracking-tight mb-6">The Trvise Trillion Dollar Dream</h2>
-                <p className="text-gray-600 dark:text-gray-400 font-medium leading-relaxed">The only robot that sees problems today and fixes them tomorrow.</p>
+          <div className="max-w-6xl mx-auto flex flex-col items-center">
+            <h2 className="font-sans font-bold text-4xl md:text-5xl tracking-tight mb-4 text-center">The Trillion Dollar Dream</h2>
+            <p className="text-gray-600 dark:text-gray-400 font-medium leading-relaxed max-w-4xl text-center mb-16">
+              Our inspection fleet is just the beginning. By spending years autonomously mapping environments, we capture the world's largest dataset of spatial factory behaviors. When the time comes, we simply attach manipulator arms to our existing platforms, leveraging years of unified ambient data to instantly achieve <strong className="text-black dark:text-white">General Physical Interactivity</strong> and own the definitive robotics stack.
+            </p>
+
+            <div className="flex flex-col md:flex-row items-end gap-6 h-auto md:h-[450px] w-full max-w-5xl mx-auto">
+              <div className="w-full md:w-1/3 bg-white dark:bg-[#111] border-t-4 border-gray-300 dark:border-gray-800 h-auto md:h-[180px] p-6 md:p-8 flex flex-col justify-end relative shadow-lg rounded-t-sm">
+                <span className="absolute top-4 left-6 text-gray-500 dark:text-gray-400 font-bebas text-3xl opacity-50">PHASE 1 (NOW)</span>
+                <h4 className="font-sans font-bold text-2xl tracking-tight mb-2 uppercase">Inspect</h4>
+                <p className="text-gray-600 dark:text-gray-400 font-medium text-sm">Deploy sensors to map factories and capture failure signatures.</p>
               </div>
-              <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div className="bg-white dark:bg-[#111] p-6 border border-black/5 dark:border-white/5 rounded-sm shadow-sm">
-                  <span className="inline-block px-2 py-1 bg-[#C9A84C]/10 text-[#C9A84C] text-[10px] tracking-widest font-bold uppercase mb-4 rounded-sm">Phase 1 (Now)</span>
-                  <h4 className="font-sans font-semibold text-2xl tracking-tight mb-3">Inspect</h4>
-                  <p className="text-sm font-medium leading-relaxed text-gray-600 dark:text-gray-400">Autonomous patrols capturing vibrational, thermal, and acoustic signatures.</p>
-                </div>
-                <div className="bg-white dark:bg-[#111] p-6 border border-black/5 dark:border-white/5 rounded-sm shadow-sm">
-                  <span className="inline-block px-2 py-1 bg-[#1A3BFF]/10 text-[#1A3BFF] text-[10px] tracking-widest font-bold uppercase mb-4 rounded-sm">Phase 2 (2027)</span>
-                  <h4 className="font-sans font-semibold text-2xl tracking-tight mb-3">Predict</h4>
-                  <p className="text-sm font-medium leading-relaxed text-gray-600 dark:text-gray-400">Cross-facility ML models identifying degradation before breakdown.</p>
-                </div>
-                <div className="bg-white dark:bg-[#111] p-6 border border-black/5 dark:border-white/5 rounded-sm shadow-sm opacity-100 md:opacity-60 hover:opacity-100 transition-opacity">
-                  <span className="inline-block px-2 py-1 bg-black/10 dark:bg-white/10 text-gray-800 dark:text-white text-[10px] tracking-widest font-bold uppercase mb-4 rounded-sm">Phase 3 (2028+)</span>
-                  <h4 className="font-sans font-semibold text-2xl tracking-tight mb-3">Act</h4>
-                  <p className="text-sm font-medium leading-relaxed text-gray-600 dark:text-gray-400">Interventions via manipulator arms. Replacing parts, tightening, no human entry.</p>
-                </div>
+
+              <div className="w-full md:w-1/3 bg-white dark:bg-[#111] border-t-4 border-[#1A3BFF] h-auto md:h-[280px] p-6 md:p-8 flex flex-col justify-end relative shadow-lg rounded-t-sm">
+                <span className="absolute top-4 left-6 text-[#1A3BFF] font-bebas text-3xl opacity-50">PHASE 2 (2027)</span>
+                <h4 className="font-sans font-bold text-2xl tracking-tight mb-2 uppercase">Predict</h4>
+                <p className="text-gray-600 dark:text-gray-400 font-medium text-sm">Trvise ML OS predicting localized degradation globally.</p>
+              </div>
+
+              <div className="w-full md:w-1/3 bg-black dark:bg-[#1f1f1f] border-t-4 border-[#C9A84C] h-auto md:h-[450px] p-6 md:p-8 flex flex-col justify-end relative shadow-2xl rounded-t-sm text-white transition-transform hover:scale-[1.02]">
+                <span className="absolute top-4 left-6 text-[#C9A84C] font-bebas text-4xl">PHASE 3 (2028+)</span>
+                <h4 className="font-sans font-bold text-3xl tracking-tight mb-4 uppercase text-[#C9A84C]">Act <span className="text-sm tracking-widest text-[#C9A84C]/50 block mt-1">Trillion-Dollar Scale</span></h4>
+                <p className="text-gray-300 dark:text-gray-400 font-medium text-sm leading-relaxed">General intelligence arms executing autonomous physical repair and logistics.</p>
               </div>
             </div>
           </div>
@@ -236,18 +272,37 @@ export function LandingPage() {
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16">
             <div>
               <h2 className="font-sans font-bold text-4xl md:text-5xl tracking-tight mb-12">Momentum</h2>
-              <div className="space-y-8">
-                <div className="flex border-b border-black/10 dark:border-white/10 pb-6">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] mt-2 mr-6 shrink-0" />
-                  <p className="text-xl font-medium tracking-tight text-gray-900 dark:text-white leading-snug">3 LOIs from midwest auto parts manufacturers.</p>
+              <div className="space-y-6">
+                <div className="flex border-b border-black/10 dark:border-white/10 pb-6 group">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] mt-2 mr-4 shrink-0 group-hover:scale-150 transition-transform" />
+                  <div>
+                    <h5 className="font-bold text-lg dark:text-white mb-1">Total Commitment</h5>
+                    <p className="text-gray-600 dark:text-gray-400 font-medium text-sm leading-relaxed">Founders dropping out of UIUC this summer to relocate to SF full-time.</p>
+                  </div>
                 </div>
-                <div className="flex border-b border-black/10 dark:border-white/10 pb-6">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] mt-2 mr-6 shrink-0" />
-                  <p className="text-xl font-medium tracking-tight text-gray-900 dark:text-white leading-snug">Functional prototype built and tested at UIUC.</p>
+
+                <div className="flex border-b border-black/10 dark:border-white/10 pb-6 group">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] mt-2 mr-4 shrink-0 group-hover:scale-150 transition-transform" />
+                  <div>
+                    <h5 className="font-bold text-lg dark:text-white mb-1">Customer Validation</h5>
+                    <p className="text-gray-600 dark:text-gray-400 font-medium text-sm leading-relaxed">Interviewed 25 companies; 20 requested immediate product availability.</p>
+                  </div>
                 </div>
-                <div className="flex pb-6">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] mt-2 mr-6 shrink-0" />
-                  <p className="text-xl font-medium tracking-tight text-gray-900 dark:text-white leading-snug">Patent pending: Perception Box sensor array.</p>
+
+                <div className="flex border-b border-black/10 dark:border-white/10 pb-6 group">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#1A3BFF] mt-2 mr-4 shrink-0 group-hover:scale-150 transition-transform" />
+                  <div>
+                    <h5 className="font-bold text-lg dark:text-white mb-1">Enterprise Inbound</h5>
+                    <p className="text-gray-600 dark:text-gray-400 font-medium text-sm leading-relaxed">Organic interest secured from John Deere, Caterpillar, and the IL Manufacturing Excellence Center (representing 200+ manufacturers).</p>
+                  </div>
+                </div>
+
+                <div className="flex pb-4 group">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] mt-2 mr-4 shrink-0 group-hover:scale-150 transition-transform" />
+                  <div>
+                    <h5 className="font-bold text-lg dark:text-white mb-1">Engineering Velocity</h5>
+                    <p className="text-gray-600 dark:text-gray-400 font-medium text-sm leading-relaxed">Designing next-gen industrial base by applying direct hardware learnings from our TRINA functional prototype.</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -256,11 +311,11 @@ export function LandingPage() {
               <div className="bg-gray-50 dark:bg-[#111] p-10 border-l-4 border-[#C9A84C] rounded-sm ring-1 ring-black/5 dark:ring-white/5 shadow-md">
                 <span className="font-bebas text-8xl text-black dark:text-white block mb-4">$47B</span>
                 <h4 className="font-sans font-semibold text-xl tracking-tight mb-2">Total Addressable Market</h4>
-                <p className="text-gray-600 dark:text-gray-400 font-medium mb-8 max-w-sm leading-relaxed">Global industrial predictive maintenance software & robotics scaling exponentially.</p>
+                <p className="text-gray-600 dark:text-gray-400 font-medium mb-8 max-w-sm leading-relaxed">Global predictive maintenance robotics scaling exponentially.</p>
 
                 <div className="pt-8 border-t border-black/10 dark:border-white/10">
                   <span className="font-bebas text-4xl text-[#C9A84C] block mb-2">1,200 PLANTS</span>
-                  <p className="text-gray-600 dark:text-gray-400 font-medium text-sm leading-relaxed mb-6">Our initial beachhead: Underserved mid-size Midwest automotive facilities with zero automation.</p>
+                  <p className="text-gray-600 dark:text-gray-400 font-medium text-sm leading-relaxed mb-6">Initial beachhead: Underserved mid-size Midwest automotive facilities.</p>
 
                   <h4 className="font-sans font-semibold text-lg tracking-tight mb-3">Expansion Verticals</h4>
                   <div className="flex flex-wrap gap-2">
