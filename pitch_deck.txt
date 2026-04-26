@@ -1,0 +1,287 @@
+PRE-SEED · APRIL 2026
+
+THE PROBLEM
+
+Factory Equipment Fails Silently
+and Expensively
+Most industrial facilities run equipment until it breaks —
+there is no continuous monitoring system.
+Inspection is manual: technicians do periodic
+walkthroughs, catching problems too late.
+A single unplanned downtime event costs $50K–$500K in
+lost production, emergency labor, and spoiled runs.
+
+02 / 10
+
+THE TRUE COST OF DOWNTIME
+
+$260B
+
+Lost annually by manufacturers to unplanned downtime
+
+$50–500K
+Cost per downtime
+event: lost
+production +
+emergency labor +
+scrap
+
+23 hrs
+
+70%
+
+Average time to
+diagnose + repair a
+critical machine
+failure
+
+Of failures are
+detectable early via
+vibration, thermal, or
+acoustic signals
+
+Trvise ROI: A single avoided downtime event at $100K pays for an entire year of Trvise.
+Typical customer breaks even in under 60 days.
+Sources: Siemens Unplanned Downtime Report 2023 · Aberdeen Group · McKinsey Manufacturing Analytics 2022
+
+03 / 10
+
+OUR SOLUTION
+
+Continuous Autonomous
+Inspection
+Always-On Patrol
+Robot navigates the factory floor 24/7, scanning every
+machine with thermal, acoustic, and visual sensors.
+
+Predictive Alerting
+ML models learn each machine's health baseline and flag
+anomalies before they cascade into failures.
+
+Zero Infrastructure Changes
+Deploys in days. No retrofitting. No sensor installation. Just
+drop it on the floor and go.
+
+04 / 10
+
+P R O D U C T P L AT F O R M
+
+Three Layers: Sense, Predict, Act
+PHASE 01 · PRE-SEED · NOW
+
+PHASE 02 · SEED · 2027
+
+PHASE 03 · SERIES A · 2028+
+
+Inspection Robot
+
+Data Flywheel
+
+Manipulation Platform
+
+What it does: Autonomous mobile robot
+patrols factory floors 24/7. Captures
+
+What it does: As units deploy across
+facilities, Trvise builds a proprietary dataset
+
+What it does: Retractable arms enable the
+robot to act, not just observe. Light
+
+vibration, thermal & acoustic signatures per
+
+of real industrial equipment degradation —
+
+interventions: tightening, lubrication, small
+
+machine on every pass.
+
+unavailable anywhere else.
+
+part replacement — no human entry
+needed.
+
+Deliverable: Live health dashboard + alert
+
+Deliverable: Cross-facility ML models that
+
+system per site. No infrastructure changes
+
+get sharper with every new site. Predictive
+
+Deliverable: Full autonomous maintenance
+
+required.
+
+accuracy compounds.
+
+loop. Inspection → Prediction →
+Remediation.
+
+Revenue: Hardware sale + $50–150K/yr
+
+Moat: Dataset = durable competitive
+
+SaaS per site.
+
+advantage competitors cannot replicate.
+
+Vision: The only robot that sees problems
+today and fixes them tomorrow.
+
+05 / 10
+
+B U I LT & W O R K I N G
+
+The Robot We Built
+
+D U A L - A R M P L AT F O R M
+
+MOBILE BASE + PERCEPTION
+
+Functional prototype with UR5 arms, custom torso, and integrated
+sensor array. Built and tested at UIUC robotics lab.
+
+Omnidirectional base with onboard compute, lidar, and stereo
+cameras. Autonomous navigation validated in lab environment.
+
+MARKET OPPORTUNITY
+
+Mid-Size Midwest Automotive Parts
+Manufacturers
+
+$47B
+
+$4.2B
+
+$180M
+
+Total Addressable Market
+
+Serviceable Market
+
+Initial Beachhead
+
+Global industrial predictive maintenance software
+
+US mid-size manufacturing facilities with aging
+
+~1,200 automotive parts plants in Midwest without
+
+& robotics
+
+equipment
+
+existing automation
+
+WEDGE
+
+Motivated buyers with no existing solution, clear ROI in under 6 months,
+and enough volume to build a proprietary dataset fast.
+
+06 / 10
+
+BUSINESS MODEL
+
+Hardware + SaaS per Site
+REVENUE STREAM 01
+
+REVENUE STREAM 02
+
+Hardware Sale
+
+SaaS Subscription
+
+One-time robot unit sale per facility. Capital purchase with a 12–
+18 month payback period for the customer based on avoided
+downtime alone.
+
+Annual software license covering the analytics platform, model
+updates, and remote monitoring. Recurring, high-margin, and
+grows with fleet size.
+
+$50–150K
+
+<6 mo
+
+70%+
+
+ARR per customer site
+
+Customer payback period
+
+Gross margin on SaaS layer
+
+07 / 10
+
+TRACTION & ROADMAP
+
+From First Customer to Data Moat
+NOW · Q2 2026
+
+Q4 2026
+
+2027
+
+2028+
+
+Validation
+
+First Revenue
+
+Scale
+
+Moat
+
+3 LOIs from Midwest auto parts
+plants
+
+Ship pilot units to 3 anchor
+customers
+
+20+ sites live across Midwest
+
+100+ facilities in dataset
+
+Cross-facility ML models deployed
+
+Prototype deployed in UIUC lab
+environment
+
+Dashboard v1 live in production
+
+Manipulation arm beta program
+
+Proprietary degradation models,
+untouchable by competitors
+
+First $300K ARR
+
+Seed Round close
+
+Patent pending: Perception Box
+sensor array
+
+Begin Seed Round prep
+
+Expand to aerospace, pharma,
+food manufacturing
+
+Raising $1.5M seed
+
+08 / 10
+
+PRE-SEED
+
+$1.5M
+
+First customers · 3–6 month runway to Seed
+Manufacture & ship 3 pilot units to anchor customers
+Hire 2 ML engineers and 1 field operations lead
+Build SaaS dashboard v1 and analytics backend
+Secure 3–6 month runway to Seed raise
+trvise.com · aadityav@trvise.com
+
+10 / 10
+
+

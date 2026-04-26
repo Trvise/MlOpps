@@ -71,6 +71,8 @@ function App() {
         <Route path="/" element={<LandingPage />} />
 
         {/* Dashboard + all sub-routes */}
+        <Route path="/software-demo/*" element={<DashboardShell />} />
+        {/* Keep legacy route for any hardcoded links */}
         <Route path="/dashboard/*" element={<DashboardShell />} />
       </Routes>
     </Router>

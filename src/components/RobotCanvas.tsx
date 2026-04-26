@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, Environment, Float, Html, useAnimations } from '@react-three/drei';
+import { useGLTF, Environment, Float, useAnimations } from '@react-three/drei';
 import { useScroll } from 'framer-motion';
 import * as THREE from 'three';
 
@@ -118,33 +118,7 @@ function RobotModel({ scrollYProgress }: { scrollYProgress: any }) {
             <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
                 <primitive object={scene} />
 
-                {/* Pointer 1: Perception */}
-                <Html position={[0, 1.5, 0]} center className="pointer-events-none opacity-0 transition-opacity duration-500" style={{ opacity: scrollYProgress.get() > 0.1 && scrollYProgress.get() < 0.3 ? 1 : 0 }}>
-                    <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#E8B84B] animate-ping absolute" />
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#E8B84B]" />
-                        <div className="h-[1px] w-12 bg-white/30" />
-                        <span className="text-[10px] uppercase tracking-widest text-white font-mono bg-[#0c0c0c]/80 border border-white/[0.07] px-2 py-1 backdrop-blur-md">Perception</span>
-                    </div>
-                </Html>
 
-                {/* Pointer 2: Planning */}
-                <Html position={[-1, 0.5, 1]} center className="pointer-events-none opacity-0 transition-opacity duration-500" style={{ opacity: scrollYProgress.get() > 0.4 && scrollYProgress.get() < 0.6 ? 1 : 0 }}>
-                    <div className="flex items-center gap-2">
-                        <span className="text-[10px] uppercase tracking-widest text-[#E8B84B] font-mono bg-[#0c0c0c]/80 border border-[#E8B84B]/30 px-2 py-1 backdrop-blur-md">Planning</span>
-                        <div className="h-[1px] w-12 bg-[#E8B84B]/50" />
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#E8B84B]" />
-                    </div>
-                </Html>
-
-                {/* Pointer 3: Control */}
-                <Html position={[1, -0.5, 1]} center className="pointer-events-none opacity-0 transition-opacity duration-500" style={{ opacity: scrollYProgress.get() > 0.7 && scrollYProgress.get() < 0.9 ? 1 : 0 }}>
-                    <div className="flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                        <div className="h-[1px] w-16 bg-emerald-500/50" />
-                        <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-mono bg-[#0c0c0c]/80 border border-emerald-500/30 px-2 py-1 backdrop-blur-md">Control</span>
-                    </div>
-                </Html>
             </Float>
         </group>
     );

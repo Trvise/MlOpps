@@ -19,7 +19,7 @@ export default {
       colors: {
         // Remap slate to match the Trvise/Vortex palette
         slate: {
-          50:  '#f0f0f0',
+          50: '#f0f0f0',
           100: '#d0d0d0',
           200: '#aaaaaa',
           300: '#888888',
@@ -64,6 +64,10 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        bebas: ['"Bebas Neue"', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
