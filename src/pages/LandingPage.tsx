@@ -100,7 +100,7 @@ export function LandingPage() {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="text-lg md:text-2xl text-gray-800 dark:text-gray-200 max-w-2xl font-semibold leading-relaxed mb-8"
               >
-                Autonomous robots that inspect your floor 24/7 — catching anomalies before they cascade into catastrophic failure.
+                Universal autonomous inspection for datacenters, warehouses, and energy grids — but we are solving the hardest problem first: <span className="text-black dark:text-white">Factory floors.</span>
               </motion.p>
               <motion.button
                 onClick={() => navigate('/software-demo')}
@@ -260,7 +260,16 @@ export function LandingPage() {
 
                 <div className="pt-8 border-t border-black/10 dark:border-white/10">
                   <span className="font-bebas text-4xl text-[#C9A84C] block mb-2">1,200 PLANTS</span>
-                  <p className="text-gray-600 dark:text-gray-400 font-medium text-sm leading-relaxed">Our initial beachhead: Underserved mid-size Midwest automotive facilities with zero automation.</p>
+                  <p className="text-gray-600 dark:text-gray-400 font-medium text-sm leading-relaxed mb-6">Our initial beachhead: Underserved mid-size Midwest automotive facilities with zero automation.</p>
+
+                  <h4 className="font-sans font-semibold text-lg tracking-tight mb-3">Expansion Verticals</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {['Factories', 'Warehouses', 'Data Centers', 'Energy Grids', 'Logistics Hubs'].map(vertical => (
+                      <span key={vertical} className="bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/10 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-sm text-sm font-medium transition-colors hover:bg-black/10 dark:hover:bg-white/20">
+                        {vertical}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
