@@ -7,7 +7,7 @@ import * as THREE from 'three';
 // Preload the model
 useGLTF.preload('/RobotExpressive.glb');
 
-function RobotModel({ scrollYProgress }: { scrollYProgress: any }) {
+function RobotModel({ scrollYProgress, isLightMode }: { scrollYProgress: any; isLightMode?: boolean }) {
     const { scene, animations } = useGLTF('/RobotExpressive.glb');
     const groupRef = useRef<THREE.Group>(null);
     const { actions } = useAnimations(animations, groupRef);
@@ -22,7 +22,7 @@ function RobotModel({ scrollYProgress }: { scrollYProgress: any }) {
         return () => window.removeEventListener('enter-vortex', handleEnter);
     }, []);
 
-    // Play idle animation and force cinematic materials
+    // Play idle animation and dynamically update materials for light/dark mode
     React.useEffect(() => {
         if (actions['Idle']) {
             actions['Idle'].reset().play();
@@ -30,79 +30,61 @@ function RobotModel({ scrollYProgress }: { scrollYProgress: any }) {
 
         scene.traverse((child) => {
             if (child instanceof THREE.Mesh) {
-                // Force an insanely dark, reflective sci-fi aesthetic
+                // Adaptive shader based on theme
+                const baseColor = isLightMode ? '#cfcfcf' : '#050505';
+                const metalness = isLightMode ? 0.6 : 0.9;
                 const newMat = new THREE.MeshStandardMaterial({
-                    color: new THREE.Color('#050505'),
-                    metalness: 0.9,
+                    color: new THREE.Color(baseColor),
+                    metalness: metalness,
                     roughness: 0.2,
-                    envMapIntensity: 2.0,
+                    envMapIntensity: isLightMode ? 0.8 : 2.0,
                 });
                 child.material = newMat;
             }
         });
-    }, [scene, actions]);
+    }, [scene, actions, isLightMode]);
 
     useFrame((_, delta) => {
         if (!groupRef.current) return;
 
         if (isEntering) {
             enterProgress.current += delta;
-
-            // Elegant Cinematic Sequence:
-            // 1. Smoothly glide to center frame
-            // 2. Rotate gracefully toward the viewer
-            // 3. Scale and push through the camera lens at the very end
             const p = Math.min(enterProgress.current / 1.2, 1);
-            const easeIn = p * p * p; // cubic ease in for zoom
-
-            // Glide softly to dead center horizontally, but drop Y significantly to target the brain area
+            const easeIn = p * p * p;
             groupRef.current.position.y += (-3.5 - groupRef.current.position.y) * 0.08;
             groupRef.current.position.x += (0 - groupRef.current.position.x) * 0.08;
-
-            // Push into camera lens smoothly, accelerating to envelope the screen
             groupRef.current.position.z += delta * (4 + easeIn * 30);
-
-            // Slowly rotate to face the camera straight on
             groupRef.current.rotation.y += (0 - groupRef.current.rotation.y) * 0.05;
             groupRef.current.rotation.x += (0.1 - groupRef.current.rotation.x) * 0.05;
             return;
         }
 
         const scroll = scrollYProgress.get();
-
-        // Detect active scrolling state via delta
         if (Math.abs(scroll - lastScroll.current) > 0.0001) {
-            scrollTimer.current = 0.15; // 150ms buffer
+            scrollTimer.current = 0.15;
         } else {
             scrollTimer.current = Math.max(0, scrollTimer.current - delta);
         }
         lastScroll.current = scroll;
 
         const isActivelyScrolling = scrollTimer.current > 0;
-
-        // Cap the movement to the first 40% of the page
         const turnProgress = Math.min(scroll / 0.4, 1);
-
-        // Base Movement: Smoothly float and rotate the entire humanoid based on turnProgress
-        const targetPositionX = 0; // Perfectly centered on screen
-        const targetPositionY = -2.5 + turnProgress * 1.5; // Rise up slightly while walking
+        const targetPositionX = 0;
+        const targetPositionY = -2.5 + turnProgress * 1.5;
         groupRef.current.position.x += (targetPositionX - groupRef.current.position.x) * 0.1;
         groupRef.current.position.y += (targetPositionY - groupRef.current.position.y) * 0.1;
 
-        const baseTargetRotY = -Math.PI / 4 - turnProgress * Math.PI; // Dramatic spin to face user
+        const baseTargetRotY = -Math.PI / 4 - turnProgress * Math.PI;
         groupRef.current.rotation.y += (baseTargetRotY - groupRef.current.rotation.y) * 0.05;
 
-        // Tilt forward slightly during walk
         const targetRotX = turnProgress * 0.2;
         groupRef.current.rotation.x += (targetRotX - groupRef.current.rotation.x) * 0.1;
 
-        // Dynamically blend between Idle and Walking only during the turn phase
         const walkAction = actions['Walking'];
         const idleAction = actions['Idle'];
 
         if (walkAction && idleAction) {
             const isWalkingPhase = scroll > 0.01 && scroll < 0.4 && isActivelyScrolling;
-            // Fast toggle between walk cycle vs idle
             if (isWalkingPhase && !walkAction.isRunning()) {
                 walkAction.reset().play();
                 walkAction.crossFadeFrom(idleAction, 0.5, true);
@@ -117,28 +99,26 @@ function RobotModel({ scrollYProgress }: { scrollYProgress: any }) {
         <group ref={groupRef} position={[0, -2.5, -2]} scale={2.2}>
             <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
                 <primitive object={scene} />
-
-
             </Float>
         </group>
     );
 }
 
-export default function RobotCanvas() {
+export default function RobotCanvas({ isLightMode = false }: { isLightMode?: boolean }) {
     const { scrollYProgress } = useScroll();
 
     return (
         <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
             <Canvas camera={{ position: [0, 0, 8], fov: 45 }} gl={{ alpha: true }}>
-                <ambientLight intensity={0.5} />
-                <directionalLight position={[10, 10, 5]} intensity={2} color="#ffffff" />
+                <ambientLight intensity={isLightMode ? 2.5 : 0.5} />
+                <directionalLight position={[10, 10, 5]} intensity={isLightMode ? 3 : 2} color="#ffffff" />
                 <directionalLight position={[-10, 10, -5]} intensity={1} color="#E8B84B" />
-                <pointLight position={[0, -5, 5]} intensity={1.5} color="#1A3BFF" />
+                <pointLight position={[0, -5, 5]} intensity={isLightMode ? 0.5 : 1.5} color="#1A3BFF" />
 
-                <Environment preset="city" />
+                <Environment preset={isLightMode ? "studio" : "city"} />
 
                 <React.Suspense fallback={null}>
-                    <RobotModel scrollYProgress={scrollYProgress} />
+                    <RobotModel scrollYProgress={scrollYProgress} isLightMode={isLightMode} />
                 </React.Suspense>
             </Canvas>
         </div>
