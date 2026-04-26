@@ -76,21 +76,20 @@ export function LandingPage() {
         {/* 1. Hero Section */}
         <section className="relative min-h-screen items-center justify-center pt-24 pb-12 px-6 flex flex-col overflow-hidden">
           {/* Gradients */}
-          <div className="absolute inset-x-0 bottom-0 top-0 opacity-20 dark:opacity-40 bg-gradient-to-b from-transparent via-white dark:via-black to-white dark:to-black pointer-events-none z-0 transition-colors duration-500"></div>
-          <div className="absolute inset-0 bg-white/20 dark:bg-black/50 z-10 pointer-events-none transition-colors duration-500"></div>
+          <div className="absolute inset-x-0 bottom-0 top-0 opacity-30 dark:opacity-60 bg-gradient-to-b from-transparent via-white dark:via-black to-white dark:to-black pointer-events-none z-0 transition-colors duration-500"></div>
 
           {/* 3D Robot Background */}
-          <div className="absolute inset-0 opacity-100 dark:opacity-60 z-0 [mask-image:radial-gradient(ellipse_at_center,transparent_0%,black_100%)] [-webkit-mask-image:radial-gradient(ellipse_at_center,transparent_0%,black_100%)]">
+          <div className="absolute inset-0 opacity-100 dark:opacity-90 z-0">
             <RobotCanvas isLightMode={isLightMode} />
           </div>
 
           <div className="relative z-20 max-w-5xl mx-auto flex flex-col items-center text-center mt-12 md:mt-0 px-4 w-full">
-            <div className="bg-white/85 dark:bg-black/80 backdrop-blur-xl px-4 py-12 sm:px-8 md:px-12 md:py-16 rounded-2xl shadow-[0_0_60px_rgba(0,0,0,0.15)] dark:shadow-[0_0_60px_rgba(0,0,0,0.8)] border border-black/10 dark:border-white/10 w-full max-w-5xl flex flex-col items-center">
+            <div className="bg-white/80 dark:bg-black/70 backdrop-blur-md px-6 py-6 sm:px-10 sm:py-8 rounded-3xl shadow-2xl border border-black/10 dark:border-white/10 inline-flex flex-col items-center max-w-4xl mx-auto">
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="font-sans font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight mb-6 sm:mb-8 leading-tight text-gray-900 dark:text-white drop-shadow-xl"
+                className="font-sans font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight mb-6 sm:mb-8 leading-tight text-gray-900 dark:text-white drop-shadow-sm"
               >
                 Unplanned downtime costs millions.<br />
                 <span className="block mt-2 md:mt-4 xl:mt-6"><span className="text-[#C9A84C]">We stop it</span> before it starts.</span>
@@ -99,16 +98,25 @@ export function LandingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-lg md:text-2xl text-gray-800 dark:text-gray-200 max-w-3xl font-semibold leading-relaxed drop-shadow-md"
+                className="text-lg md:text-2xl text-gray-800 dark:text-gray-200 max-w-2xl font-semibold leading-relaxed mb-8"
               >
                 Autonomous robots that inspect your floor 24/7 — catching anomalies before they cascade into catastrophic failure.
               </motion.p>
+              <motion.button
+                onClick={() => navigate('/software-demo')}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="bg-[#C9A84C] text-black px-10 py-5 font-bold tracking-wide text-lg rounded-md hover:bg-[#ebd088] transition-colors flex items-center gap-3 shadow-[0_0_30px_rgba(201,168,76,0.3)] hover:scale-105"
+              >
+                <Settings2 className="w-5 h-5" /> Vortex OS Demo
+              </motion.button>
             </div>
           </div>
         </section>
 
         {/* 2. The Problem */}
-        <section className="py-24 md:py-32 px-6 bg-gray-50 dark:bg-[#050505] border-t border-black/5 dark:border-white/5 transition-colors duration-500">
+        <section className="relative z-10 py-24 md:py-32 px-6 bg-gray-50 dark:bg-[#050505] border-t border-black/5 dark:border-white/5 transition-colors duration-500">
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
             <div className="flex flex-col border-t border-black/10 dark:border-white/10 pt-6">
               <span className="font-bebas text-6xl md:text-7xl text-[#C9A84C] mb-4 drop-shadow-sm">$260B</span>
@@ -126,7 +134,7 @@ export function LandingPage() {
         </section>
 
         {/* 3. The Solution */}
-        <section id="solution" className="py-24 md:py-32 px-6 bg-white dark:bg-black relative transition-colors duration-500">
+        <section id="solution" className="relative z-10 py-24 md:py-32 px-6 bg-white dark:bg-black transition-colors duration-500">
           <div className="max-w-6xl mx-auto">
             <h2 className="font-sans font-bold text-4xl md:text-5xl tracking-tight mb-16 text-black dark:text-white">Continuous Autonomous Inspection</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -150,7 +158,7 @@ export function LandingPage() {
         </section>
 
         {/* 4. The Robot Prototype */}
-        <section id="prototype" className="py-32 px-6 bg-gray-50 dark:bg-[#050505] border-y border-black/5 dark:border-white/5 transition-colors duration-500">
+        <section id="prototype" className="relative z-10 py-32 px-6 bg-gray-50 dark:bg-[#050505] border-y border-black/5 dark:border-white/5 transition-colors duration-500">
           <div className="max-w-6xl mx-auto flex flex-col items-center">
             <h2 className="font-sans font-bold text-4xl md:text-5xl tracking-tight mb-6 text-center">Our Perception Prototype</h2>
             <p className="font-medium text-gray-600 dark:text-gray-400 text-lg md:text-xl max-w-3xl text-center mb-16 leading-relaxed">
@@ -169,7 +177,7 @@ export function LandingPage() {
         </section>
 
         {/* 5. How It Works */}
-        <section id="how-it-works" className="py-24 px-6 bg-white dark:bg-black transition-colors duration-500">
+        <section id="how-it-works" className="relative z-10 py-24 px-6 bg-white dark:bg-black transition-colors duration-500">
           <div className="max-w-6xl mx-auto">
             <h2 className="font-sans font-bold text-4xl md:text-5xl tracking-tight mb-16 text-center">How It Works</h2>
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 relative">
@@ -195,7 +203,7 @@ export function LandingPage() {
         </section>
 
         {/* 6. Product Roadmap */}
-        <section id="roadmap" className="py-24 px-6 bg-gray-50 dark:bg-[#050505] border-t border-black/5 dark:border-white/5 transition-colors duration-500">
+        <section id="roadmap" className="relative z-10 py-24 px-6 bg-gray-50 dark:bg-[#050505] border-t border-black/5 dark:border-white/5 transition-colors duration-500">
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col md:flex-row gap-8">
               <div className="md:w-1/3">
@@ -224,7 +232,7 @@ export function LandingPage() {
         </section>
 
         {/* 7. Social Proof / Traction & Market */}
-        <section className="py-24 px-6 bg-white dark:bg-black border-y border-black/5 dark:border-white/5 transition-colors duration-500">
+        <section className="relative z-10 py-24 px-6 bg-white dark:bg-black border-y border-black/5 dark:border-white/5 transition-colors duration-500">
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16">
             <div>
               <h2 className="font-sans font-bold text-4xl md:text-5xl tracking-tight mb-12">Momentum</h2>
@@ -260,7 +268,7 @@ export function LandingPage() {
         </section>
 
         {/* 9. CTA & Footer */}
-        <section className="py-32 px-6 bg-gray-50 dark:bg-black relative text-center flex flex-col items-center overflow-hidden border-t border-black/5 dark:border-white/5 transition-colors duration-500">
+        <section className="relative z-10 py-32 px-6 bg-gray-50 dark:bg-black text-center flex flex-col items-center overflow-hidden border-t border-black/5 dark:border-white/5 transition-colors duration-500">
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C9A84C] to-transparent opacity-30 z-0"></div>
 
           <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
